@@ -1,5 +1,6 @@
-﻿*.env
+*.env
 env.yaml
 *keys*
 node_modules/
 .DS_Store
+*.bak
