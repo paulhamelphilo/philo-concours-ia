@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Mentor IA philo</title>
+    <title>Philo Concours IA</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🤔</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -1578,7 +1578,7 @@
     <div id="floating-profile-dock" class="floating-profile-dock" title="Survolez pour afficher les profils et l'historique"></div>
 
     <div class="container">
-        <h1>🤔 Mentor IA philo</h1>
+        <h1>🤔 Philo Concours IA</h1>
 
         <div class="global-selector">
             <label style="display:block; font-weight:bold; margin-bottom:8px"><strong>Exercice</strong></label>
@@ -1768,11 +1768,11 @@
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
             try {
-                const lastCheck = sessionStorage.getItem('mentor_last_version_check');
+                const lastCheck = sessionStorage.getItem('philo_concours_last_version_check');
                 const now = Date.now();
                 // Garde-fou : vérification légère et asynchrone au maximum une fois par minute
                 if (!force && lastCheck && now - Number(lastCheck) < 60000) return;
-                sessionStorage.setItem('mentor_last_version_check', String(now));
+                sessionStorage.setItem('philo_concours_last_version_check', String(now));
 
                 fetch(window.location.href.split('#')[0].split('?')[0] + '?_nocache=' + now, {
                     method: 'GET',
@@ -4270,8 +4270,8 @@
         };
 
         // ============ GESTION DU STOCKAGE LOCAL PAR SUJET (PERSISTANCE & MULTI-PROFILS) ============
-        const STORAGE_KEY_V1 = 'mentor_ia_saved_data_v1';
-        const STORAGE_KEY_V2 = 'mentor_ia_saved_data_v2';
+        const STORAGE_KEY_V1 = 'philo_concours_ia_saved_data_v1';
+        const STORAGE_KEY_V2 = 'philo_concours_ia_saved_data_v2';
         let lastRenderedSubjectKey = null;
 
         let storageData = {
