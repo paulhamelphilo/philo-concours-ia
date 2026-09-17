@@ -5467,25 +5467,139 @@
             };
         }
 
+        // Extraction intelligente du numéro de section (chiffre arabe, chiffre romain ou ordinal)
+        function extractSectionNumber(str, prefixKeyword) {
+            if (!str || typeof str !== 'string') return null;
+            const s = str.toUpperCase().trim();
+            const romanMap = { 'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10 };
+
+            if (prefixKeyword) {
+                const kw = prefixKeyword.toUpperCase();
+                // 1. Chiffre arabe direct lié au mot-clé (ex: MOMENT 2, PHASE 1, MOMENT #2, MOMENT : 2)
+                const regexDigit = new RegExp('\\b' + kw + '\\s*(?:#|N°|NO|:)?\\s*(\\d+)\\b', 'i');
+                const mDigit = s.match(regexDigit);
+                if (mDigit) return parseInt(mDigit[1], 10);
+
+                // 2. Chiffre romain direct lié au mot-clé (ex: MOMENT II, PHASE IV, MOMENT : III)
+                const regexRoman = new RegExp('\\b' + kw + '\\s*(?:#|N°|NO|:)?\\s*([IVXLCDM]+)\\b', 'i');
+                const mRoman = s.match(regexRoman);
+                if (mRoman && romanMap[mRoman[1].toUpperCase()]) {
+                    return romanMap[mRoman[1].toUpperCase()];
+                }
+
+                // 3. Ordinal en français lié au mot-clé (ex: PREMIER MOMENT, 2EME PHASE, MOMENT PREMIER)
+                if (new RegExp('(?:\\b(?:1ER|PREMIER|PREMIERE|PREMIÈRE)\\s+' + kw + '\\b)|(?:\\b' + kw + '\\s+(?:1ER|PREMIER|PREMIERE|PREMIÈRE)\\b)', 'i').test(s)) return 1;
+                if (new RegExp('(?:\\b(?:2E|2EME|2ÈME|SECOND|SECONDE|DEUXIEME|DEUXIÈME)\\s+' + kw + '\\b)|(?:\\b' + kw + '\\s+(?:2E|2EME|2ÈME|SECOND|SECONDE|DEUXIEME|DEUXIÈME)\\b)', 'i').test(s)) return 2;
+                if (new RegExp('(?:\\b(?:3E|3EME|3ÈME|TROISIEME|TROISIÈME)\\s+' + kw + '\\b)|(?:\\b' + kw + '\\s+(?:3E|3EME|3ÈME|TROISIEME|TROISIÈME)\\b)', 'i').test(s)) return 3;
+                if (new RegExp('(?:\\b(?:4E|4EME|4ÈME|QUATRIEME|QUATRIÈME)\\s+' + kw + '\\b)|(?:\\b' + kw + '\\s+(?:4E|4EME|4ÈME|QUATRIEME|QUATRIÈME)\\b)', 'i').test(s)) return 4;
+                if (new RegExp('(?:\\b(?:5E|5EME|5ÈME|CINQUIEME|CINQUIÈME)\\s+' + kw + '\\b)|(?:\\b' + kw + '\\s+(?:5E|5EME|5ÈME|CINQUIEME|CINQUIÈME)\\b)', 'i').test(s)) return 5;
+                if (new RegExp('(?:\\b(?:6E|6EME|6ÈME|SIXIEME|SIXIÈME)\\s+' + kw + '\\b)|(?:\\b' + kw + '\\s+(?:6E|6EME|6ÈME|SIXIEME|SIXIÈME)\\b)', 'i').test(s)) return 6;
+
+                // Si un mot-clé précis était demandé mais qu'aucun numéro n'y est associé, on ne prend pas un chiffre arbitraire du reste de la phrase (ex: ligne 13)
+                return null;
+            }
+
+            // Recherche générale (quand aucun mot-clé précis n'est imposé)
+            const generalDigit = s.match(/\b\d+\b/);
+            if (generalDigit) return parseInt(generalDigit[0], 10);
+
+            const generalRoman = s.match(/\b(VIII|VII|VI|IV|V|III|II|I|IX|X)\b/i);
+            if (generalRoman && romanMap[generalRoman[1].toUpperCase()]) {
+                return romanMap[generalRoman[1].toUpperCase()];
+            }
+
+            if (/\b(?:1ER|PREMIER|PREMIERE|PREMIÈRE)\b/i.test(s)) return 1;
+            if (/\b(?:2E|2EME|2ÈME|SECOND|SECONDE|DEUXIEME|DEUXIÈME)\b/i.test(s)) return 2;
+            if (/\b(?:3E|3EME|3ÈME|TROISIEME|TROISIÈME)\b/i.test(s)) return 3;
+            if (/\b(?:4E|4EME|4ÈME|QUATRIEME|QUATRIÈME)\b/i.test(s)) return 4;
+
+            return null;
+        }
+
         // Génération d'abréviations courtes et intelligentes pour les pastilles de sections
-        function getShortSectionCode(sectionName) {
+        function getShortSectionCode(sectionName, index, allSections) {
             if (!sectionName || typeof sectionName !== 'string') return '';
             const s = sectionName.toUpperCase().trim();
-            if (s.startsWith('ARGUMENT')) {
-                const num = s.match(/\d+/);
-                return num ? 'A' + num[0] : 'Arg';
+
+            // 1. Phases (dans l'introduction ou tout découpage de devoir par phases)
+            if (s.includes('PHASE') || (typeof state !== 'undefined' && state.exerciseMode === 'intro')) {
+                if (s.includes('PHASE')) {
+                    const num = extractSectionNumber(s, 'PHASE');
+                    if (num !== null) return 'P' + num;
+                    if (Array.isArray(allSections)) {
+                        const phaseSections = allSections.filter(sec => (sec.name || '').toUpperCase().includes('PHASE'));
+                        const pos = phaseSections.findIndex(sec => sec.name === sectionName || (typeof index === 'number' && sec === allSections[index]));
+                        if (pos >= 0) return 'P' + (pos + 1);
+                    }
+                    if (typeof index === 'number') return 'P' + (index + 1);
+                    return 'P1';
+                }
+
+                // En mode introduction sans le mot 'PHASE' explicite dans le titre
+                if (typeof state !== 'undefined' && state.exerciseMode === 'intro') {
+                    if (s.includes('AMORCE') || s.includes('ACCROCHE')) return 'P1';
+                    if (s.includes('NOTION') || s.includes('CONCEPT') || s.includes('DÉFINITION') || s.includes('DEFINITION') || s.includes('TERME')) return 'P2';
+                    if (s.includes('PROBLÉM') || s.includes('PROBLEM') || s.includes('APORIE')) return 'P3';
+                    if (s.includes('ANNONCE') || s.includes('PLAN') || s.includes('DÉMARCHE') || s.includes('DEMARCHE')) return 'P4';
+                    if (typeof index === 'number') return 'P' + (index + 1);
+                    return 'P1';
+                }
             }
+
+            // 2. Sous-Moment
+            if (s.includes('SOUS-MOMENT') || s.includes('SOUS MOMENT') || s.startsWith('SM')) {
+                const num = extractSectionNumber(s, 'SOUS-MOMENT') || extractSectionNumber(s, 'SOUS MOMENT') || extractSectionNumber(s, 'SM');
+                if (num !== null) return 'SM' + num;
+                if (Array.isArray(allSections)) {
+                    const smSections = allSections.filter(sec => {
+                        const str = (sec.name || '').toUpperCase();
+                        return str.includes('SOUS-MOMENT') || str.includes('SOUS MOMENT') || str.startsWith('SM');
+                    });
+                    const pos = smSections.findIndex(sec => sec.name === sectionName || (typeof index === 'number' && sec === allSections[index]));
+                    if (pos >= 0) return 'SM' + (pos + 1);
+                }
+                if (typeof index === 'number') return 'SM' + (index + 1);
+                return 'SM';
+            }
+
+            // 3. Moment (explication de texte : M1, M2, M3...)
+            if (s.includes('MOMENT') || /^M\s*\d+/i.test(s)) {
+                const num = extractSectionNumber(s, 'MOMENT');
+                if (num !== null) return 'M' + num;
+                if (Array.isArray(allSections)) {
+                    const mSections = allSections.filter(sec => {
+                        const str = (sec.name || '').toUpperCase();
+                        return str.includes('MOMENT') && !str.includes('SOUS-MOMENT') && !str.includes('SOUS MOMENT') && !str.startsWith('SM');
+                    });
+                    const pos = mSections.findIndex(sec => sec.name === sectionName || (typeof index === 'number' && sec === allSections[index]));
+                    if (pos >= 0) return 'M' + (pos + 1);
+                }
+                if (typeof index === 'number') return 'M' + (index + 1);
+                return 'M1';
+            }
+
+            // 4. Arguments
+            if (s.startsWith('ARGUMENT') || s.startsWith('ARG')) {
+                const num = extractSectionNumber(s, 'ARGUMENT') || extractSectionNumber(s, 'ARG') || extractSectionNumber(s);
+                return num ? 'A' + num : 'Arg';
+            }
+
+            // 5. Références et exemples
             if (s.startsWith('RÉF') || s.startsWith('REF') || s.startsWith('EXEMPLE')) {
-                const num = s.match(/\d+/);
-                return num ? 'R' + num[0] : 'R';
+                const num = extractSectionNumber(s, 'REF') || extractSectionNumber(s, 'EXEMPLE') || extractSectionNumber(s);
+                return num ? 'R' + num : 'R';
             }
-            if (s.includes('SOUS-MOMENT') || s.includes('MOMENT')) {
-                const num = s.match(/\d+/);
-                return num ? 'SM' + num[0] : 'SM';
+
+            // 6. Parties et axes
+            if (s.startsWith('PARTIE') || s.startsWith('AXE')) {
+                const num = extractSectionNumber(s, 'PARTIE') || extractSectionNumber(s, 'AXE') || extractSectionNumber(s);
+                return num ? 'P' + num : 'Part';
             }
+
+            // 7. Éléments conceptuels isolés
             if (s === 'THÈSE' || s === 'THESE') return 'T';
             if (s === 'THÈME' || s === 'THEME') return 'Th';
-            if (s === 'AMORCE') return 'A';
+            if (s.includes('AMORCE')) return 'A';
             if (s === 'SUJET') return 'S';
             if (s.startsWith('ÉVIDENCE') || s.startsWith('EVIDENCE')) return 'EDC';
             if (s.startsWith('CONTRADICTION')) return 'CL';
@@ -5497,6 +5611,9 @@
             if (s.startsWith('OBJECTION')) return 'Obj';
             if (s.startsWith('TRANSITION')) return 'Tr';
             if (s.startsWith('REFORMULATION')) return 'Rf';
+
+            if (s.length <= 3) return s;
+
             return s.charAt(0);
         }
 
@@ -5549,8 +5666,8 @@
 
             if (validSections.length > 0) {
                 html += `<div class="quicknav-divider"></div>`;
-                validSections.forEach(s => {
-                    const shortCode = getShortSectionCode(s.name);
+                validSections.forEach((s, idx) => {
+                    const shortCode = getShortSectionCode(s.name, idx, validSections);
                     const colors = getScoreColorClass(s.score);
                     html += `<a href="#${s.anchorId}" class="quicknav-section-pill ${colors.pill}" data-tooltip="${s.name} — ${s.score}/100" data-target="${s.anchorId}" onclick="scrollToElement('${s.anchorId}'); return false;">${shortCode}</a>`;
                 });
