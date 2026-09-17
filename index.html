@@ -1767,10 +1767,10 @@
 
                     <div style="margin-bottom:18px;">
                         <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:0.9rem;">Contenu de la copie (retranscription ou collage direct) :</label>
-                        <textarea id="upload-modal-content" rows="10" placeholder="Le texte de votre copie extrait du fichier apparaîtra ici. Vous pouvez également coller directement votre texte..."
+                        <textarea id="upload-modal-content" rows="10" maxlength="100000" placeholder="Le texte de votre copie extrait du fichier apparaîtra ici. Vous pouvez également coller directement votre texte..."
                             oninput="updateUploadCharCount(this.value); preserveAndCount(this);" onkeydown="handleTextareaKeydown(event, this)" onfocus="handleTextareaFocus(this)" onpaste="handleTextareaPaste(event, this)"
                             style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; font-family:inherit; font-size:0.9rem; line-height:1.6;"></textarea>
-                        <div id="upload-char-count" style="text-align:right; font-size:0.8rem; color:#64748b; margin-top:4px;">0 caractère</div>
+                        <div id="upload-char-count" style="text-align:right; font-size:0.8rem; color:#64748b; margin-top:4px;">0 / 100 000 caractères</div>
                     </div>
 
                     <div style="display:flex; justify-content:flex-end; gap:10px;">
@@ -6378,7 +6378,25 @@
         function updateUploadCharCount(val) {
             const counter = document.getElementById('upload-char-count');
             if (counter) {
-                counter.textContent = `${(val || '').length} / 60 000 caractères`;
+                const len = (val || '').length;
+                const max = 100000;
+                let label = `${len.toLocaleString('fr-FR')} / ${max.toLocaleString('fr-FR')} caractères`;
+                let color = '#64748b';
+                let fontWeight = 'normal';
+
+                if (len >= max) {
+                    label += ' 🚫 (limite atteinte)';
+                    color = '#0f4c81';
+                    fontWeight = 'bold';
+                } else if (len >= max * 0.9) {
+                    label += ' ⚠️ (limite presque atteinte)';
+                    color = '#d35400';
+                    fontWeight = 'bold';
+                }
+
+                counter.textContent = label;
+                counter.style.color = color;
+                counter.style.fontWeight = fontWeight;
             }
         }
 
@@ -6631,15 +6649,17 @@
         }
 
         function getCharCountInfo(len, max) {
-            let label = `${len} / ${max} caractères`;
+            const safeLen = (typeof len === 'number' && !isNaN(len)) ? len : 0;
+            const safeMax = (typeof max === 'number' && !isNaN(max) && max > 0) ? max : 100000;
+            let label = `${safeLen.toLocaleString('fr-FR')} / ${safeMax.toLocaleString('fr-FR')} caractères`;
             let color = '#7f8c8d';
             let fontWeight = 'normal';
 
-            if (len >= max) {
+            if (safeLen >= safeMax) {
                 label += ' 🚫 (limite atteinte)';
                 color = '#0f4c81';
                 fontWeight = 'bold';
-            } else if (len >= max * 0.9) {
+            } else if (safeLen >= safeMax * 0.9) {
                 label += ' ⚠️ (limite presque atteinte)';
                 color = '#d35400';
                 fontWeight = 'bold';
@@ -6897,7 +6917,7 @@
 
             const area = document.getElementById('content-area');
 
-            const maxLength = state.mode === 'complete' ? 60000 : (state.mode === 'argumentation' ? 3000 : (state.mode === 'intro' ? 3000 : 12000));
+            const maxLength = state.mode === 'complete' ? 100000 : (state.mode === 'argumentation' ? 8000 : (state.mode === 'intro' ? 10000 : 50000));
             
             const sujetActif = obtenirSujetActif();
             const currentSubjectKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
