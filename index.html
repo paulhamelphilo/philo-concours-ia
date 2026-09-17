@@ -124,8 +124,7 @@
         }
 
         .main-nav,
-        .sub-nav,
-        .exercise-type-nav {
+        .sub-nav {
             display: flex;
             justify-content: center;
             gap: 10px;
@@ -133,16 +132,36 @@
             flex-wrap: wrap;
         }
 
-        .exercise-type-nav {
-            margin-bottom: 12px;
-        }
-
         .main-nav .btn,
-        .sub-nav .btn,
-        .exercise-type-nav .btn {
+        .sub-nav .btn {
             flex: 1;
             max-width: 200px;
             text-align: center;
+        }
+
+        .concours-nav,
+        .exercise-type-nav {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .concours-nav .btn,
+        .exercise-type-nav .btn {
+            flex: 1 1 0%;
+            max-width: 220px;
+            min-width: 160px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            min-height: 48px;
+            box-sizing: border-box;
         }
 
         .btn {
@@ -254,6 +273,8 @@
             border-left: 5px solid #475569;
             background-color: #f8fafc;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         #correction-box h2 {
@@ -424,6 +445,9 @@
             text-decoration: none;
             transition: all 0.15s ease;
             border: 1px solid #e2e8f0;
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .section-chip:hover {
@@ -453,6 +477,8 @@
             margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .section-feedback-card.card-tier-1 {
@@ -490,7 +516,12 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin: 0;
-            white-space: nowrap;
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.4;
+            min-width: 0;
+            max-width: 100%;
         }
 
         .section-card-bar-wrap {
@@ -1584,10 +1615,406 @@
             margin: 0 5px;
         }
 
-        @media (max-width: 768px) {
-            #main-nav-separator {
-                display: none;
+        /* ============ STYLES DE LA CORRECTION PAR ONGLETS ET COPIE ANNOTÉE ============ */
+        .correction-tabs-bar {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 22px;
+            gap: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .correction-tab-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #475569;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .correction-tab-btn:hover {
+            color: #1e293b;
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .correction-tab-btn.active {
+            background: #ffffff;
+            color: #1e293b;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .badge-annotations-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #3b82f6;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            min-width: 18px;
+            line-height: 1.2;
+        }
+
+        .correction-tab-pane {
+            display: block;
+            animation: fadeInPane 0.25s ease;
+        }
+
+        @keyframes fadeInPane {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Bannière d'accès rapide dans le rapport d'évaluation */
+        .switch-to-copie-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 4px solid #3b82f6;
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin: 16px 0 24px 0;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .switch-to-copie-btn {
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .switch-to-copie-btn:hover {
+            background: #1d4ed8;
+        }
+
+        /* Disposition bi-colonne de la copie annotée */
+        .copie-annotee-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 390px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .copie-annotee-layout {
+                grid-template-columns: 1fr;
             }
+        }
+
+        .copie-text-col {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 28px 32px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            font-size: 15.5px;
+            line-height: 1.85;
+            color: #1e293b;
+            font-family: 'Merriweather', Georgia, 'Times New Roman', serif;
+        }
+
+        .copie-text-col p {
+            margin-top: 0;
+            margin-bottom: 1.3em;
+            text-align: justify;
+            text-indent: 1.8em;
+        }
+
+        /* Surlignages colorés de la copie annotée */
+        .copie-highlight {
+            padding: 2px 3px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline;
+        }
+
+        .copie-highlight:hover {
+            filter: brightness(0.92);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+        }
+
+        .copie-highlight.active-highlight {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.7);
+            filter: brightness(0.9);
+        }
+
+        /* Typologie 1 : Glissement conceptuel */
+        .highlight-conceptuel {
+            background-color: rgba(245, 158, 11, 0.25);
+            border-bottom: 2px solid #f59e0b;
+            color: #78350f;
+        }
+
+        /* Typologie 2 : Rupture logique */
+        .highlight-logique {
+            background-color: rgba(239, 68, 68, 0.22);
+            border-bottom: 2px solid #ef4444;
+            color: #7f1d1d;
+        }
+
+        /* Typologie 3 : Référence à approfondir */
+        .highlight-reference {
+            background-color: rgba(14, 165, 233, 0.22);
+            border-bottom: 2px solid #0284c7;
+            color: #0c4a6e;
+        }
+
+        /* Typologie 4 : Métadiscours scolaire */
+        .highlight-style {
+            background-color: rgba(168, 85, 247, 0.22);
+            border-bottom: 2px solid #9333ea;
+            color: #581c87;
+        }
+
+        /* Typologie 5 : Étincelle à valoriser */
+        .highlight-etincelle {
+            background-color: rgba(34, 197, 94, 0.25);
+            border-bottom: 2px solid #16a34a;
+            color: #14532d;
+        }
+
+        .ann-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 17px;
+            height: 17px;
+            font-size: 10.5px;
+            font-weight: 800;
+            border-radius: 50%;
+            margin-left: 3px;
+            vertical-align: super;
+            line-height: 1;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #334155;
+            color: #ffffff;
+        }
+
+        /* Colonne de marge pour les cartes d'annotation */
+        .copie-margin-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .copie-margin-col::-webkit-scrollbar {
+            width: 6px;
+        }
+        .copie-margin-col::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .ann-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #94a3b8;
+            border-radius: 8px;
+            padding: 14px 16px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+            font-size: 13.5px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .ann-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateX(-2px);
+        }
+
+        .ann-card.active-target {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
+            transform: translateX(-4px);
+            background: #f8fafc;
+        }
+
+        .ann-card.type-conceptuel { border-left-color: #f59e0b; }
+        .ann-card.type-logique { border-left-color: #ef4444; }
+        .ann-card.type-reference { border-left-color: #0284c7; }
+        .ann-card.type-style { border-left-color: #9333ea; }
+        .ann-card.type-etincelle { border-left-color: #16a34a; }
+
+        .ann-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            gap: 8px;
+        }
+
+        .ann-card-badge {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .type-conceptuel .ann-card-badge { background: #fef3c7; color: #92400e; }
+        .type-logique .ann-card-badge { background: #fee2e2; color: #991b1b; }
+        .type-reference .ann-card-badge { background: #e0f2fe; color: #075985; }
+        .type-style .ann-card-badge { background: #f3e8ff; color: #6b21a8; }
+        .type-etincelle .ann-card-badge { background: #dcfce7; color: #166534; }
+
+        .ann-card-quote {
+            font-style: italic;
+            color: #475569;
+            font-size: 12.5px;
+            margin: 0 0 8px 0;
+            padding: 6px 10px;
+            background: #f8fafc;
+            border-radius: 4px;
+            border-left: 2px solid #cbd5e1;
+            line-height: 1.45;
+        }
+
+        .ann-card-diag {
+            margin: 0 0 8px 0;
+            color: #1e293b;
+            line-height: 1.45;
+        }
+
+        .ann-card-conseil {
+            margin: 0;
+            padding: 6px 10px;
+            background: #f0fdf4;
+            border-left: 2px solid #22c55e;
+            border-radius: 4px;
+            color: #166534;
+            font-size: 12.5px;
+            line-height: 1.45;
+        }
+
+        /* Cartes de l'Atelier comparatif avant / après */
+        .atelier-case-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin: 22px 0;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .atelier-case-header {
+            background: #1e293b;
+            color: #ffffff;
+            padding: 12px 18px;
+            font-size: 14.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .atelier-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        @media (max-width: 800px) {
+            .atelier-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .atelier-before {
+            background: #fffdfc;
+            padding: 18px 20px;
+            border-right: 1px solid #f1f5f9;
+        }
+
+        .atelier-after {
+            background: #f8fafc;
+            padding: 18px 20px;
+            border-left: 1px solid #f1f5f9;
+        }
+
+        .atelier-sub-title {
+            font-size: 12.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .atelier-before .atelier-sub-title { color: #dc2626; }
+        .atelier-after .atelier-sub-title { color: #16a34a; }
+
+        .atelier-quote-box {
+            font-style: italic;
+            font-size: 13.5px;
+            padding: 10px 14px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+            color: #475569;
+        }
+
+        .atelier-model-box {
+            font-size: 14px;
+            padding: 12px 16px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-left: 3px solid #16a34a;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: #0f172a;
+            font-family: 'Merriweather', Georgia, serif;
+        }
+
+        .atelier-gain-bar {
+            background: #eff6ff;
+            border-top: 1px solid #dbeafe;
+            padding: 12px 20px;
+            font-size: 13.5px;
+            color: #1e40af;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
@@ -1602,15 +2029,14 @@
 
                 <div class="global-selector">
             <label style="display:block; font-weight:bold; margin-bottom:8px; text-align:center;"><strong>Concours</strong></label>
-            <div class="concours-nav" style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+            <div class="concours-nav">
                 <button id="btn-concours-capes-ext" class="btn active" onclick="setConcours('Capes Externe')">Capes externe</button>
                 <button id="btn-concours-agreg-int" class="btn" onclick="setConcours('Agrégation Interne')">Agrégation interne</button>
                 <button id="btn-concours-agreg-ext" class="btn" onclick="setConcours('Agrégation Externe')">Agrégation externe</button>
             </div>
 
             <label style="display:block; font-weight:bold; margin-bottom:8px; text-align:center;"><strong>Épreuve</strong></label>
-            <div id="exercise-type-container" class="exercise-type-nav"
-                style="display: flex; justify-content: center; gap: 10px; width: 100%; flex-wrap: wrap; margin-bottom: 20px;">
+            <div id="exercise-type-container" class="exercise-type-nav">
                 <button id="btn-ep-dis" type="button" class="btn active" onclick="setExerciseTypeAndEpreuve('dissertation', 'Dissertation')">Dissertation</button>
                 <button id="btn-ep-exp" type="button" class="btn" onclick="setExerciseTypeAndEpreuve('explication', 'Explication de texte')">Explication de texte</button>
             </div>
@@ -4247,18 +4673,18 @@
                 duree = "6 heures";
                 typeEpreuveLabel = isExplic ? "Épreuve écrite disciplinaire appliquée (explication de texte)" : "Épreuve écrite disciplinaire (dissertation)";
             } else if (c === 'Agrégation Interne') {
-                duree = isExplic ? "6 heures" : "7 heures";
+                duree = isExplic ? "6 heures 30" : "7 heures";
                 typeEpreuveLabel = isExplic ? "2ᵈᵉ épreuve d'admissibilité (explication de texte)" : "1ʳᵉ épreuve d'admissibilité (dissertation)";
             } else if (c === 'Agrégation Externe') {
-                if (ep === 'Dissertation hors-programme') {
-                    duree = "7 heures";
-                    typeEpreuveLabel = "1ʳᵉ composition (dissertation hors-programme)";
+                if (ep === 'Commentaire de texte' || isExplic) {
+                    duree = "6 heures";
+                    typeEpreuveLabel = "3ᵉ composition (histoire de la philosophie)";
                 } else if (ep === 'Dissertation sur programme') {
                     duree = "7 heures";
                     typeEpreuveLabel = "2ᵈᵉ composition (dissertation sur programme)";
-                } else if (ep === 'Commentaire de texte') {
-                    duree = "6 heures";
-                    typeEpreuveLabel = "3ᵉ composition (histoire de la philosophie)";
+                } else {
+                    duree = "7 heures";
+                    typeEpreuveLabel = "1ʳᵉ composition (dissertation hors-programme)";
                 }
             }
 
@@ -4268,13 +4694,13 @@
                 if (!isExplic) {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #2563eb;">
-                        <h3 style="color: #2563eb;">🎓 Exigences spécifiques du Capes externe (dissertation)</h3>
+                        <h3 style="color: #2563eb;">Exigences spécifiques du Capes externe (dissertation — 6 h)</h3>
                         <p><strong>Clarté pédagogique et rigueur notionnelle :</strong> le jury du Capes valorise une pensée ordonnée, capable de déplier un problème philosophique avec netteté sans jargon superflu. L'équilibre strict des trois parties et la progressivité de la démarche sont impératifs. Proscrire toute virtuosité artificielle ou récitation opaque de cours.</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #2563eb;">
-                        <h3 style="color: #2563eb;">🎓 Exigences spécifiques du Capes externe (explication de texte)</h3>
+                        <h3 style="color: #2563eb;">Exigences spécifiques du Capes externe (explication de texte — 6 h)</h3>
                         <p><strong>Sens aigu de la pédagogie de la lecture philosophique :</strong> aptitude à guider pas à pas le lecteur dans le texte. La clarté des articulations logiques, l'explicitation des présupposés et le traitement intégral de l'argumentation de l'auteur sont décisifs. Ne jamais substituer un exposé thématique à l'explication minutieuse de la lettre.</p>
                     </div>`;
                 }
@@ -4282,13 +4708,13 @@
                 if (!isExplic) {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #0d9488;">
-                        <h3 style="color: #0d9488;">🎖️ Exigences spécifiques de l'Agrégation interne (dissertation)</h3>
+                        <h3 style="color: #0d9488;">Exigences spécifiques de l'Agrégation interne (dissertation — 7 h)</h3>
                         <p><strong>Posture souveraine d'enseignant-philosophe :</strong> maîtrise philosophique adulte et affirmée, affrontant directement les contradictions du sujet sans faux-fuyant scolaire. L'aporie doit être véritablement féconde et conduire à une sursomption dialectique substantielle. Le recyclage de cours réchauffés ou de fiches thématiques est immédiatement sanctionné.</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #0d9488;">
-                        <h3 style="color: #0d9488;">🎖️ Exigences spécifiques de l'Agrégation interne (explication de texte)</h3>
+                        <h3 style="color: #0d9488;">Exigences spécifiques de l'Agrégation interne (explication de texte — 6 h 30)</h3>
                         <p><strong>Profondeur herméneutique et immanence :</strong> faire entendre la voix singulière de l'auteur et la nécessité interne de son cheminement argumentatif. Refus absolu de tout placage de doctrines extérieures ou de généralités historiques : chaque formule du texte doit être soumise à une micro-analyse philosophique exigeante.</p>
                     </div>`;
                 }
@@ -4296,19 +4722,19 @@
                 if (ep === 'Dissertation hors-programme') {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
-                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : dissertation hors-programme (7 h)</h3>
+                        <h3 style="color: #7c3aed;">Exigences spécifiques : dissertation hors-programme (7 h)</h3>
                         <p><strong>Amplitude ontologique et radicalité spéculative :</strong> épreuve mesurant l'envergure de la culture philosophique et la capacité à penser de manière autonome au plus haut niveau. Le questionnement doit être pris à sa racine première. La troisième partie doit obligatoirement opérer un déplacement conceptuel majeur (sursomption ontologique) et non un simple compromis.</p>
                     </div>`;
                 } else if (ep === 'Dissertation sur programme') {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
-                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : dissertation sur programme (7 h)</h3>
+                        <h3 style="color: #7c3aed;">Exigences spécifiques : dissertation sur programme (7 h)</h3>
                         <p><strong>Précision chirurgicale et maîtrise du corpus de la session :</strong> exactitude terminologique absolue quant aux notions et auteurs au programme de l'année. Les distinctions conceptuelles fines, les débats doctrinaux contemporains et les textes clés doivent être mobilisés avec virtuosité comme des instruments de résolution du problème posé.</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
-                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : commentaire de texte / histoire de la philosophie (6 h)</h3>
+                        <h3 style="color: #7c3aed;">Exigences spécifiques : histoire de la philosophie (commentaire de texte — 6 h)</h3>
                         <p><strong>Érudition philologique et rigueur historique :</strong> maîtrise rigoureuse de la langue philosophique et du système de l'auteur. Le texte doit être restitué dans son exact contexte polémique et doctrinal : contre quelle tradition l'auteur écrit-il ? Quel adversaire implicite combat-il ? Traitement exhaustif de l'extrait jusqu'au dernier mot.</p>
                     </div>`;
                 }
@@ -4354,23 +4780,27 @@
                 </div>`;
             }
 
-            // Paliers d'évaluation
+            // Paliers d'évaluation adaptés au concours
+            const palier1Desc = (c === 'Capes Externe')
+                ? "très insuffisant / éliminatoire (note réglementairement éliminatoire : ≤ 5/20). Contresens majeurs, absence de problématisation, catalogue d'auteurs hors-sol, devoir amputé."
+                : "très insuffisant / éliminatoire de fait (seule la note de 0/20 étant réglementairement éliminatoire). Contresens majeurs, absence de problématisation, catalogue d'auteurs hors-sol, devoir amputé.";
+
             const paliersHtml = `
             <div class="methodo-block" style="background: #f8fafc; border-left-color: #64748b;">
-                <h3>📊 Les 5 paliers officiels d'évaluation du jury (/20)</h3>
+                <h3>Paliers d'évaluation fondés sur les rapports du jury (/20)</h3>
                 <ul style="list-style: none; padding-left: 0; margin-top: 8px; line-height: 1.7; font-size: 0.92rem;">
                     <li><strong style="color: #16a34a;">🟢 Palier 5 (15 à 20/20) :</strong> excellence spéculative, aporie féconde, sursomption dialectique réelle, élégance de style, pensée souveraine avec les auteurs.</li>
-                    <li><strong style="color: #2563eb;">🔵 Palier 4 (12.5 à 14.5/20) :</strong> solide et admissible confortable. Démonstration rigoureuse, problématisation tenue, définitions exactes, aucun contresens.</li>
+                    <li><strong style="color: #2563eb;">🔵 Palier 4 (12,5 à 14,5/20) :</strong> solide et admissible confortable. Démonstration rigoureuse, problématisation tenue, définitions exactes, aucun contresens.</li>
                     <li><strong style="color: #ca8a04;">🟡 Palier 3 (10 à 12/20) :</strong> admissible au seuil de moyenne. Épreuve comprise, règles respectées, mais prudence ou troisième partie écourtée.</li>
-                    <li><strong style="color: #ea580c;">🟠 Palier 2 (7 à 9.5/20) :</strong> fragile / sous la barre. Travail scolaire, présence d'un écueil caractérisé (plan binaire, paraphrase, fausse transition).</li>
-                    <li><strong style="color: #dc2626;">🔴 Palier 1 (0 à 6.5/20) :</strong> insuffisant / éliminatoire. Contresens majeurs, absence de problématisation, catalogue d'auteurs hors-sol, devoir amputé.</li>
+                    <li><strong style="color: #ea580c;">🟠 Palier 2 (7 à 9,5/20) :</strong> fragile / sous la barre. Travail scolaire, présence d'un écueil caractérisé (plan binaire, paraphrase, fausse transition).</li>
+                    <li><strong style="color: #dc2626;">🔴 Palier 1 (0 à 6,5/20) :</strong> ${palier1Desc}</li>
                 </ul>
             </div>`;
 
             // Codes tacites & règles implicites
             const codesTacitesHtml = `
             <div class="methodo-block" style="background: #fffbeb; border-left-color: #f59e0b;">
-                <h3 style="color: #b45309;">🤫 Règles implicites et codes tacites déterminants</h3>
+                <h3 style="color: #b45309;">Règles implicites et codes tacites déterminants</h3>
                 <p style="font-size: 0.9rem; line-height: 1.6;">
                     <strong>1. Posture souveraine vs scolaire :</strong> bannir le ton d'élève qui demande l'autorisation de penser ou qui récite. Voix philosophique adulte dès la première phrase.<br>
                     <strong>2. Convocation doctrinale par nécessité :</strong> un auteur n'est jamais convoqué pour décorer mais parce que la crise interne du problème exige son réactif conceptuel.<br>
@@ -4383,7 +4813,7 @@
             return `
                 <h2>Méthodologie officielle : ${typeEpreuveLabel}</h2>
                 <div style="margin-bottom: 12px; font-size: 0.88rem; color: #64748b; font-weight: 600;">
-                    🏛️ ${c} &bull; Épreuve : ${ep} &bull; Durée : ${duree} &bull; Mode : ${mode.toUpperCase()}
+                    ${c} &bull; Épreuve : ${ep} &bull; Durée : ${duree} &bull; Mode : ${mode.toUpperCase()}
                 </div>
                 ${specificitesHtml}
                 ${architectureHtml}
@@ -5434,11 +5864,384 @@
                 }
             }
 
+            // Embellissement de la section 2 : Annotations chirurgicales de la copie
+            const h2Annotations = Array.from(doc.querySelectorAll('h2')).find(h => /Annotations\s+chirurgicales/i.test(h.textContent));
+            if (h2Annotations && !doc.querySelector('.switch-to-copie-banner')) {
+                const bannerDiv = doc.createElement('div');
+                bannerDiv.className = 'switch-to-copie-banner';
+                bannerDiv.innerHTML = `
+                    <span>💡 <strong>Visualisation interactive :</strong> consultez ces remarques directement sur votre texte avec surlignages colorés et volet de marge.</span>
+                    <button type="button" class="switch-to-copie-btn" onclick="switchCorrectionTab('copie')">
+                        📝 Ouvrir la copie annotée
+                    </button>
+                `;
+                if (h2Annotations.nextElementSibling) {
+                    h2Annotations.parentNode.insertBefore(bannerDiv, h2Annotations.nextElementSibling);
+                } else {
+                    h2Annotations.parentNode.appendChild(bannerDiv);
+                }
+            }
+
+            // Embellissement de la section 3 : Atelier de réécriture comparative avant / après
+            const h2Atelier = Array.from(doc.querySelectorAll('h2')).find(h => /Atelier\s+de\s+r[ée][ée]criture/i.test(h.textContent));
+            if (h2Atelier) {
+                let cur = h2Atelier.nextElementSibling;
+                while (cur && cur.tagName !== 'H2') {
+                    const next = cur.nextElementSibling;
+                    if (cur.tagName === 'H3' && /Cas\s*\d+/i.test(cur.textContent)) {
+                        const casTitle = cur.textContent.trim();
+                        const casNodes = [];
+                        let subCur = cur.nextElementSibling;
+                        while (subCur && subCur.tagName !== 'H3' && subCur.tagName !== 'H2') {
+                            const subNext = subCur.nextElementSibling;
+                            casNodes.push(subCur);
+                            subCur = subNext;
+                        }
+
+                        const cardDiv = doc.createElement('div');
+                        cardDiv.className = 'atelier-case-card';
+
+                        const headerDiv = doc.createElement('div');
+                        headerDiv.className = 'atelier-case-header';
+                        headerDiv.innerHTML = `<span>🎯 ${escapeHtml(casTitle)}</span>`;
+                        cardDiv.appendChild(headerDiv);
+
+                        const splitDiv = doc.createElement('div');
+                        splitDiv.className = 'atelier-split';
+
+                        const beforeCol = doc.createElement('div');
+                        beforeCol.className = 'atelier-before';
+                        beforeCol.innerHTML = `<div class="atelier-sub-title">❌ Texte initial et verrou identifié</div>`;
+
+                        const afterCol = doc.createElement('div');
+                        afterCol.className = 'atelier-after';
+                        afterCol.innerHTML = `<div class="atelier-sub-title">✨ Version remaniée d'excellence (Agrégation / Capes)</div>`;
+
+                        splitDiv.appendChild(beforeCol);
+                        splitDiv.appendChild(afterCol);
+                        cardDiv.appendChild(splitDiv);
+
+                        let gainBar = null;
+
+                        casNodes.forEach(node => {
+                            const txt = node.textContent.trim();
+                            if (/B[ée]n[ée]fice\s+philosophique/i.test(txt)) {
+                                gainBar = doc.createElement('div');
+                                gainBar.className = 'atelier-gain-bar';
+                                gainBar.innerHTML = `<strong>📈 Gain philosophique :</strong> ${escapeHtml(txt.replace(/^[*\s]*(?:B[ée]n[ée]fice\s+philosophique(?:\s+obtenu)?)[*\s]*[:*]+\s*/i, ''))}`;
+                            } else if (/Version\s+remani[ée]e|R[ée][ée]criture/i.test(txt) || node.tagName === 'PRE') {
+                                afterCol.appendChild(node);
+                            } else {
+                                beforeCol.appendChild(node);
+                            }
+                        });
+
+                        if (gainBar) {
+                            cardDiv.appendChild(gainBar);
+                        }
+
+                        if (cur.parentNode) {
+                            cur.parentNode.replaceChild(cardDiv, cur);
+                        }
+                    }
+                    cur = next;
+                }
+            }
+
             return {
                 html: doc.body.innerHTML,
                 sections,
                 globalScore
             };
+        }
+
+        /* ============ FONCTIONS DE GESTION DE LA COPIE ANNOTÉE ET DES ONGLETS ============ */
+        function switchCorrectionTab(tab) {
+            const btnRapport = document.getElementById('tab-btn-rapport');
+            const btnCopie = document.getElementById('tab-btn-copie');
+            const paneRapport = document.getElementById('pane-rapport-eval');
+            const paneCopie = document.getElementById('pane-copie-annotee');
+            if (!btnRapport || !btnCopie || !paneRapport || !paneCopie) return;
+
+            if (tab === 'copie') {
+                btnRapport.classList.remove('active');
+                btnRapport.setAttribute('aria-selected', 'false');
+                btnCopie.classList.add('active');
+                btnCopie.setAttribute('aria-selected', 'true');
+                paneRapport.style.display = 'none';
+                paneCopie.style.display = 'block';
+            } else {
+                btnCopie.classList.remove('active');
+                btnCopie.setAttribute('aria-selected', 'false');
+                btnRapport.classList.add('active');
+                btnRapport.setAttribute('aria-selected', 'true');
+                paneCopie.style.display = 'none';
+                paneRapport.style.display = 'block';
+            }
+        }
+
+        function extraireAnnotationsChirurgicales(md) {
+            if (!md || typeof md !== 'string') return [];
+            const annotations = [];
+
+            // Détection de chaque bloc d'annotation sous la section 2
+            const pattern = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait(?:\s+exact)?\*\*[ \t]*:[ \t]*([^\n]+)([\s\S]*?)(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait|\n##\s*\d|\n---|$)/gi;
+            let match;
+            let count = 0;
+
+            while ((match = pattern.exec(md)) !== null) {
+                count++;
+                const rawExtrait = match[1].replace(/^[«"“'\s]+|[»"”'\s]+$/g, '').trim();
+                const blockRest = match[2] || '';
+
+                const mTypo = blockRest.match(/\*\*Typologie\*\*[ \t]*:[ \t]*([^\n]+)/i);
+                const mObs = blockRest.match(/\*\*Observation(?:\s+du\s+jury)?\*\*[ \t]*:[ \t]*([^\n]+)/i);
+                const mConseil = blockRest.match(/\*\*Conseil(?:\s+imm[ée]diat)?\*\*[ \t]*:[ \t]*([^\n]+)/i);
+
+                let cleanExtrait = rawExtrait.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '');
+
+                if (cleanExtrait) {
+                    annotations.push({
+                        id: count,
+                        extrait: cleanExtrait,
+                        typologie: mTypo ? mTypo[1].trim() : 'Glissement conceptuel',
+                        observation: mObs ? mObs[1].trim() : '',
+                        conseil: mConseil ? mConseil[1].trim() : ''
+                    });
+                }
+            }
+            return annotations;
+        }
+
+        function getTypologieInfo(typologieStr) {
+            const s = (typologieStr || '').toLowerCase();
+            if (s.includes('glissement') || s.includes('concept') || s.includes('équivoque') || s.includes('equivoque')) {
+                return {
+                    cls: 'highlight-conceptuel',
+                    cardCls: 'type-conceptuel',
+                    icon: '⚠️',
+                    label: 'Glissement conceptuel'
+                };
+            }
+            if (s.includes('rupture') || s.includes('logique') || s.includes('déductif') || s.includes('deductif') || s.includes('non sequitur') || s.includes('pétition') || s.includes('petition')) {
+                return {
+                    cls: 'highlight-logique',
+                    cardCls: 'type-logique',
+                    icon: '⚡',
+                    label: 'Rupture logique'
+                };
+            }
+            if (s.includes('référence') || s.includes('reference') || s.includes('doctrine') || s.includes('auteur') || s.includes('citation')) {
+                return {
+                    cls: 'highlight-reference',
+                    cardCls: 'type-reference',
+                    icon: '📚',
+                    label: 'Référence à approfondir'
+                };
+            }
+            if (s.includes('métadiscours') || s.includes('metadiscours') || s.includes('style') || s.includes('scolaire') || s.includes('formulation')) {
+                return {
+                    cls: 'highlight-style',
+                    cardCls: 'type-style',
+                    icon: '✍️',
+                    label: 'Métadiscours scolaire'
+                };
+            }
+            if (s.includes('étincelle') || s.includes('etincelle') || s.includes('valoriser') || s.includes('réussite') || s.includes('reussite') || s.includes('remarquable') || s.includes('audace')) {
+                return {
+                    cls: 'highlight-etincelle',
+                    cardCls: 'type-etincelle',
+                    icon: '💡',
+                    label: 'Étincelle à valoriser'
+                };
+            }
+            return {
+                cls: 'highlight-conceptuel',
+                cardCls: 'type-conceptuel',
+                icon: '🔍',
+                label: typologieStr || 'Remarque méthodologique'
+            };
+        }
+
+        function findTextOccurrences(fullText, phrase) {
+            if (!fullText || !phrase) return null;
+            const cleanPhrase = phrase.trim();
+            if (!cleanPhrase) return null;
+
+            // 1. Recherche exacte
+            let idx = fullText.indexOf(cleanPhrase);
+            if (idx !== -1) {
+                return { start: idx, end: idx + cleanPhrase.length };
+            }
+
+            // 2. Recherche insensible à la casse et souple sur les espaces
+            const words = cleanPhrase.split(/\s+/).filter(w => w.length > 0);
+            if (words.length > 0) {
+                const regexStr = words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+');
+                try {
+                    const reg = new RegExp(regexStr, 'i');
+                    const match = reg.exec(fullText);
+                    if (match) {
+                        return { start: match.index, end: match.index + match[0].length };
+                    }
+                } catch (e) {}
+            }
+
+            // 3. Correspondance de préfixe pour citations longues
+            if (words.length >= 4) {
+                const prefixWords = words.slice(0, 4);
+                const prefixRegexStr = prefixWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+');
+                try {
+                    const reg = new RegExp(prefixRegexStr, 'i');
+                    const match = reg.exec(fullText);
+                    if (match) {
+                        const approxEnd = Math.min(fullText.length, match.index + cleanPhrase.length);
+                        return { start: match.index, end: approxEnd };
+                    }
+                } catch (e) {}
+            }
+
+            return null;
+        }
+
+        function rafraichirCopieAnnotee(rawMarkdown, draftText) {
+            const container = document.getElementById('copie-annotee-container');
+            const badge = document.getElementById('badge-nb-annotations');
+            if (!container) return;
+
+            const annotations = extraireAnnotationsChirurgicales(rawMarkdown);
+
+            if (badge) {
+                if (annotations.length > 0) {
+                    badge.innerText = annotations.length;
+                    badge.style.display = 'inline-flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            if (!draftText || !draftText.trim()) {
+                container.innerHTML = `
+                    <div style="padding: 30px; text-align: center; color: #64748b; font-style: italic;">
+                        Veuillez rédiger ou coller votre travail dans la zone de rédaction pour afficher la copie annotée.
+                    </div>
+                `;
+                return;
+            }
+
+            if (annotations.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 30px; text-align: center; color: #64748b; font-style: italic;">
+                        Aucune annotation textuelle chirurgicale détectée dans cette évaluation.
+                    </div>
+                `;
+                return;
+            }
+
+            // Recherche de chaque extrait dans le texte du candidat
+            const intervals = [];
+            annotations.forEach(ann => {
+                const loc = findTextOccurrences(draftText, ann.extrait);
+                if (loc) {
+                    intervals.push({
+                        start: loc.start,
+                        end: loc.end,
+                        ann: ann
+                    });
+                }
+            });
+
+            intervals.sort((a, b) => a.start - b.start);
+
+            // Filtrage des chevauchements éventuels
+            const cleanIntervals = [];
+            let maxEnd = -1;
+            intervals.forEach(it => {
+                if (it.start >= maxEnd) {
+                    cleanIntervals.push(it);
+                    maxEnd = it.end;
+                }
+            });
+
+            // Reconstitution du texte de la copie avec les surlignages
+            let textHtml = '';
+            let cursor = 0;
+
+            cleanIntervals.forEach(it => {
+                if (it.start > cursor) {
+                    textHtml += escapeHtml(draftText.substring(cursor, it.start)).replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
+                }
+                const typoInfo = getTypologieInfo(it.ann.typologie);
+                const chunk = draftText.substring(it.start, it.end);
+                textHtml += `<mark class="copie-highlight ${typoInfo.cls}" id="mark-ann-${it.ann.id}" data-ann-id="${it.ann.id}" onclick="selectAnnotation(${it.ann.id})" title="[#${it.ann.id}] ${escapeHtml(typoInfo.label)} : cliquez pour voir la note">${escapeHtml(chunk)}<span class="ann-badge-pill">${it.ann.id}</span></mark>`;
+                cursor = it.end;
+            });
+
+            if (cursor < draftText.length) {
+                textHtml += escapeHtml(draftText.substring(cursor)).replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
+            }
+
+            // Construction des cartes d'annotation dans la marge
+            let marginCardsHtml = '';
+            annotations.forEach(ann => {
+                const typoInfo = getTypologieInfo(ann.typologie);
+                marginCardsHtml += `
+                    <div class="ann-card ${typoInfo.cardCls}" id="ann-card-${ann.id}" onclick="focusAnnotationFromCard(${ann.id})">
+                        <div class="ann-card-header">
+                            <span class="ann-card-badge">${typoInfo.icon} ${escapeHtml(typoInfo.label)}</span>
+                            <span style="font-weight: 800; color: #64748b; font-size: 12px;">#${ann.id}</span>
+                        </div>
+                        <div class="ann-card-quote">« ${escapeHtml(ann.extrait)} »</div>
+                        ${ann.observation ? `<div class="ann-card-diag"><strong>Diagnostic :</strong> ${escapeHtml(ann.observation)}</div>` : ''}
+                        ${ann.conseil ? `<div class="ann-card-conseil"><strong>Conseil :</strong> ${escapeHtml(ann.conseil)}</div>` : ''}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="copie-annotee-layout">
+                    <div class="copie-text-col" id="copie-text-col-scroll">
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+                            📝 Copie restituée avec surlignages d'annotation
+                        </div>
+                        <p>${textHtml}</p>
+                    </div>
+                    <div class="copie-margin-col" id="copie-margin-col-scroll">
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; margin-bottom: 4px;">
+                            📌 Marge du jury (${annotations.length} remarques)
+                        </div>
+                        ${marginCardsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectAnnotation(id) {
+            document.querySelectorAll('.copie-highlight.active-highlight').forEach(el => el.classList.remove('active-highlight'));
+            document.querySelectorAll('.ann-card.active-target').forEach(el => el.classList.remove('active-target'));
+
+            const mark = document.getElementById(`mark-ann-${id}`);
+            const card = document.getElementById(`ann-card-${id}`);
+
+            if (mark) mark.classList.add('active-highlight');
+            if (card) {
+                card.classList.add('active-target');
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function focusAnnotationFromCard(id) {
+            document.querySelectorAll('.copie-highlight.active-highlight').forEach(el => el.classList.remove('active-highlight'));
+            document.querySelectorAll('.ann-card.active-target').forEach(el => el.classList.remove('active-target'));
+
+            const mark = document.getElementById(`mark-ann-${id}`);
+            const card = document.getElementById(`ann-card-${id}`);
+
+            if (card) card.classList.add('active-target');
+            if (mark) {
+                mark.classList.add('active-highlight');
+                mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         // Extraction intelligente du numéro de section (chiffre arabe, chiffre romain ou ordinal)
@@ -6913,7 +7716,7 @@
                 <div class="workspace-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                     <h2 style="margin: 0;">${exerciseTitle}</h2>
                     <button class="btn btn-help ${state.showHelp ? 'active' : ''}" onclick="toggleHelp()">
-                        💡 Aide méthodologique
+                        Aide méthodologique
                     </button>
                 </div>
             `;
@@ -7076,8 +7879,25 @@
                         </div>
                         <div id="loading-msg" class="loading">Le correcteur IA analyse votre travail conformément à la méthodologie, veuillez patienter (environ 5 à 10 secondes)<span class="loading-dots"></span></div>
                         <div id="correction-box" style="${savedCorrection ? 'display: block;' : 'display: none;'}">
-                            <h2>Analyse personnalisée</h2>
-                            <div id="correction-text">${savedCorrection || ''}</div>
+                            <!-- Barre d'onglets commutable en sentence case -->
+                            <div class="correction-tabs-bar" role="tablist">
+                                <button id="tab-btn-rapport" type="button" class="correction-tab-btn active" role="tab" aria-selected="true" onclick="switchCorrectionTab('rapport')">
+                                    🏛️ Rapport d'évaluation
+                                </button>
+                                <button id="tab-btn-copie" type="button" class="correction-tab-btn" role="tab" aria-selected="false" onclick="switchCorrectionTab('copie')">
+                                    📝 Copie annotée <span id="badge-nb-annotations" class="badge-annotations-count" style="display: none;">0</span>
+                                </button>
+                            </div>
+
+                            <!-- Volet 1 : Rapport d'évaluation complet -->
+                            <div id="pane-rapport-eval" class="correction-tab-pane" role="tabpanel">
+                                <div id="correction-text">${savedCorrection || ''}</div>
+                            </div>
+
+                            <!-- Volet 2 : Copie annotée et notes de marge -->
+                            <div id="pane-copie-annotee" class="correction-tab-pane" role="tabpanel" style="display: none;">
+                                <div id="copie-annotee-container"></div>
+                            </div>
                         </div>
                     </div>
             `;
@@ -7095,6 +7915,14 @@
             workspaceHtml += `</div>`; // Close workspace-layout
 
             area.innerHTML = workspaceHtml;
+
+            // Si une correction sauvegardée est présente, restaurer également la vue Copie annotée
+            if (savedCorrection && savedCorrectionObj) {
+                const rawMd = savedCorrectionObj.rawMarkdown || '';
+                const storedEntry = prof.subjectsData[getSubjectStorageKey(state.exerciseType, state.mode, sujetActif)];
+                const draft = savedCorrectionObj.draftText || (storedEntry ? storedEntry.workingDraft : '') || currentText;
+                rafraichirCopieAnnotee(rawMd, draft);
+            }
 
             // Synchroniser la barre flottante de navigation rapide et le dock de profils/crans
             const savedScores = (savedCorrection && savedCorrectionObj && Array.isArray(savedCorrectionObj.scores)) ? savedCorrectionObj.scores : [];
@@ -7238,6 +8066,12 @@
 
                 document.getElementById("correction-text").innerHTML = "";
                 document.getElementById("correction-box").style.display = "block";
+                switchCorrectionTab('rapport');
+                const badgeInit = document.getElementById("badge-nb-annotations");
+                if (badgeInit) badgeInit.style.display = "none";
+                const containerInit = document.getElementById("copie-annotee-container");
+                if (containerInit) containerInit.innerHTML = "";
+
                 document.getElementById("correction-box").scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
@@ -7257,6 +8091,18 @@
                         const intermediateTransformed = transformerRenduCorrection(intermediateHtml, savedCorrectionObj, currentDraftBySection);
                         document.getElementById("correction-text").innerHTML = intermediateTransformed.html;
                         updateFloatingQuickNav(intermediateTransformed.sections, intermediateTransformed.globalScore);
+
+                        // Mise à jour progressive du badge d'annotations pendant le streaming
+                        const streamedAnnotations = extraireAnnotationsChirurgicales(texteCumule);
+                        const streamingBadge = document.getElementById("badge-nb-annotations");
+                        if (streamingBadge) {
+                            if (streamedAnnotations.length > 0) {
+                                streamingBadge.innerText = streamedAnnotations.length;
+                                streamingBadge.style.display = "inline-flex";
+                            } else {
+                                streamingBadge.style.display = "none";
+                            }
+                        }
                     }
                 } catch (streamError) {
                     texteCumule += "\n\n[Erreur de connexion : le flux a été interrompu par le réseau. Veuillez réessayer si la correction est incomplète.]";
@@ -7271,13 +8117,17 @@
                 document.getElementById("correction-text").innerHTML = transformedFinal.html;
                 updateFloatingQuickNav(transformedFinal.sections, transformedFinal.globalScore);
 
+                // Reconstitution finale complète de la copie annotée
+                rafraichirCopieAnnotee(texteCumule, trainingText);
+
                 const newCorrectionObj = {
                     sujet: sujetActif,
                     html: transformedFinal.html,
                     rawMarkdown: texteCumule,
                     scores: transformedFinal.sections,
                     globalScore: transformedFinal.globalScore,
-                    draftBySection: currentDraftBySection
+                    draftBySection: currentDraftBySection,
+                    draftText: trainingText
                 };
                 
                 const currentSubjectKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
