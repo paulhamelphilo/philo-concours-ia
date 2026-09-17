@@ -1783,15 +1783,17 @@
             </div>
         </div>
 
-        <div class="main-nav">
-            <button id="btn-mode-intro" class="btn active" onclick="setMode('intro')">Introduction</button>
-            <button id="btn-mode-dev" class="btn" onclick="setMode('dev')">Développement</button>
-            <button id="btn-mode-complete" class="btn" onclick="setMode('complete')">Copie complète</button>
-            <div id="main-nav-separator"></div>
-            <button id="btn-mode-arg-dis" class="btn" onclick="setMode('argumentation')"
-                style="max-width: 220px; white-space: nowrap;">Argumenter une thèse</button>
-            <button id="btn-mode-arg-exp" class="btn" onclick="setMode('argumentation')"
-                style="max-width: 280px; white-space: nowrap;">Expliquer un fragment de texte</button>
+        <div class="main-nav-unified" style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 20px 0; padding: 12px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--primary-color); font-weight: 600;">
+                <span>🏛️ Espace de Rédaction & d'Évaluation Unifié</span>
+                <span style="font-weight: normal; color: #64748b; font-size: 0.85rem;">(Saisie libre : copie complète, introduction, partie ou fragment)</span>
+            </div>
+            <div>
+                <button type="button" class="btn btn-sm" onclick="openCopyUploadModal()"
+                    style="background-color: var(--primary-color); color: #fff; display: inline-flex; align-items: center; gap: 6px; padding: 7px 15px; font-weight: 600; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    📤 Uploader une copie (PDF, TXT, MD)
+                </button>
+            </div>
         </div>
 
 
@@ -1800,7 +1802,7 @@
     </div>
 
     <script>
-        const APP_BUILD_VERSION = "2026.09.10.auto_refresh_v16";
+        const APP_BUILD_VERSION = "2026.09.18.unified_eval_v1";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -4200,7 +4202,7 @@
             concours: 'Capes Externe',
             epreuve: 'Dissertation',
             exerciseType: 'dissertation',
-            mode: 'intro',
+            mode: 'redaction',
             showHelp: false,
             training: {
                 dissertation: { intro: null, dev: null, complete: null },
@@ -4217,9 +4219,8 @@
             currentExplicText: null,
             isCustomDissertation: true,
             isCustomExplication: true,
-            isCustomExplicationArg: false,
-            isCustomArgumentation: false,
             activeThesis: null,
+            activeFragment: null,
             thesisOrientation: null
         };
 
@@ -4296,135 +4297,49 @@
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
-                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : Commentaire de texte - Histoire de la philosophie (6h)</h3>
+                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : Commentaire de texte / Histoire de la philo (6h)</h3>
                         <p><strong>Érudition philologique et rigueur historique :</strong> Maîtrise rigoureuse de la langue philosophique et du système de l'auteur. Le texte doit être restitué dans son exact contexte polémique et doctrinal : contre quelle tradition l'auteur écrit-il ? Quel adversaire implicite combat-il ? Traitement exhaustif de l'extrait jusqu'au dernier mot.</p>
                     </div>`;
                 }
             }
 
-            // Architecture selon le mode actif
+            // Architecture de l'épreuve complète
             let architectureHtml = "";
-            if (mode === 'intro') {
-                if (!isExplic) {
-                    architectureHtml = `
-                    <div class="methodo-block">
-                        <h3>1. Accroche philosophique & Émergence du questionnement</h3>
-                        <p>Entrée d'emblée dans la tension conceptuelle. Bannir impérativement les anecdotes sociologiques, l'actualité immédiate, les proverbes ou les citations décoratives. L'amorce doit poser un véritable étonnement philosophique à partir d'une contradiction rationnelle initiale.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>2. Définition notionnelle & Présupposés du sujet</h3>
-                        <p>Expliciter minutieusement les différents sens des termes en jeu et leurs relations réciproques. Dégager les présupposés cachés de l'énoncé qui semblent imposer d'abord une réponse évidente.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>3. Construction de l'Aporie (Le nœud du problème)</h3>
-                        <p>Montrer pourquoi la question résiste : mettre en scène le conflit logique entre deux nécessités rationnelles également légitimes mais inconciliables. C'est le cœur spéculatif de l'introduction.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>4. Problématique directrice & Question motrice</h3>
-                        <p>Formuler sous forme interrogative compacte le dilemme décisif que le devoir va devoir résoudre pour sortir de l'impasse.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>5. Annonce du plan dialectique organique</h3>
-                        <p>Déployer les trois étapes nécessaires du cheminement intellectuel (Thèse, Antithèse / Crise interne, Sursomption). Bannir les annonces scolaires de catalogue (« Dans un premier temps... »).</p>
-                    </div>`;
-                } else {
-                    architectureHtml = `
-                    <div class="methodo-block">
-                        <h3>1. Situation précise de l'extrait dans l'œuvre</h3>
-                        <p>Localiser le texte dans l'économie globale de l'ouvrage sans réciter de préambule biographique ou encyclopédique hors-sol. Quel tournant de l'œuvre cet extrait constitue-t-il ?</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>2. Objet et Thème rigoureusement délimité</h3>
-                        <p>Circonscrire précisément ce dont traite le texte en reliant l'objet aux notions fondamentales en jeu.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>3. Thèse centrale de l'auteur</h3>
-                        <p>Formuler sans détour la position novatrice ou la conclusion conceptuelle que l'auteur entend établir contre une opinion courante ou une doctrine adverse.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>4. Problème philosophique & Adversaire implicite</h3>
-                        <p>Identifier la difficulté philosophique sous-jacente et la thèse opposée que l'auteur combat de manière voilée ou directe.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>5. Découpage du mouvement argumentatif</h3>
-                        <p>Présenter la démarche interne du texte en articulant fonction démonstrative et contenu thématique de chaque moment organique.</p>
-                    </div>`;
-                }
-            } else if (mode === 'dev') {
-                if (!isExplic) {
-                    architectureHtml = `
-                    <div class="methodo-block">
-                        <h3>1. Thèse directrice de la partie</h3>
-                        <p>Affirmer d'emblée la position philosophique soutenue dans la partie, en réponse directe à la question directrice.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>2. Arguments conceptuels déductifs</h3>
-                        <p>Justifier la thèse par une progression démonstrative rigoureuse. Chaque sous-partie approfondit une dimension du problème en évitant la simple juxtaposition d'idées.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>3. Opérateurs doctrinaux : « Penser AVEC l'auteur et non SUR l'auteur »</h3>
-                        <p>Mobiliser les doctrines philosophiques non comme un exposé extérieur ou un résumé de manuel, mais comme l'outil opératoire nécessaire pour résoudre une difficulté conceptuelle interne.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>4. Exemples analysés comme faits de pensée</h3>
-                        <p>Traiter les exemples littéraires, scientifiques ou historiques comme des expériences de pensée rigoureuses, en explicitant le principe universel qu'ils révèlent.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>5. Transition critique sous forme de crise interne</h3>
-                        <p>Conclure la partie en faisant surgir sa limite interne, son aporie ou sa contradiction concealed, rendant impératif le passage au moment suivant.</p>
-                    </div>`;
-                } else {
-                    architectureHtml = `
-                    <div class="methodo-block">
-                        <h3>1. Lecture immanente et respect de l'ordre des raisons</h3>
-                        <p>Suivre fidèlement la lettre et le déploiement argumentatif de l'auteur. Tout écart par rapport à la progression du texte fragilise l'explication.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>2. Micro-analyse sémantique et syntaxique</h3>
-                        <p>Élucider scrupuleusement le rôle des connecteurs logiques, la structure syntaxique des phrases, les nuances lexicales et les oppositions notionnelles instituées par l'auteur.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>3. Statut des exemples de l'auteur</h3>
-                        <p>Analyser les exemples mobilisés dans l'extrait comme des éléments intégrants de la démonstration conceptuelle et non comme de simples illustrations décoratives.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>4. Refus de la paraphrase et du surplomb doctrinal</h3>
-                        <p>Ne jamais se contenter de redire les phrases de l'auteur avec d'autres mots, ni disserter sur la doctrine générale de l'auteur sans lien avec la lettre de l'extrait.</p>
-                    </div>
-                    <div class="methodo-block">
-                        <h3>5. Traitement exhaustif jusqu'à la fin de l'extrait</h3>
-                        <p>Traiter avec la même rigueur les dernières lignes du texte : la conclusion de l'auteur contient souvent la clé résolutive de tout l'extrait.</p>
-                    </div>`;
-                }
-            } else if (mode === 'complete') {
+            if (!isExplic) {
                 architectureHtml = `
                 <div class="methodo-block">
-                    <h3>⏱️ Stratégie et gestion du temps en concours (${duree})</h3>
-                    <p><strong>Répartition recommandée :</strong> Consacrer 2h à 2h30 à l'analyse au brouillon (problématisation, élucidation des concepts, plan détaillé et rédaction intégrale de l'introduction et des transitions) ; 3h30 à 4h de rédaction continue au propre ; 20 à 30 minutes de relecture attentive impérative (syntaxe, orthographe, précision des références).</p>
+                    <h3>1. Accroche philosophique & Construction de l'Aporie (Introduction)</h3>
+                    <p>Entrée d'emblée dans la tension conceptuelle. Bannir les accroches sociologiques ou proverbiales. L'amorce doit poser un véritable étonnement philosophique, élucider les termes et construire la contradiction logique (deux nécessités rationnelles inconciliables) qui commande le plan dialectique en trois temps.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>🏗️ Architecture globale et équilibre des trois parties</h3>
-                    <p>Veiller à l'équilibre substantiel des trois temps du devoir. Une troisième partie écourtée, bâclée ou réduite à quelques lignes est lourdement sanctionnée par les jurys. La partie III doit constituer le sommet spéculatif du devoir (sursomption réelle).</p>
+                    <h3>2. Déploiement dialectique & Opérateurs doctrinaux (Développement)</h3>
+                    <p>Chaque partie affirme une thèse directrice justifiée déductivement. Les auteurs ne sont pas récités mais mobilisés comme des <em>opérateurs de pensée</em> pour surmonter un obstacle interne. Les transitions font éclater la crise logique de la thèse précédente.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>🔄 Transitions organiques et nécessité interne</h3>
-                    <p>Les transitions entre parties ne sont pas de simples bilans récapitulatifs : elles doivent faire éclater la crise logique de la thèse précédente et rendre inévitable l'ouverture du moment suivant.</p>
+                    <h3>3. Sursomption ontologique en Partie III (Le Dépassement)</h3>
+                    <p>La troisième partie ne propose jamais un compromis mou (« un peu des deux »), mais opère un véritable changement d'échelle ou de cadre catégoriel qui refonde le problème et dénoue l'antinomie des parties I et II.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>🎯 Conclusion résolutive</h3>
-                    <p>Dresser le bilan précis de l'itinéraire accompli et apporter une réponse définitive et tranchante au problème initial. Proscription absolue de la « fausse ouverture » relativiste ou dubitative en dernière phrase.</p>
+                    <h3>4. Conclusion résolutive & Gestion du temps (${duree})</h3>
+                    <p>Dresser le bilan de l'itinéraire conceptuel et apporter une réponse définitive et affirmative. Proscription absolue de la fausse ouverture relativiste en dernière ligne.</p>
                 </div>`;
-            } else if (mode === 'argumentation') {
+            } else {
                 architectureHtml = `
                 <div class="methodo-block">
-                    <h3>Construction d'un argument conceptuel pur</h3>
-                    <p>Un argument de concours n'est ni une anecdote ni une profession de foi : c'est une déduction conceptuelle rigoureuse établissant la nécessité d'une proposition par l'analyse de ses conditions de possibilité.</p>
+                    <h3>1. Situation, Thèse & Adversaire implicite (Introduction)</h3>
+                    <p>Localiser le texte dans l'économie globale de l'œuvre sans préambule hors-sol. Énoncer avec netteté la thèse novatrice de l'auteur, identifier l'adversaire ou l'opinion commune combattue, et découper le mouvement logique démonstratif.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>Méthodes de justification probante</h3>
-                    <p>• <strong>Emboîtement définitionnel :</strong> déduire la thèse de l'articulation logique des concepts clés.<br>
-                    • <strong>Raisonnement par l'absurde :</strong> démontrer l'insoutenabilité ou l'inconsistance de la position adverse.<br>
-                    • <strong>Déplacement catégoriel :</strong> montrer que l'objection repose sur une confusion des plans (ex: droit vs fait, transcendantal vs empirique).</p>
+                    <h3>2. Ordre des raisons & Micro-analyse (Développement)</h3>
+                    <p>Suivre fidèlement le parcours immanent de la pensée. Micro-analyse sémantique et syntaxique des connecteurs, des distinctions conceptuelles et des exemples analysés comme moments constitutifs de la démonstration.</p>
+                </div>
+                <div class="methodo-block">
+                    <h3>3. Refus du double écueil : paraphrase et surplomb doctoral</h3>
+                    <p>Ne jamais se contenter de redire les phrases de l'auteur sous une autre forme, ni réciter un cours général déconnecté du texte. Penser <em>avec</em> le texte en dégageant ses présupposés ultimes.</p>
+                </div>
+                <div class="methodo-block">
+                    <h3>4. Traitement exhaustif jusqu'au dernier mot & Portée (Conclusion)</h3>
+                    <p>La règle d'or est le traitement intégral : la chute du texte contient souvent sa clé résolutive. La conclusion fait le bilan de l'opération philosophique accomplie par l'auteur.</p>
                 </div>`;
             }
 
@@ -4512,7 +4427,7 @@
                         concours: 'Capes Externe',
                         epreuve: 'Dissertation',
                         exerciseType: 'dissertation',
-                        mode: 'intro',
+                        mode: 'redaction',
                         notion: '',
                         sujet: '',
                         customSujet: '',
@@ -4550,7 +4465,7 @@
                         concours: 'Capes Externe',
                         epreuve: 'Dissertation',
                         exerciseType: 'dissertation',
-                        mode: 'intro',
+                        mode: 'redaction',
                         notion: '',
                         sujet: '',
                         customSujet: '',
@@ -4576,7 +4491,7 @@
 
         function getSubjectStorageKey(exerciseType, mode, sujet) {
             const ex = (exerciseType || 'dissertation').trim().toLowerCase();
-            const md = (mode || 'intro').trim().toLowerCase();
+            const md = (mode || 'redaction').trim().toLowerCase();
             const s = (sujet || '').trim().replace(/[’'`]/g, "'").replace(/\s+/g, ' ');
             return `${ex}_${md}:${s}`;
         }
@@ -4677,8 +4592,22 @@
         function getSubjectStoredDraftAndCorrection(exerciseType, mode, sujet) {
             const prof = getActiveProfile();
             const key = getSubjectStorageKey(exerciseType, mode, sujet);
-            const entry = prof.subjectsData[key];
+            let entry = prof.subjectsData[key];
             const defaultTpl = getDefaultTemplate(exerciseType, mode);
+
+            if (!entry) {
+                // Rétrocompatibilité absolue : recherche dans les modes antérieurs (complete, intro, dev, etc.)
+                const fallbackModes = ['complete', 'intro', 'dev', 'argumentation', 'redaction'];
+                for (const fbMode of fallbackModes) {
+                    const fbKey = getSubjectStorageKey(exerciseType, fbMode, sujet);
+                    if (prof.subjectsData[fbKey]) {
+                        entry = prof.subjectsData[fbKey];
+                        // Migration transparente sans perte
+                        prof.subjectsData[key] = entry;
+                        break;
+                    }
+                }
+            }
 
             if (!entry) {
                 return {
@@ -4866,8 +4795,8 @@
                 createdAt: Date.now(),
                 lastActive: {
                     concours: 'Agrégation Interne',
-            exerciseType: 'dissertation',
-                    mode: 'intro',
+                    exerciseType: 'dissertation',
+                    mode: 'redaction',
                     notion: '',
                     sujet: '',
                     customSujet: '',
@@ -5460,6 +5389,40 @@
                 doc.body.insertBefore(dashboardDiv, doc.body.firstChild);
             }
 
+            // Embellissement visuel du Verdict du Double Curseur Étalonné
+            const h2Verdict = Array.from(doc.querySelectorAll('h2')).find(h => /VERDICT\s+DU\s+DOUBLE\s+CURSEUR/i.test(h.textContent));
+            if (h2Verdict) {
+                const verdictContainer = doc.createElement('div');
+                verdictContainer.className = 'double-curseur-verdict-box';
+                verdictContainer.style.cssText = 'background: #ffffff; border: 2px solid #3b82f6; border-radius: 10px; padding: 20px 24px; margin: 25px 0; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.08);';
+
+                h2Verdict.style.cssText = 'color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 10px; margin-top: 0; margin-bottom: 18px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;';
+                
+                const verdictNodes = [h2Verdict];
+                let cur = h2Verdict.nextElementSibling;
+                while (cur && cur.tagName !== 'H2') {
+                    const next = cur.nextElementSibling;
+                    if (cur.tagName === 'H3') {
+                        if (/Curseur\s*1/i.test(cur.textContent)) {
+                            cur.style.cssText = 'background: #f0fdf4; color: #166534; padding: 8px 14px; border-left: 4px solid #16a34a; border-radius: 4px; margin-top: 15px; margin-bottom: 10px; font-size: 1.1rem;';
+                        } else if (/Curseur\s*2/i.test(cur.textContent)) {
+                            cur.style.cssText = 'background: #f8fafc; color: #1e293b; padding: 8px 14px; border-left: 4px solid #475569; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
+                        } else if (/Delta/i.test(cur.textContent)) {
+                            cur.style.cssText = 'background: #eff6ff; color: #1e40af; padding: 8px 14px; border-left: 4px solid #3b82f6; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
+                        }
+                    } else if (cur.tagName === 'BLOCKQUOTE') {
+                        cur.style.cssText = 'background: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px 16px; margin: 10px 0; border-radius: 4px; color: #1e3a8a; font-style: normal;';
+                    }
+                    verdictNodes.push(cur);
+                    cur = next;
+                }
+
+                if (h2Verdict.parentNode) {
+                    h2Verdict.parentNode.insertBefore(verdictContainer, h2Verdict);
+                    verdictNodes.forEach(node => verdictContainer.appendChild(node));
+                }
+            }
+
             return {
                 html: doc.body.innerHTML,
                 sections,
@@ -5737,7 +5700,7 @@
             populateExplicConcours();
 
             state.exerciseType = la.exerciseType || 'dissertation';
-            state.mode = la.mode || 'intro';
+            state.mode = 'redaction';
             state.showHelp = !!la.showHelp;
 
             // Sync selectors visibility based on exerciseType & mode
@@ -6189,9 +6152,7 @@
                 });
             }
 
-            if (state.mode !== 'complete' && state.mode !== 'argumentation') {
-                state.mode = 'intro';
-            }
+            state.mode = 'redaction';
 
             populateSujetsConcours();
             populateExplicConcours();
@@ -6474,8 +6435,8 @@
                 return;
             }
 
-            // Basculer en mode Copie complète
-            state.mode = 'complete';
+            // Espace de rédaction unifié
+            state.mode = 'redaction';
 
             // Mettre à jour le sujet si renseigné
             if (sujet) {
@@ -6866,41 +6827,30 @@
         }
 
         function render() {
-            // Check active navigation buttons
-            document.getElementById('btn-mode-intro').classList.toggle('active', state.mode === 'intro');
-            document.getElementById('btn-mode-dev').classList.toggle('active', state.mode === 'dev');
+            // Navigation mode (espace unifié de rédaction)
+            const btnIntro = document.getElementById('btn-mode-intro');
+            if (btnIntro) btnIntro.classList.toggle('active', state.mode === 'intro');
+            const btnDev = document.getElementById('btn-mode-dev');
+            if (btnDev) btnDev.classList.toggle('active', state.mode === 'dev');
             const btnComplete = document.getElementById('btn-mode-complete');
             if (btnComplete) btnComplete.classList.toggle('active', state.mode === 'complete');
 
             const btnArgDis = document.getElementById('btn-mode-arg-dis');
+            if (btnArgDis) btnArgDis.style.display = 'none';
             const btnArgExp = document.getElementById('btn-mode-arg-exp');
-
-            const isDissert = state.exerciseType === 'dissertation';
-
-            if (btnArgDis) {
-                btnArgDis.style.display = isDissert ? 'block' : 'none';
-                btnArgDis.classList.toggle('active', state.mode === 'argumentation');
-            }
-            if (btnArgExp) {
-                btnArgExp.style.display = isDissert ? 'none' : 'block';
-                btnArgExp.classList.toggle('active', state.mode === 'argumentation');
-            }
+            if (btnArgExp) btnArgExp.style.display = 'none';
 
             // Toggle selector sections
-            document.getElementById('selector-dissertation').style.display = (isDissert && state.mode !== 'argumentation') ? 'block' : 'none';
-            document.getElementById('selector-dissertation-argumentation').style.display = (isDissert && state.mode === 'argumentation') ? 'block' : 'none';
+            const isDissert = state.exerciseType === 'dissertation';
+            const selDis = document.getElementById('selector-dissertation');
+            if (selDis) selDis.style.display = isDissert ? 'block' : 'none';
+            const selDisArg = document.getElementById('selector-dissertation-argumentation');
+            if (selDisArg) selDisArg.style.display = 'none';
 
-            document.getElementById('selector-explication').style.display = (!isDissert && state.mode !== 'argumentation') ? 'block' : 'none';
-            document.getElementById('selector-explication-argumentation').style.display = (!isDissert && state.mode === 'argumentation') ? 'block' : 'none';
-
-            // Sync explanation argumentation dropdown selection
-            if (state.exerciseType === 'explication' && state.mode === 'argumentation') {
-                populateExplicTextArgSelector();
-                const select = document.getElementById('select-explic-text-arg');
-                if (select && state.activeFragment) {
-                    select.value = state.activeFragment.textIndex !== null ? state.activeFragment.textIndex : '';
-                }
-            }
+            const selExp = document.getElementById('selector-explication');
+            if (selExp) selExp.style.display = !isDissert ? 'block' : 'none';
+            const selExpArg = document.getElementById('selector-explication-argumentation');
+            if (selExpArg) selExpArg.style.display = 'none';
 
             // Toggle wide container based on help state
             const container = document.querySelector('.container');
@@ -6908,7 +6858,7 @@
                 container.classList.toggle('wide', state.showHelp);
             }
 
-            if (state.exerciseType === 'explication' && state.mode !== 'argumentation') {
+            if (state.exerciseType === 'explication') {
                 populateExplicTextSelector();
             }
 
@@ -6917,7 +6867,7 @@
 
             const area = document.getElementById('content-area');
 
-            const maxLength = state.mode === 'complete' ? 100000 : (state.mode === 'argumentation' ? 8000 : (state.mode === 'intro' ? 10000 : 50000));
+            const maxLength = 100000;
             
             const sujetActif = obtenirSujetActif();
             const currentSubjectKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
@@ -6942,24 +6892,10 @@
             const charInfo = getCharCountInfo(currentLength, maxLength);
 
             let exerciseTitle = '';
-            if (state.mode === 'complete') {
-                exerciseTitle = `Évaluation d’une copie complète (${state.concours} — ${state.epreuve})`;
-            } else if (state.exerciseType === 'dissertation') {
-                if (state.mode === 'intro') {
-                    exerciseTitle = `Entraînement à l’introduction (${state.concours} — ${state.epreuve})`;
-                } else if (state.mode === 'dev') {
-                    exerciseTitle = `Entraînement au développement (${state.concours} — ${state.epreuve})`;
-                } else if (state.mode === 'argumentation') {
-                    exerciseTitle = `Entraînement à l’argumentation (${state.concours} — ${state.epreuve})`;
-                }
+            if (state.exerciseType === 'dissertation') {
+                exerciseTitle = `Dissertation philosophique (${state.concours} — ${state.epreuve})`;
             } else if (state.exerciseType === 'explication') {
-                if (state.mode === 'intro') {
-                    exerciseTitle = `Entraînement à l’introduction (${state.concours} — ${state.epreuve})`;
-                } else if (state.mode === 'dev') {
-                    exerciseTitle = `Entraînement au développement (${state.concours} — ${state.epreuve})`;
-                } else if (state.mode === 'argumentation') {
-                    exerciseTitle = `Entraînement à l’explication d’un fragment (${state.concours} — ${state.epreuve})`;
-                }
+                exerciseTitle = `Explication de texte philosophique (${state.concours} — ${state.epreuve})`;
             }
 
             let workspaceHtml = `
@@ -6971,19 +6907,8 @@
                 </div>
             `;
 
-            if (state.mode === 'complete') {
-                workspaceHtml += `
-                    <div style="margin-top: -5px; margin-bottom: 18px;">
-                        <button type="button" class="btn btn-sm" onclick="openCopyUploadModal()"
-                            style="background-color: var(--primary-color); color: #fff; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; font-weight: 600; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                            📤 Uploader une copie complète
-                        </button>
-                    </div>
-                `;
-            }
-
             // If dissertation, display the active subject banner if set
-            if (state.exerciseType === 'dissertation' && sujetActif && state.mode !== 'argumentation') {
+            if (state.exerciseType === 'dissertation' && sujetActif) {
                 workspaceHtml += `
                     <div class="sujet-dissertation-banner" style="margin-top: -5px; margin-bottom: 20px; padding: 16px 20px; background: #ffffff; border-left: 5px solid var(--accent-color, #3498db); border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
                         <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; margin-bottom: 6px;">
@@ -7131,7 +7056,7 @@
                     <div class="editor-column">
                         <div id="training-section-container" class="form-group">
                             <label style="font-weight:600; color:var(--primary-color);">Rédaction continue de votre travail (l'évaluation identifie les phases de façon autonome) :</label>
-                            <textarea id="training-textarea" rows="18" maxlength="${maxLength}" placeholder="${state.mode === 'complete' ? 'Collez ici votre copie complète (ou utilisez le bouton Uploader une copie complète ci-dessus)...' : (state.mode === 'intro' ? 'Rédigez ici votre introduction complète de façon continue...' : (state.mode === 'dev' ? 'Rédigez ici votre développement de façon continue...' : 'Rédigez ici votre argumentation...'))}" oninput="preserveAndCount(this)" onkeydown="handleTextareaKeydown(event, this)" onfocus="handleTextareaFocus(this)" onpaste="handleTextareaPaste(event, this)">${currentText}</textarea>
+                            <textarea id="training-textarea" rows="18" maxlength="${maxLength}" placeholder="Rédigez ou collez votre travail ici (copie complète, introduction avec ou sans première partie, moment de développement ou fragment réflexif)... L'évaluateur IA adapte son diagnostic de manière autonome." oninput="preserveAndCount(this)" onkeydown="handleTextareaKeydown(event, this)" onfocus="handleTextareaFocus(this)" onpaste="handleTextareaPaste(event, this)">${currentText}</textarea>
                             <div id="char-count" style="text-align: right; font-size: 13px; color: ${charInfo.color}; font-weight: ${charInfo.fontWeight}; margin-top: 5px;">${charInfo.label}</div>
                         </div>
                         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
@@ -7178,96 +7103,65 @@
             let positionTexte = null;
 
             if (state.exerciseType === 'dissertation') {
-                if (state.mode === 'argumentation') {
-                    if (!state.activeThesis) {
-                        alert("Veuillez choisir ou saisir une thèse à défendre avant de demander la correction.");
+                if (state.isCustomDissertation) {
+                    const inp = document.getElementById("input-custom-sujet");
+                    sujet = inp ? inp.value.trim() : '';
+                    if (!sujet) {
+                        alert("Veuillez saisir votre sujet personnalisé avant de demander la correction.");
                         return;
                     }
-                    thesisOrientation = state.thesisOrientation;
-                    positionTexte = state.activeThesis;
-                    if (!state.isCustomArgumentation) {
-                        const notion = document.getElementById("select-notion-arg").value;
-                        const idx = parseInt(document.getElementById("select-sujet-arg").value, 10);
-                        if (notion && !isNaN(idx)) {
-                            sujet = sujetsPhilo[notion][idx].question;
-                        }
-                    } else {
-                        sujet = "Thèse personnalisée";
-                    }
                 } else {
-                    if (state.isCustomDissertation) {
-                        sujet = document.getElementById("input-custom-sujet").value.trim();
-                        if (!sujet) {
-                            alert("Veuillez saisir votre sujet personnalisé avant de demander la correction.");
-                            return;
-                        }
-                    } else {
-                        sujet = document.getElementById("select-sujet").value;
-                        if (!sujet) {
-                            alert("Veuillez sélectionner un sujet avant de demander la correction.");
-                            return;
-                        }
+                    const sel = document.getElementById("select-sujet");
+                    sujet = sel ? sel.value : '';
+                    if (!sujet) {
+                        alert("Veuillez sélectionner un sujet avant de demander la correction.");
+                        return;
                     }
                 }
             } else if (state.exerciseType === 'explication') {
-                if (state.mode === 'argumentation') {
-                    if (!state.activeThesis) {
-                        if (state.isCustomExplicationArg) {
-                            alert("Veuillez saisir le fragment à expliquer avant de demander la correction.");
-                        } else {
-                            alert("Veuillez choisir un fragment à expliquer avant de demander la correction.");
-                        }
-                        return;
-                    }
-                    thesisOrientation = 'fragment';
-                    positionTexte = state.activeThesis;
-                    sujet = "Fragment de texte";
-                } else {
-                    // Explication de texte standard
-                    if (!state.currentExplicText) {
-                        if (state.isCustomExplication) {
-                            alert("Veuillez saisir le texte à expliquer avant de demander la correction.");
-                        } else {
-                            alert("Veuillez sélectionner un texte en haut de la page avant de demander la correction.");
-                        }
-                        return;
-                    }
-                    if (state.currentExplicText.structure) {
-                        const starts = state.currentExplicText.paragraphStarts || [[0, 0]];
-                        const isParagraphStart = (m, s) => starts.some(coord => coord[0] === m && coord[1] === s);
-                        let textHtml = "";
-                        let inParagraph = false;
-                        state.currentExplicText.structure.forEach((moment, mIdx) => {
-                            moment.subMoments.forEach((sub, sIdx) => {
-                                const isStart = isParagraphStart(mIdx, sIdx);
-                                if (isStart) {
-                                    if (inParagraph) {
-                                        textHtml += `</p>`;
-                                    }
-                                    textHtml += `<p style="margin-bottom: 15px;">`;
-                                    inParagraph = true;
-                                } else {
-                                    textHtml += " ";
-                                }
-                                textHtml += sub;
-                            });
-                        });
-                        if (inParagraph) {
-                            textHtml += `</p>`;
-                        }
-                        selectedTextHtml = textHtml;
-                        if (state.currentExplicText.source) {
-                            selectedTextHtml += `<p style="text-align: right; margin-top: 15px; color: #475569;">${state.currentExplicText.source}</p>`;
-                        }
-                        if (state.currentExplicText.notes) {
-                            selectedTextHtml += `<div style="margin-top: 15px; color: #475569;">${state.currentExplicText.notes}</div>`;
-                        }
+                if (!state.currentExplicText) {
+                    if (state.isCustomExplication) {
+                        alert("Veuillez saisir le texte à expliquer avant de demander la correction.");
                     } else {
-                        selectedTextHtml = state.currentExplicText.html || "";
+                        alert("Veuillez sélectionner un texte en haut de la page avant de demander la correction.");
                     }
-                    selectedTextTitle = state.currentExplicText.label || state.currentExplicText.title;
-                    sujet = selectedTextTitle || "Explication de texte";
+                    return;
                 }
+                if (state.currentExplicText.structure) {
+                    const starts = state.currentExplicText.paragraphStarts || [[0, 0]];
+                    const isParagraphStart = (m, s) => starts.some(coord => coord[0] === m && coord[1] === s);
+                    let textHtml = "";
+                    let inParagraph = false;
+                    state.currentExplicText.structure.forEach((moment, mIdx) => {
+                        moment.subMoments.forEach((sub, sIdx) => {
+                            const isStart = isParagraphStart(mIdx, sIdx);
+                            if (isStart) {
+                                if (inParagraph) {
+                                    textHtml += `</p>`;
+                                }
+                                textHtml += `<p style="margin-bottom: 15px;">`;
+                                inParagraph = true;
+                            } else {
+                                textHtml += " ";
+                            }
+                            textHtml += sub;
+                        });
+                    });
+                    if (inParagraph) {
+                        textHtml += `</p>`;
+                    }
+                    selectedTextHtml = textHtml;
+                    if (state.currentExplicText.source) {
+                        selectedTextHtml += `<p style="text-align: right; margin-top: 15px; color: #475569;">${state.currentExplicText.source}</p>`;
+                    }
+                    if (state.currentExplicText.notes) {
+                        selectedTextHtml += `<div style="margin-top: 15px; color: #475569;">${state.currentExplicText.notes}</div>`;
+                    }
+                } else {
+                    selectedTextHtml = state.currentExplicText.html || "";
+                }
+                selectedTextTitle = state.currentExplicText.label || state.currentExplicText.title;
+                sujet = selectedTextTitle || "Explication de texte";
             }
 
             let trainingText = document.getElementById("training-textarea") ? document.getElementById("training-textarea").value.trim() : '';
@@ -7303,23 +7197,18 @@
             document.getElementById("correction-box").style.display = "none";
 
             try {
-                // Détermine les bons paramètres en fonction du mode d'argumentation ou standard
+                // Détermine les paramètres d'envoi pour l'évaluation unifiée
                 const body = {
                     sujet,
                     concours: state.concours,
                     epreuve: state.epreuve,
-                    type: state.mode === 'argumentation' ? 'argumentation' : state.exerciseType,
-                    mode: state.mode,
+                    type: state.exerciseType,
+                    mode: 'redaction',
                     texte: trainingText
                 };
-                if (state.exerciseType === 'explication' && state.mode !== 'argumentation') {
+                if (state.exerciseType === 'explication') {
                     body.selectedTextTitle = selectedTextTitle;
                     body.selectedTextHtml = selectedTextHtml;
-                }
-                if (state.mode === 'argumentation') {
-                    body.thesisOrientation = thesisOrientation;
-                    body.positionTexte = positionTexte;
-                    body.argumentationSubMode = state.exerciseType === 'explication' ? 'fragment' : 'dissertation';
                 }
 
                 const response = await fetch(CLOUD_FUNCTION_URL, {
