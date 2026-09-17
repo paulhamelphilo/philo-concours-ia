@@ -1713,42 +1713,38 @@
             background: #1d4ed8;
         }
 
-        /* Disposition bi-colonne de la copie annotée */
-        .copie-annotee-layout {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 390px;
-            gap: 24px;
-            align-items: start;
-        }
-
-        @media (max-width: 960px) {
-            .copie-annotee-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .copie-text-col {
+        /* Lecteur de la copie annotée (mise en page unifiée et aérée) */
+        .copie-reader-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 28px 32px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            border-radius: 12px;
+            padding: 34px 38px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
             font-size: 15.5px;
             line-height: 1.85;
             color: #1e293b;
             font-family: 'Merriweather', Georgia, 'Times New Roman', serif;
+            max-width: 940px;
+            margin: 0 auto;
         }
 
-        .copie-text-col p {
+        @media (max-width: 768px) {
+            .copie-reader-card {
+                padding: 20px 18px;
+                font-size: 14.5px;
+            }
+        }
+
+        .copie-reader-card p {
             margin-top: 0;
-            margin-bottom: 1.3em;
+            margin-bottom: 1.2em;
             text-align: justify;
             text-indent: 1.8em;
         }
 
         /* Surlignages colorés de la copie annotée */
         .copie-highlight {
-            padding: 2px 3px;
+            padding: 2px 4px;
             border-radius: 3px;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -1768,35 +1764,35 @@
 
         /* Typologie 1 : Glissement conceptuel */
         .highlight-conceptuel {
-            background-color: rgba(245, 158, 11, 0.25);
+            background-color: rgba(245, 158, 11, 0.22);
             border-bottom: 2px solid #f59e0b;
             color: #78350f;
         }
 
         /* Typologie 2 : Rupture logique */
         .highlight-logique {
-            background-color: rgba(239, 68, 68, 0.22);
+            background-color: rgba(239, 68, 68, 0.2);
             border-bottom: 2px solid #ef4444;
             color: #7f1d1d;
         }
 
         /* Typologie 3 : Référence à approfondir */
         .highlight-reference {
-            background-color: rgba(14, 165, 233, 0.22);
+            background-color: rgba(14, 165, 233, 0.2);
             border-bottom: 2px solid #0284c7;
             color: #0c4a6e;
         }
 
         /* Typologie 4 : Métadiscours scolaire */
         .highlight-style {
-            background-color: rgba(168, 85, 247, 0.22);
+            background-color: rgba(168, 85, 247, 0.2);
             border-bottom: 2px solid #9333ea;
             color: #581c87;
         }
 
         /* Typologie 5 : Étincelle à valoriser */
         .highlight-etincelle {
-            background-color: rgba(34, 197, 94, 0.25);
+            background-color: rgba(34, 197, 94, 0.22);
             border-bottom: 2px solid #16a34a;
             color: #14532d;
         }
@@ -1805,12 +1801,13 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 17px;
-            height: 17px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
             font-size: 10.5px;
             font-weight: 800;
-            border-radius: 50%;
-            margin-left: 3px;
+            border-radius: 9px;
+            margin-left: 4px;
             vertical-align: super;
             line-height: 1;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -1818,203 +1815,381 @@
             color: #ffffff;
         }
 
-        /* Colonne de marge pour les cartes d'annotation */
-        .copie-margin-col {
+        /* Barre d'outils et commandes au-dessus de la copie */
+        .copie-annotee-toolbar {
+            max-width: 940px;
+            margin: 0 auto 16px auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 18px;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
             gap: 12px;
-            position: sticky;
-            top: 20px;
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
-            padding-right: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        .copie-margin-col::-webkit-scrollbar {
-            width: 6px;
-        }
-        .copie-margin-col::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
+        .copie-toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .ann-card {
+        .copie-toolbar-counter {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .copie-toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-toolbar {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-toolbar:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* Barre des filtres typologiques */
+        .copie-filter-bar {
+            max-width: 940px;
+            margin: 0 auto 18px auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .copie-filter-chip {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .copie-filter-chip:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+
+        .copie-filter-chip.active {
+            background: #1e293b;
+            border-color: #1e293b;
+            color: #ffffff;
+        }
+
+        /* Cartes d'annotation au fil du texte (insérées sous la phrase) */
+        .inline-annotation-card {
+            display: block;
+            margin: 14px 0 18px 0;
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-left: 4px solid #94a3b8;
             border-radius: 8px;
-            padding: 14px 16px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-            font-size: 13.5px;
-            transition: all 0.2s ease;
-            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 13px;
+            line-height: 1.5;
+            text-indent: 0 !important;
+            transition: all 0.2s ease;
         }
 
-        .ann-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transform: translateX(-2px);
+        .inline-annotation-card.hidden-by-filter {
+            display: none !important;
         }
 
-        .ann-card.active-target {
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35);
-            transform: translateX(-4px);
+        .inline-annotation-card.type-conceptuel { border-left-color: #f59e0b; }
+        .inline-annotation-card.type-logique { border-left-color: #ef4444; }
+        .inline-annotation-card.type-reference { border-left-color: #0284c7; }
+        .inline-annotation-card.type-style { border-left-color: #9333ea; }
+        .inline-annotation-card.type-etincelle { border-left-color: #16a34a; }
+
+        .inline-ann-header {
+            padding: 8px 14px;
             background: #f8fafc;
-        }
-
-        .ann-card.type-conceptuel { border-left-color: #f59e0b; }
-        .ann-card.type-logique { border-left-color: #ef4444; }
-        .ann-card.type-reference { border-left-color: #0284c7; }
-        .ann-card.type-style { border-left-color: #9333ea; }
-        .ann-card.type-etincelle { border-left-color: #16a34a; }
-
-        .ann-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .inline-ann-header:hover {
+            background: #f1f5f9;
+        }
+
+        .inline-ann-title {
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
 
-        .ann-card-badge {
-            font-size: 11.5px;
+        .inline-ann-badge {
+            font-size: 11px;
             font-weight: 700;
             padding: 2px 8px;
-            border-radius: 10px;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
 
-        .type-conceptuel .ann-card-badge { background: #fef3c7; color: #92400e; }
-        .type-logique .ann-card-badge { background: #fee2e2; color: #991b1b; }
-        .type-reference .ann-card-badge { background: #e0f2fe; color: #075985; }
-        .type-style .ann-card-badge { background: #f3e8ff; color: #6b21a8; }
-        .type-etincelle .ann-card-badge { background: #dcfce7; color: #166534; }
+        .type-conceptuel .inline-ann-badge { background: #fef3c7; color: #92400e; }
+        .type-logique .inline-ann-badge { background: #fee2e2; color: #991b1b; }
+        .type-reference .inline-ann-badge { background: #e0f2fe; color: #075985; }
+        .type-style .inline-ann-badge { background: #f3e8ff; color: #6b21a8; }
+        .type-etincelle .inline-ann-badge { background: #dcfce7; color: #166534; }
 
-        .ann-card-quote {
-            font-style: italic;
+        .inline-ann-num {
+            font-size: 12px;
+            font-weight: 700;
             color: #475569;
-            font-size: 12.5px;
-            margin: 0 0 8px 0;
-            padding: 6px 10px;
-            background: #f8fafc;
-            border-radius: 4px;
-            border-left: 2px solid #cbd5e1;
-            line-height: 1.45;
         }
 
-        .ann-card-diag {
-            margin: 0 0 8px 0;
+        .inline-ann-toggle-btn {
+            font-size: 11.5px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .inline-ann-body {
+            padding: 12px 16px;
+            background: #ffffff;
+        }
+
+        .inline-ann-body.collapsed {
+            display: none;
+        }
+
+        .inline-ann-diag {
             color: #1e293b;
-            line-height: 1.45;
+            margin-bottom: 8px;
+            font-size: 13px;
+            line-height: 1.5;
         }
 
-        .ann-card-conseil {
-            margin: 0;
-            padding: 6px 10px;
+        .inline-ann-conseil {
+            padding: 8px 12px;
             background: #f0fdf4;
             border-left: 2px solid #22c55e;
             border-radius: 4px;
             color: #166534;
             font-size: 12.5px;
-            line-height: 1.45;
+            line-height: 1.5;
+            margin: 0;
         }
 
         /* Cartes de l'Atelier comparatif avant / après */
         .atelier-case-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            margin: 22px 0;
+            border-radius: 12px;
+            margin: 24px 0;
             overflow: hidden;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s ease;
         }
 
         .atelier-case-header {
-            background: #1e293b;
-            color: #ffffff;
-            padding: 12px 18px;
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 12px 20px;
             font-size: 14.5px;
             font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid #334155;
         }
 
-        .atelier-split {
-            display: grid;
+        .atelier-case-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        /* Barre de bascule cliquable */
+        .atelier-toggle-bar {
+            display: inline-flex;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 3px;
+            gap: 4px;
+        }
+
+        .atelier-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .atelier-toggle-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .atelier-toggle-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+        }
+
+        .atelier-body {
+            padding: 20px;
+        }
+
+        .atelier-view-remaniee {
+            display: block;
+        }
+
+        .atelier-view-initial {
+            display: none;
+        }
+
+        .atelier-view-split {
+            display: none;
             grid-template-columns: 1fr 1fr;
-            gap: 0;
+            gap: 20px;
         }
 
-        @media (max-width: 800px) {
-            .atelier-split {
+        @media (max-width: 820px) {
+            .atelier-view-split {
                 grid-template-columns: 1fr;
             }
         }
 
-        .atelier-before {
-            background: #fffdfc;
-            padding: 18px 20px;
-            border-right: 1px solid #f1f5f9;
-        }
-
-        .atelier-after {
-            background: #f8fafc;
-            padding: 18px 20px;
-            border-left: 1px solid #f1f5f9;
-        }
-
         .atelier-sub-title {
-            font-size: 12.5px;
+            font-size: 12px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
             margin: 0 0 10px 0;
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        .atelier-before .atelier-sub-title { color: #dc2626; }
-        .atelier-after .atelier-sub-title { color: #16a34a; }
+        .atelier-sub-title.title-initial {
+            color: #dc2626;
+        }
+
+        .atelier-sub-title.title-remaniee {
+            color: #16a34a;
+        }
 
         .atelier-quote-box {
             font-style: italic;
-            font-size: 13.5px;
-            padding: 10px 14px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            line-height: 1.5;
-            color: #475569;
-        }
-
-        .atelier-model-box {
             font-size: 14px;
             padding: 12px 16px;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-left: 3px solid #16a34a;
+            background: #fff8f8;
+            border: 1px solid #fed7d7;
+            border-left: 3px solid #ef4444;
             border-radius: 6px;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
             line-height: 1.6;
-            color: #0f172a;
-            font-family: 'Merriweather', Georgia, serif;
+            color: #7f1d1d;
         }
 
-        .atelier-gain-bar {
+        .atelier-verrou-box {
+            font-size: 13.5px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid #64748b;
+            border-radius: 6px;
+            line-height: 1.55;
+            color: #334155;
+        }
+
+        /* Version remaniée d'excellence : style livre de philosophie avec wrapping strict */
+        .atelier-prose-model {
+            font-family: 'Merriweather', Georgia, 'Times New Roman', serif;
+            font-size: 15px;
+            line-height: 1.85;
+            color: #0f172a;
+            background: #f8fafc;
+            border: 1px solid #dcfce7;
+            border-left: 4px solid #16a34a;
+            border-radius: 8px;
+            padding: 18px 22px;
+            text-align: justify;
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 100%;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            white-space: pre-wrap !important;
+        }
+
+        /* Pied de carte : Valeur ajoutée pour le concours */
+        .atelier-gain-footer {
             background: #eff6ff;
             border-top: 1px solid #dbeafe;
-            padding: 12px 20px;
-            font-size: 13.5px;
+            padding: 14px 20px;
+            border-radius: 0 0 12px 12px;
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .atelier-gain-header {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
             color: #1e40af;
-            line-height: 1.5;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+        }
+
+        .atelier-gain-text {
+            font-size: 13.5px;
+            color: #1e3a8a;
+            line-height: 1.6;
+            margin: 0;
         }
     </style>
 </head>
@@ -5870,7 +6045,7 @@
                 const bannerDiv = doc.createElement('div');
                 bannerDiv.className = 'switch-to-copie-banner';
                 bannerDiv.innerHTML = `
-                    <span>💡 <strong>Visualisation interactive :</strong> consultez ces remarques directement sur votre texte avec surlignages colorés et volet de marge.</span>
+                    <span>💡 <strong>Visualisation au fil du texte :</strong> consultez ces remarques insérées directement sous vos phrases dans la copie.</span>
                     <button type="button" class="switch-to-copie-btn" onclick="switchCorrectionTab('copie')">
                         📝 Ouvrir la copie annotée
                     </button>
@@ -5886,9 +6061,12 @@
             const h2Atelier = Array.from(doc.querySelectorAll('h2')).find(h => /Atelier\s+de\s+r[ée][ée]criture/i.test(h.textContent));
             if (h2Atelier) {
                 let cur = h2Atelier.nextElementSibling;
+                let casCounter = 0;
                 while (cur && cur.tagName !== 'H2') {
                     const next = cur.nextElementSibling;
                     if (cur.tagName === 'H3' && /Cas\s*\d+/i.test(cur.textContent)) {
+                        casCounter++;
+                        const casIdx = casCounter;
                         const casTitle = cur.textContent.trim();
                         const casNodes = [];
                         let subCur = cur.nextElementSibling;
@@ -5898,47 +6076,124 @@
                             subCur = subNext;
                         }
 
-                        const cardDiv = doc.createElement('div');
-                        cardDiv.className = 'atelier-case-card';
+                        // Extraction robuste des 4 composantes du cas
+                        let passageInitial = '';
+                        let verrou = '';
+                        let remaniee = '';
+                        let gain = '';
 
-                        const headerDiv = doc.createElement('div');
-                        headerDiv.className = 'atelier-case-header';
-                        headerDiv.innerHTML = `<span>🎯 ${escapeHtml(casTitle)}</span>`;
-                        cardDiv.appendChild(headerDiv);
+                        // Nettoyage préalable des éventuelles balises de code ou pre
+                        const fullHtml = casNodes.map(n => n.outerHTML || '').join('');
+                        const cleanHtmlNoPre = fullHtml.replace(/<pre><code>([\s\S]*?)<\/code><\/pre>/gi, '$1').replace(/<\/?(?:pre|code)[^>]*>/gi, '');
 
-                        const splitDiv = doc.createElement('div');
-                        splitDiv.className = 'atelier-split';
+                        const tempDiv = doc.createElement('div');
+                        tempDiv.innerHTML = cleanHtmlNoPre;
+                        const listItems = Array.from(tempDiv.querySelectorAll('li'));
 
-                        const beforeCol = doc.createElement('div');
-                        beforeCol.className = 'atelier-before';
-                        beforeCol.innerHTML = `<div class="atelier-sub-title">❌ Texte initial et verrou identifié</div>`;
+                        if (listItems.length >= 2) {
+                            listItems.forEach(li => {
+                                const rawText = li.textContent.trim();
+                                if (/Passage\s+initial|Texte\s+initial/i.test(rawText)) {
+                                    passageInitial = rawText.replace(/^[*\s]*(?:Passage|Texte)\s+initial(?:\s+du\s+candidat)?[*\s]*[:*]+\s*/i, '').trim();
+                                } else if (/L['’]impens[ée]|Verrou|Diagnostic/i.test(rawText)) {
+                                    verrou = rawText.replace(/^[*\s]*(?:L['’]impens[ée](?:\s+ou\s+le\s+verrou)?|Verrou(?:\s+identifi[ée])?|Diagnostic)[*\s]*[:*]+\s*/i, '').trim();
+                                } else if (/Version\s+remani[ée]e|R[ée][ée]criture/i.test(rawText)) {
+                                    remaniee = rawText.replace(/^[*\s]*(?:Version\s+remani[ée]e(?:\s+d['’]excellence)?(?:\s*\([^)]+\))?|R[ée][ée]criture)[*\s]*[:*]+\s*/i, '').trim();
+                                } else if (/B[ée]n[ée]fice\s+philosophique|Gain\s+philosophique|Valeur\s+concours/i.test(rawText)) {
+                                    gain = rawText.replace(/^[*\s]*(?:B[ée]n[ée]fice\s+philosophique(?:\s+obtenu)?|Gain\s+philosophique|Valeur\s+concours)[*\s]*[:*]+\s*/i, '').trim();
+                                }
+                            });
+                        }
 
-                        const afterCol = doc.createElement('div');
-                        afterCol.className = 'atelier-after';
-                        afterCol.innerHTML = `<div class="atelier-sub-title">✨ Version remaniée d'excellence (Agrégation / Capes)</div>`;
+                        // Fallback par analyse du texte intégral si les puces <li> n'étaient pas structurées
+                        if (!remaniee || !passageInitial) {
+                            const fullText = casNodes.map(n => n.textContent.trim()).join('\n');
+                            
+                            const mInit = fullText.match(/(?:Passage|Texte)\s+initial(?:\s+du\s+candidat)?\s*[:*]+\s*([^\n]+(?:\n(?!(?:L['’]impens|Verrou|Version|B[ée]n[ée]fice|Gain))[^\n]+)*)/i);
+                            if (mInit && !passageInitial) passageInitial = mInit[1].trim();
 
-                        splitDiv.appendChild(beforeCol);
-                        splitDiv.appendChild(afterCol);
-                        cardDiv.appendChild(splitDiv);
+                            const mVerrou = fullText.match(/(?:L['’]impens[ée](?:\s+ou\s+le\s+verrou)?|Verrou(?:\s+identifi[ée])?)\s*[:*]+\s*([^\n]+(?:\n(?!(?:Version|R[ée][ée]criture|B[ée]n[ée]fice|Gain))[^\n]+)*)/i);
+                            if (mVerrou && !verrou) verrou = mVerrou[1].trim();
 
-                        let gainBar = null;
+                            const mRem = fullText.match(/(?:Version\s+remani[ée]e(?:\s+d['’]excellence)?(?:\s*\([^)]+\))?|R[ée][ée]criture)\s*[:*]+\s*([\s\S]*?)(?=(?:B[ée]n[ée]fice\s+philosophique|Gain\s+philosophique|Valeur\s+concours|\n###|\Z))/i);
+                            if (mRem && !remaniee) remaniee = mRem[1].trim();
 
-                        casNodes.forEach(node => {
-                            const txt = node.textContent.trim();
-                            if (/B[ée]n[ée]fice\s+philosophique/i.test(txt)) {
-                                gainBar = doc.createElement('div');
-                                gainBar.className = 'atelier-gain-bar';
-                                gainBar.innerHTML = `<strong>📈 Gain philosophique :</strong> ${escapeHtml(txt.replace(/^[*\s]*(?:B[ée]n[ée]fice\s+philosophique(?:\s+obtenu)?)[*\s]*[:*]+\s*/i, ''))}`;
-                            } else if (/Version\s+remani[ée]e|R[ée][ée]criture/i.test(txt) || node.tagName === 'PRE') {
-                                afterCol.appendChild(node);
-                            } else {
-                                beforeCol.appendChild(node);
-                            }
+                            const mGain = fullText.match(/(?:B[ée]n[ée]fice\s+philosophique(?:\s+obtenu)?|Gain\s+philosophique|Valeur\s+concours)\s*[:*]+\s*([^\n]+(?:\n(?!\n|###)[^\n]+)*)/i);
+                            if (mGain && !gain) gain = mGain[1].trim();
+                        }
+
+                        // Nettoyage des guillemets éventuels
+                        if (passageInitial) {
+                            passageInitial = passageInitial.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '').trim();
+                        }
+                        if (remaniee) {
+                            remaniee = remaniee.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '').trim();
+                        }
+
+                        // Suppression des nœuds d'origine pour éviter tout doublon ou débordement
+                        casNodes.forEach(n => {
+                            if (n.parentNode) n.parentNode.removeChild(n);
                         });
 
-                        if (gainBar) {
-                            cardDiv.appendChild(gainBar);
-                        }
+                        // Construction de la nouvelle carte d'Atelier avec bascule cliquable
+                        const cardDiv = doc.createElement('div');
+                        cardDiv.className = 'atelier-case-card';
+                        cardDiv.id = `atelier-card-${casIdx}`;
+
+                        const gainFooterHtml = gain ? `
+                            <div class="atelier-gain-footer">
+                                <div class="atelier-gain-header">🏛️ Valeur ajoutée pour le concours</div>
+                                <div class="atelier-gain-text">${escapeHtml(gain)}</div>
+                            </div>
+                        ` : '';
+
+                        const initialBoxHtml = `
+                            <div class="atelier-sub-title title-initial">❌ Extrait initial du candidat</div>
+                            <div class="atelier-quote-box">« ${escapeHtml(passageInitial || 'Extrait initial relevé')} »</div>
+                            ${verrou ? `
+                                <div class="atelier-sub-title" style="color: #475569;">🔒 Impensé ou verrou identifié</div>
+                                <div class="atelier-verrou-box">${escapeHtml(verrou)}</div>
+                            ` : ''}
+                        `;
+
+                        const remanieeBoxHtml = `
+                            <div class="atelier-sub-title title-remaniee">✨ Réécriture d'excellence pour le concours</div>
+                            <div class="atelier-prose-model">${escapeHtml(remaniee || 'Réécriture proposée')}</div>
+                        `;
+
+                        cardDiv.innerHTML = `
+                            <div class="atelier-case-header">
+                                <div class="atelier-case-title">🎯 ${escapeHtml(casTitle)}</div>
+                                <div class="atelier-toggle-bar">
+                                    <button type="button" class="atelier-toggle-btn btn-view-remaniee active" onclick="toggleCasView(${casIdx}, 'remaniee')">
+                                        ✨ Version remaniée
+                                    </button>
+                                    <button type="button" class="atelier-toggle-btn btn-view-initial" onclick="toggleCasView(${casIdx}, 'initial')">
+                                        ❌ Texte initial et verrou
+                                    </button>
+                                    <button type="button" class="atelier-toggle-btn btn-view-split" onclick="toggleCasView(${casIdx}, 'split')">
+                                        ⚖️ Vue comparative
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="atelier-body">
+                                <div class="atelier-view-remaniee">
+                                    ${remanieeBoxHtml}
+                                </div>
+                                <div class="atelier-view-initial">
+                                    ${initialBoxHtml}
+                                </div>
+                                <div class="atelier-view-split">
+                                    <div class="atelier-split-col">
+                                        ${initialBoxHtml}
+                                    </div>
+                                    <div class="atelier-split-col">
+                                        ${remanieeBoxHtml}
+                                    </div>
+                                </div>
+                            </div>
+                            ${gainFooterHtml}
+                        `;
 
                         if (cur.parentNode) {
                             cur.parentNode.replaceChild(cardDiv, cur);
@@ -6017,6 +6272,7 @@
             const s = (typologieStr || '').toLowerCase();
             if (s.includes('glissement') || s.includes('concept') || s.includes('équivoque') || s.includes('equivoque')) {
                 return {
+                    key: 'conceptuel',
                     cls: 'highlight-conceptuel',
                     cardCls: 'type-conceptuel',
                     icon: '⚠️',
@@ -6025,6 +6281,7 @@
             }
             if (s.includes('rupture') || s.includes('logique') || s.includes('déductif') || s.includes('deductif') || s.includes('non sequitur') || s.includes('pétition') || s.includes('petition')) {
                 return {
+                    key: 'logique',
                     cls: 'highlight-logique',
                     cardCls: 'type-logique',
                     icon: '⚡',
@@ -6033,6 +6290,7 @@
             }
             if (s.includes('référence') || s.includes('reference') || s.includes('doctrine') || s.includes('auteur') || s.includes('citation')) {
                 return {
+                    key: 'reference',
                     cls: 'highlight-reference',
                     cardCls: 'type-reference',
                     icon: '📚',
@@ -6041,6 +6299,7 @@
             }
             if (s.includes('métadiscours') || s.includes('metadiscours') || s.includes('style') || s.includes('scolaire') || s.includes('formulation')) {
                 return {
+                    key: 'style',
                     cls: 'highlight-style',
                     cardCls: 'type-style',
                     icon: '✍️',
@@ -6049,6 +6308,7 @@
             }
             if (s.includes('étincelle') || s.includes('etincelle') || s.includes('valoriser') || s.includes('réussite') || s.includes('reussite') || s.includes('remarquable') || s.includes('audace')) {
                 return {
+                    key: 'etincelle',
                     cls: 'highlight-etincelle',
                     cardCls: 'type-etincelle',
                     icon: '💡',
@@ -6056,6 +6316,7 @@
                 };
             }
             return {
+                key: 'conceptuel',
                 cls: 'highlight-conceptuel',
                 cardCls: 'type-conceptuel',
                 icon: '🔍',
@@ -6102,6 +6363,102 @@
             }
 
             return null;
+        }
+
+        // Bascule cliquable de la vue de l'atelier (Version remaniée / Texte initial / Vue comparative)
+        function toggleCasView(casIdx, viewType) {
+            const card = document.getElementById('atelier-card-' + casIdx);
+            if (!card) return;
+
+            const btnRemaniee = card.querySelector('.btn-view-remaniee');
+            const btnInitial = card.querySelector('.btn-view-initial');
+            const btnSplit = card.querySelector('.btn-view-split');
+
+            const viewRemaniee = card.querySelector('.atelier-view-remaniee');
+            const viewInitial = card.querySelector('.atelier-view-initial');
+            const viewSplit = card.querySelector('.atelier-view-split');
+
+            if (btnRemaniee) btnRemaniee.classList.toggle('active', viewType === 'remaniee');
+            if (btnInitial) btnInitial.classList.toggle('active', viewType === 'initial');
+            if (btnSplit) btnSplit.classList.toggle('active', viewType === 'split');
+
+            if (viewRemaniee) viewRemaniee.style.display = (viewType === 'remaniee') ? 'block' : 'none';
+            if (viewInitial) viewInitial.style.display = (viewType === 'initial') ? 'block' : 'none';
+            if (viewSplit) viewSplit.style.display = (viewType === 'split') ? 'grid' : 'none';
+        }
+
+        // Dépliage / repliage d'une note inline sous une phrase
+        function toggleInlineNote(id) {
+            const body = document.getElementById('inline-body-' + id);
+            const lbl = document.getElementById('toggle-lbl-' + id);
+            if (!body) return;
+
+            const isCollapsed = body.classList.contains('collapsed');
+            if (isCollapsed) {
+                body.classList.remove('collapsed');
+                if (lbl) lbl.innerText = 'Replier ▴';
+            } else {
+                body.classList.add('collapsed');
+                if (lbl) lbl.innerText = 'Déplier ▾';
+            }
+        }
+
+        // Tout déplier ou tout replier dans la copie annotée
+        function toggleAllNotes(expand) {
+            const allBodies = document.querySelectorAll('.inline-ann-body');
+            allBodies.forEach(body => {
+                const id = body.id.replace('inline-body-', '');
+                const lbl = document.getElementById('toggle-lbl-' + id);
+                if (expand) {
+                    body.classList.remove('collapsed');
+                    if (lbl) lbl.innerText = 'Replier ▴';
+                } else {
+                    body.classList.add('collapsed');
+                    if (lbl) lbl.innerText = 'Déplier ▾';
+                }
+            });
+        }
+
+        // Filtrage des remarques par typologie
+        let currentAnnotationFilter = 'all';
+        function filterAnnotations(typeKey) {
+            currentAnnotationFilter = typeKey;
+
+            // Mise à jour des puces de filtre
+            document.querySelectorAll('.copie-filter-chip').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-filter') === typeKey);
+            });
+
+            // Filtrage des cartes d'annotation au fil du texte
+            document.querySelectorAll('.inline-annotation-card').forEach(card => {
+                if (typeKey === 'all' || card.getAttribute('data-typology-key') === typeKey) {
+                    card.classList.remove('hidden-by-filter');
+                } else {
+                    card.classList.add('hidden-by-filter');
+                }
+            });
+
+            // Atténuation visuelle des surlignages non ciblés
+            document.querySelectorAll('.copie-highlight').forEach(hl => {
+                if (typeKey === 'all' || hl.getAttribute('data-typology-key') === typeKey) {
+                    hl.style.opacity = '1';
+                } else {
+                    hl.style.opacity = '0.35';
+                }
+            });
+        }
+
+        function scrollToInlineNote(id) {
+            const card = document.getElementById('inline-card-' + id);
+            const body = document.getElementById('inline-body-' + id);
+            const lbl = document.getElementById('toggle-lbl-' + id);
+            if (card) {
+                if (body && body.classList.contains('collapsed')) {
+                    body.classList.remove('collapsed');
+                    if (lbl) lbl.innerText = 'Replier ▴';
+                }
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         function rafraichirCopieAnnotee(rawMarkdown, draftText) {
@@ -6163,85 +6520,107 @@
                 }
             });
 
-            // Reconstitution du texte de la copie avec les surlignages
-            let textHtml = '';
-            let cursor = 0;
+            // Comptage par typologie pour la barre de filtres
+            const counts = { all: annotations.length, conceptuel: 0, logique: 0, reference: 0, style: 0, etincelle: 0 };
+            annotations.forEach(ann => {
+                const info = getTypologieInfo(ann.typologie);
+                if (info.key && counts[info.key] !== undefined) {
+                    counts[info.key]++;
+                }
+            });
 
+            // Découpage en segments ordonnés (texte brut, surlignage, carte inline)
+            const segList = [];
+            let cursor = 0;
             cleanIntervals.forEach(it => {
                 if (it.start > cursor) {
-                    textHtml += escapeHtml(draftText.substring(cursor, it.start)).replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
+                    segList.push({ type: 'text', content: draftText.substring(cursor, it.start) });
                 }
-                const typoInfo = getTypologieInfo(it.ann.typologie);
-                const chunk = draftText.substring(it.start, it.end);
-                textHtml += `<mark class="copie-highlight ${typoInfo.cls}" id="mark-ann-${it.ann.id}" data-ann-id="${it.ann.id}" onclick="selectAnnotation(${it.ann.id})" title="[#${it.ann.id}] ${escapeHtml(typoInfo.label)} : cliquez pour voir la note">${escapeHtml(chunk)}<span class="ann-badge-pill">${it.ann.id}</span></mark>`;
+                segList.push({ type: 'highlight', content: draftText.substring(it.start, it.end), ann: it.ann });
+                segList.push({ type: 'card', ann: it.ann });
                 cursor = it.end;
             });
-
             if (cursor < draftText.length) {
-                textHtml += escapeHtml(draftText.substring(cursor)).replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>');
+                segList.push({ type: 'text', content: draftText.substring(cursor) });
             }
 
-            // Construction des cartes d'annotation dans la marge
-            let marginCardsHtml = '';
-            annotations.forEach(ann => {
-                const typoInfo = getTypologieInfo(ann.typologie);
-                marginCardsHtml += `
-                    <div class="ann-card ${typoInfo.cardCls}" id="ann-card-${ann.id}" onclick="focusAnnotationFromCard(${ann.id})">
-                        <div class="ann-card-header">
-                            <span class="ann-card-badge">${typoInfo.icon} ${escapeHtml(typoInfo.label)}</span>
-                            <span style="font-weight: 800; color: #64748b; font-size: 12px;">#${ann.id}</span>
+            // Assemblage des blocs HTML (sans imbriquer de div dans un p)
+            const blocks = [];
+            let curP = [];
+
+            segList.forEach(item => {
+                if (item.type === 'text') {
+                    const rawParts = item.content.split(/\n\n+/);
+                    rawParts.forEach((part, pIdx) => {
+                        if (pIdx > 0) {
+                            const pText = curP.join('').trim();
+                            if (pText) blocks.push(`<p>${pText}</p>`);
+                            curP = [];
+                        }
+                        const cleanEscaped = escapeHtml(part).replace(/\n/g, '<br>');
+                        if (cleanEscaped) curP.push(cleanEscaped);
+                    });
+                } else if (item.type === 'highlight') {
+                    const info = getTypologieInfo(item.ann.typologie);
+                    const cleanEscaped = escapeHtml(item.content).replace(/\n/g, '<br>');
+                    curP.push(`<mark class="copie-highlight ${info.cls}" id="mark-ann-${item.ann.id}" data-typology-key="${info.key}" onclick="scrollToInlineNote(${item.ann.id})" title="[#${item.ann.id}] ${escapeHtml(info.label)} : cliquez pour afficher la remarque">${cleanEscaped}<span class="ann-badge-pill">${item.ann.id}</span></mark>`);
+                } else if (item.type === 'card') {
+                    const pText = curP.join('').trim();
+                    if (pText) blocks.push(`<p>${pText}</p>`);
+                    curP = [];
+
+                    const ann = item.ann;
+                    const info = getTypologieInfo(ann.typologie);
+                    blocks.push(`
+                        <div class="inline-annotation-card ${info.cardCls}" id="inline-card-${ann.id}" data-typology-key="${info.key}">
+                            <div class="inline-ann-header" onclick="toggleInlineNote(${ann.id})">
+                                <div class="inline-ann-title">
+                                    <span class="inline-ann-badge">${info.icon} ${escapeHtml(info.label)}</span>
+                                    <span class="inline-ann-num">Remarque n° ${ann.id}</span>
+                                </div>
+                                <div class="inline-ann-action">
+                                    <span class="inline-ann-toggle-btn" id="toggle-lbl-${ann.id}">Replier ▴</span>
+                                </div>
+                            </div>
+                            <div class="inline-ann-body" id="inline-body-${ann.id}">
+                                ${ann.observation ? `<div class="inline-ann-diag"><strong>Diagnostic :</strong> ${escapeHtml(ann.observation)}</div>` : ''}
+                                ${ann.conseil ? `<div class="inline-ann-conseil"><strong>Conseil du jury :</strong> ${escapeHtml(ann.conseil)}</div>` : ''}
+                            </div>
                         </div>
-                        <div class="ann-card-quote">« ${escapeHtml(ann.extrait)} »</div>
-                        ${ann.observation ? `<div class="ann-card-diag"><strong>Diagnostic :</strong> ${escapeHtml(ann.observation)}</div>` : ''}
-                        ${ann.conseil ? `<div class="ann-card-conseil"><strong>Conseil :</strong> ${escapeHtml(ann.conseil)}</div>` : ''}
-                    </div>
-                `;
+                    `);
+                }
             });
 
-            container.innerHTML = `
-                <div class="copie-annotee-layout">
-                    <div class="copie-text-col" id="copie-text-col-scroll">
-                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; margin-bottom: 16px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
-                            📝 Copie restituée avec surlignages d'annotation
-                        </div>
-                        <p>${textHtml}</p>
+            const finalP = curP.join('').trim();
+            if (finalP) blocks.push(`<p>${finalP}</p>`);
+
+            // Construction de la barre d'outils et des filtres
+            const toolbarHtml = `
+                <div class="copie-annotee-toolbar">
+                    <div class="copie-toolbar-left">
+                        <span class="copie-toolbar-counter">📝 Copie annotée : ${annotations.length} remarques de jury au fil du texte</span>
                     </div>
-                    <div class="copie-margin-col" id="copie-margin-col-scroll">
-                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; margin-bottom: 4px;">
-                            📌 Marge du jury (${annotations.length} remarques)
-                        </div>
-                        ${marginCardsHtml}
+                    <div class="copie-toolbar-actions">
+                        <button type="button" class="btn-toolbar" onclick="toggleAllNotes(true)">▾ Tout déplier</button>
+                        <button type="button" class="btn-toolbar" onclick="toggleAllNotes(false)">▴ Tout replier</button>
                     </div>
                 </div>
+                <div class="copie-filter-bar">
+                    <button type="button" class="copie-filter-chip active" data-filter="all" onclick="filterAnnotations('all')">Toutes (${counts.all})</button>
+                    ${counts.conceptuel > 0 ? `<button type="button" class="copie-filter-chip" data-filter="conceptuel" onclick="filterAnnotations('conceptuel')">⚠️ Glissements (${counts.conceptuel})</button>` : ''}
+                    ${counts.logique > 0 ? `<button type="button" class="copie-filter-chip" data-filter="logique" onclick="filterAnnotations('logique')">⚡ Ruptures (${counts.logique})</button>` : ''}
+                    ${counts.reference > 0 ? `<button type="button" class="copie-filter-chip" data-filter="reference" onclick="filterAnnotations('reference')">📚 Références (${counts.reference})</button>` : ''}
+                    ${counts.style > 0 ? `<button type="button" class="copie-filter-chip" data-filter="style" onclick="filterAnnotations('style')">✍️ Métadiscours (${counts.style})</button>` : ''}
+                    ${counts.etincelle > 0 ? `<button type="button" class="copie-filter-chip" data-filter="etincelle" onclick="filterAnnotations('etincelle')">💡 Étincelles (${counts.etincelle})</button>` : ''}
+                </div>
             `;
-        }
 
-        function selectAnnotation(id) {
-            document.querySelectorAll('.copie-highlight.active-highlight').forEach(el => el.classList.remove('active-highlight'));
-            document.querySelectorAll('.ann-card.active-target').forEach(el => el.classList.remove('active-target'));
-
-            const mark = document.getElementById(`mark-ann-${id}`);
-            const card = document.getElementById(`ann-card-${id}`);
-
-            if (mark) mark.classList.add('active-highlight');
-            if (card) {
-                card.classList.add('active-target');
-                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-
-        function focusAnnotationFromCard(id) {
-            document.querySelectorAll('.copie-highlight.active-highlight').forEach(el => el.classList.remove('active-highlight'));
-            document.querySelectorAll('.ann-card.active-target').forEach(el => el.classList.remove('active-target'));
-
-            const mark = document.getElementById(`mark-ann-${id}`);
-            const card = document.getElementById(`ann-card-${id}`);
-
-            if (card) card.classList.add('active-target');
-            if (mark) {
-                mark.classList.add('active-highlight');
-                mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            container.innerHTML = `
+                ${toolbarHtml}
+                <div class="copie-reader-card">
+                    ${blocks.join('\n')}
+                </div>
+            `;
         }
 
         // Extraction intelligente du numéro de section (chiffre arabe, chiffre romain ou ordinal)
