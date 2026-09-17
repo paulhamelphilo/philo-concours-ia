@@ -8,6 +8,17 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Philo Concours IA</title>
+    <!--
+      CHARTE DE TYPOGRAPHIE FRANÇAISE STRICTE (IMPRIMERIE NATIONALE) :
+      Tout texte visible dans cette application (titres, boutons, labels, infobulles, alertes)
+      doit respecter scrupuleusement les règles définies dans GEMINI.md :
+      1. Minuscule après les deux-points (:) sauf nom propre ou citation intégrale.
+      2. Casse de phrase (sentence case) dans les titres et boutons : seule la 1re lettre prend une majuscule.
+      3. Guillemets français (« ... ») au lieu des guillemets anglais.
+      4. Majuscules et capitales toujours accentuées (À, É, È, Ê, etc.).
+      5. Pas d'esperluette (&) dans les libellés rédigés (utiliser « et »).
+      6. Notation des siècles (XIXᵉ siècle) et ordinaux soignés (1ʳᵉ, 2ᵈᵉ, 3ᵉ).
+    -->
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏛️</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -1587,7 +1598,7 @@
     <div id="floating-profile-dock" class="floating-profile-dock" title="Survolez pour afficher les profils et l'historique"></div>
 
     <div class="container">
-        <h1>🏛️ Philo Concours IA <span style="font-size: 0.55em; font-weight: normal; color: var(--secondary-color); display: block; margin-top: 4px;">Capes Externe &bull; Agrégation Interne &bull; Agrégation Externe</span></h1>
+        <h1>🏛️ Philo Concours IA <span style="font-size: 0.55em; font-weight: normal; color: var(--secondary-color); display: block; margin-top: 4px;">Capes externe &bull; Agrégation interne &bull; Agrégation externe</span></h1>
 
                 <div class="global-selector">
             <label style="display:block; font-weight:bold; margin-bottom:8px; text-align:center;"><strong>Concours</strong></label>
@@ -1609,7 +1620,7 @@
                 <div id="dissertation-custom" style="display:block;">
                     <label><strong>Saisir votre sujet personnalisé :</strong></label>
                     <input type="text" id="input-custom-sujet" oninput="render()"
-                        placeholder="Ex: Le réel se réduit-il à ce qui est vérifiable ?"
+                        placeholder="Ex. : le réel se réduit-il à ce qui est vérifiable ?"
                         style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
 
                     <div style="margin-top:12px; text-align:right;">
@@ -1617,7 +1628,7 @@
                     </div>
                 </div>
                 <div id="dissertation-predefined" style="display:none;">
-                    <label style="display:block; margin-bottom: 6px;"><strong>Sujet de dissertation (Annales officielles)</strong></label>
+                    <label style="display:block; margin-bottom: 6px;"><strong>Sujet de dissertation (annales officielles)</strong></label>
                     <select id="select-sujet" onchange="render()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
                         <option value="">-- Sélectionnez une annale officielle --</option>
                     </select>
@@ -1656,7 +1667,7 @@
                 </div>
                 <div id="argumentation-custom" style="display:none;">
                     <label><strong>Saisir votre thèse personnalisée :</strong></label>
-                    <input type="text" id="input-custom-thesis" placeholder="Ex: L’art est utile."
+                    <input type="text" id="input-custom-thesis" placeholder="Ex. : l'art est utile."
                         oninput="updateCustomArgPosition()"
                         style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
 
@@ -1677,7 +1688,7 @@
 
                     <div>
                         <label><strong>Référence</strong></label>
-                        <input type="text" id="input-custom-ref" placeholder="Auteur, œuvre, etc. (ex: Spinoza, Éthique, III)"
+                        <input type="text" id="input-custom-ref" placeholder="Auteur, œuvre, etc. (ex. : Spinoza, Éthique, III)"
                             oninput="updateCustomExplication()"
                             style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
                     </div>
@@ -1687,7 +1698,7 @@
                     </div>
                 </div>
                 <div id="explication-predefined" style="display:none;">
-                    <label style="display:block; margin-bottom: 6px;"><strong>Texte officiel du concours (Annales)</strong></label>
+                    <label style="display:block; margin-bottom: 6px;"><strong>Texte officiel du concours (annales)</strong></label>
                     <select id="select-explic-text" onchange="selectExplicText(this.value)"
                         style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
                         <option value="">-- Sélectionnez un texte officiel --</option>
@@ -1720,7 +1731,7 @@
 
                     <div>
                         <label><strong>Référence</strong></label>
-                        <input type="text" id="input-custom-arg-ref" placeholder="Auteur, œuvre, etc. (ex: Descartes, Discours de la méthode)"
+                        <input type="text" id="input-custom-arg-ref" placeholder="Auteur, œuvre, etc. (ex. : Descartes, Discours de la méthode)"
                             oninput="updateCustomExplicationArg()"
                             style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
                     </div>
@@ -1802,7 +1813,7 @@
     </div>
 
     <script>
-        const APP_BUILD_VERSION = "2026.09.18.unified_eval_v1";
+        const APP_BUILD_VERSION = "2026.09.18.typo_fr_v1";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -3180,7 +3191,7 @@
                     "antithesis": "Tout droit n’implique pas un devoir."
                 },
                 {
-                    "question": "A-t-on des devoirs envers soi-même ?",
+                    "question": "À-t-on des devoirs envers soi-même ?",
                     "thesis": "On a des devoirs envers soi-même.",
                     "antithesis": "On n’a pas de devoirs envers soi-même."
                 }
@@ -4234,20 +4245,20 @@
             let typeEpreuveLabel = "Composition de philosophie";
             if (c === 'Capes Externe') {
                 duree = "6 heures";
-                typeEpreuveLabel = isExplic ? "Épreuve écrite disciplinaire appliquée (Explication de texte)" : "Épreuve écrite disciplinaire (Dissertation)";
+                typeEpreuveLabel = isExplic ? "Épreuve écrite disciplinaire appliquée (explication de texte)" : "Épreuve écrite disciplinaire (dissertation)";
             } else if (c === 'Agrégation Interne') {
                 duree = isExplic ? "6 heures" : "7 heures";
-                typeEpreuveLabel = isExplic ? "2e épreuve d'admissibilité (Explication de texte)" : "1re épreuve d'admissibilité (Dissertation)";
+                typeEpreuveLabel = isExplic ? "2ᵈᵉ épreuve d'admissibilité (explication de texte)" : "1ʳᵉ épreuve d'admissibilité (dissertation)";
             } else if (c === 'Agrégation Externe') {
                 if (ep === 'Dissertation hors-programme') {
                     duree = "7 heures";
-                    typeEpreuveLabel = "1re composition (Dissertation hors-programme)";
+                    typeEpreuveLabel = "1ʳᵉ composition (dissertation hors-programme)";
                 } else if (ep === 'Dissertation sur programme') {
                     duree = "7 heures";
-                    typeEpreuveLabel = "2e composition (Dissertation sur programme)";
+                    typeEpreuveLabel = "2ᵈᵉ composition (dissertation sur programme)";
                 } else if (ep === 'Commentaire de texte') {
                     duree = "6 heures";
-                    typeEpreuveLabel = "3e composition (Histoire de la philosophie)";
+                    typeEpreuveLabel = "3ᵉ composition (histoire de la philosophie)";
                 }
             }
 
@@ -4257,48 +4268,48 @@
                 if (!isExplic) {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #2563eb;">
-                        <h3 style="color: #2563eb;">🎓 Exigences spécifiques du Capes Externe (Dissertation)</h3>
-                        <p><strong>Clarté pédagogique et rigueur notionnelle :</strong> Le jury du Capes valorise une pensée ordonnée, capable de déplier un problème philosophique avec netteté sans jargon superflu. L'équilibre strict des trois parties et la progressivité de la démarche sont impératifs. Proscrire toute virtuosité artificielle ou récitation opaque de cours.</p>
+                        <h3 style="color: #2563eb;">🎓 Exigences spécifiques du Capes externe (dissertation)</h3>
+                        <p><strong>Clarté pédagogique et rigueur notionnelle :</strong> le jury du Capes valorise une pensée ordonnée, capable de déplier un problème philosophique avec netteté sans jargon superflu. L'équilibre strict des trois parties et la progressivité de la démarche sont impératifs. Proscrire toute virtuosité artificielle ou récitation opaque de cours.</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #2563eb;">
-                        <h3 style="color: #2563eb;">🎓 Exigences spécifiques du Capes Externe (Explication de texte)</h3>
-                        <p><strong>Sens aigu de la pédagogie de la lecture philosophique :</strong> Aptitude à guider pas à pas le lecteur dans le texte. La clarté des articulations logiques, l'explicitation des présupposés et le traitement intégral de l'argumentation de l'auteur sont décisifs. Ne jamais substituer un exposé thématique à l'explication minutieuse de la lettre.</p>
+                        <h3 style="color: #2563eb;">🎓 Exigences spécifiques du Capes externe (explication de texte)</h3>
+                        <p><strong>Sens aigu de la pédagogie de la lecture philosophique :</strong> aptitude à guider pas à pas le lecteur dans le texte. La clarté des articulations logiques, l'explicitation des présupposés et le traitement intégral de l'argumentation de l'auteur sont décisifs. Ne jamais substituer un exposé thématique à l'explication minutieuse de la lettre.</p>
                     </div>`;
                 }
             } else if (c === 'Agrégation Interne') {
                 if (!isExplic) {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #0d9488;">
-                        <h3 style="color: #0d9488;">🎖️ Exigences spécifiques de l'Agrégation Interne (Dissertation)</h3>
-                        <p><strong>Posture souveraine d'enseignant-philosophe :</strong> Maîtrise philosophique adulte et affirmée, affrontant directement les contradictions du sujet sans faux-fuyant scolaire. L'aporie doit être véritablement féconde et conduire à une sursomption dialectique substantielle. Le recyclage de cours réchauffés ou de fiches thématiques est immédiatement sanctionné.</p>
+                        <h3 style="color: #0d9488;">🎖️ Exigences spécifiques de l'Agrégation interne (dissertation)</h3>
+                        <p><strong>Posture souveraine d'enseignant-philosophe :</strong> maîtrise philosophique adulte et affirmée, affrontant directement les contradictions du sujet sans faux-fuyant scolaire. L'aporie doit être véritablement féconde et conduire à une sursomption dialectique substantielle. Le recyclage de cours réchauffés ou de fiches thématiques est immédiatement sanctionné.</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #0d9488;">
-                        <h3 style="color: #0d9488;">🎖️ Exigences spécifiques de l'Agrégation Interne (Explication de texte)</h3>
-                        <p><strong>Profondeur herméneutique et immanence :</strong> Faire entendre la voix singulière de l'auteur et la nécessité interne de son cheminement argumentatif. Refus absolu de tout placage de doctrines extérieures ou de généralités historiques : chaque formule du texte doit être soumise à une micro-analyse philosophique exigeante.</p>
+                        <h3 style="color: #0d9488;">🎖️ Exigences spécifiques de l'Agrégation interne (explication de texte)</h3>
+                        <p><strong>Profondeur herméneutique et immanence :</strong> faire entendre la voix singulière de l'auteur et la nécessité interne de son cheminement argumentatif. Refus absolu de tout placage de doctrines extérieures ou de généralités historiques : chaque formule du texte doit être soumise à une micro-analyse philosophique exigeante.</p>
                     </div>`;
                 }
             } else if (c === 'Agrégation Externe') {
                 if (ep === 'Dissertation hors-programme') {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
-                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : Dissertation hors-programme (7h)</h3>
-                        <p><strong>Amplitude ontologique et radicalité spéculative :</strong> Épreuve mesurant l'envergure de la culture philosophique et la capacité à penser de manière autonome au plus haut niveau. Le questionnement doit être pris à sa racine première. La troisième partie doit obligatoirement opérer un déplacement conceptuel majeur (sursomption ontologique) et non un simple compromis.</p>
+                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : dissertation hors-programme (7 h)</h3>
+                        <p><strong>Amplitude ontologique et radicalité spéculative :</strong> épreuve mesurant l'envergure de la culture philosophique et la capacité à penser de manière autonome au plus haut niveau. Le questionnement doit être pris à sa racine première. La troisième partie doit obligatoirement opérer un déplacement conceptuel majeur (sursomption ontologique) et non un simple compromis.</p>
                     </div>`;
                 } else if (ep === 'Dissertation sur programme') {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
-                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : Dissertation sur programme (7h)</h3>
-                        <p><strong>Précision chirurgicale et maîtrise du corpus de la session :</strong> Exactitude terminologique absolue quant aux notions et auteurs au programme de l'année. Les distinctions conceptuelles fines, les débats doctrinaux contemporains et les textes clés doivent être mobilisés avec virtuosité comme des instruments de résolution du problème posé.</p>
+                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : dissertation sur programme (7 h)</h3>
+                        <p><strong>Précision chirurgicale et maîtrise du corpus de la session :</strong> exactitude terminologique absolue quant aux notions et auteurs au programme de l'année. Les distinctions conceptuelles fines, les débats doctrinaux contemporains et les textes clés doivent être mobilisés avec virtuosité comme des instruments de résolution du problème posé.</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
-                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : Commentaire de texte / Histoire de la philo (6h)</h3>
-                        <p><strong>Érudition philologique et rigueur historique :</strong> Maîtrise rigoureuse de la langue philosophique et du système de l'auteur. Le texte doit être restitué dans son exact contexte polémique et doctrinal : contre quelle tradition l'auteur écrit-il ? Quel adversaire implicite combat-il ? Traitement exhaustif de l'extrait jusqu'au dernier mot.</p>
+                        <h3 style="color: #7c3aed;">🏛️ Exigences spécifiques : commentaire de texte / histoire de la philosophie (6 h)</h3>
+                        <p><strong>Érudition philologique et rigueur historique :</strong> maîtrise rigoureuse de la langue philosophique et du système de l'auteur. Le texte doit être restitué dans son exact contexte polémique et doctrinal : contre quelle tradition l'auteur écrit-il ? Quel adversaire implicite combat-il ? Traitement exhaustif de l'extrait jusqu'au dernier mot.</p>
                     </div>`;
                 }
             }
@@ -4308,29 +4319,29 @@
             if (!isExplic) {
                 architectureHtml = `
                 <div class="methodo-block">
-                    <h3>1. Accroche philosophique & Construction de l'Aporie (Introduction)</h3>
+                    <h3>1. Accroche philosophique et construction de l'aporie (introduction)</h3>
                     <p>Entrée d'emblée dans la tension conceptuelle. Bannir les accroches sociologiques ou proverbiales. L'amorce doit poser un véritable étonnement philosophique, élucider les termes et construire la contradiction logique (deux nécessités rationnelles inconciliables) qui commande le plan dialectique en trois temps.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>2. Déploiement dialectique & Opérateurs doctrinaux (Développement)</h3>
+                    <h3>2. Déploiement dialectique et opérateurs doctrinaux (développement)</h3>
                     <p>Chaque partie affirme une thèse directrice justifiée déductivement. Les auteurs ne sont pas récités mais mobilisés comme des <em>opérateurs de pensée</em> pour surmonter un obstacle interne. Les transitions font éclater la crise logique de la thèse précédente.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>3. Sursomption ontologique en Partie III (Le Dépassement)</h3>
+                    <h3>3. Sursomption ontologique en partie III (le dépassement)</h3>
                     <p>La troisième partie ne propose jamais un compromis mou (« un peu des deux »), mais opère un véritable changement d'échelle ou de cadre catégoriel qui refonde le problème et dénoue l'antinomie des parties I et II.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>4. Conclusion résolutive & Gestion du temps (${duree})</h3>
+                    <h3>4. Conclusion résolutive et gestion du temps (${duree})</h3>
                     <p>Dresser le bilan de l'itinéraire conceptuel et apporter une réponse définitive et affirmative. Proscription absolue de la fausse ouverture relativiste en dernière ligne.</p>
                 </div>`;
             } else {
                 architectureHtml = `
                 <div class="methodo-block">
-                    <h3>1. Situation, Thèse & Adversaire implicite (Introduction)</h3>
+                    <h3>1. Situation, thèse et adversaire implicite (introduction)</h3>
                     <p>Localiser le texte dans l'économie globale de l'œuvre sans préambule hors-sol. Énoncer avec netteté la thèse novatrice de l'auteur, identifier l'adversaire ou l'opinion commune combattue, et découper le mouvement logique démonstratif.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>2. Ordre des raisons & Micro-analyse (Développement)</h3>
+                    <h3>2. Ordre des raisons et micro-analyse (développement)</h3>
                     <p>Suivre fidèlement le parcours immanent de la pensée. Micro-analyse sémantique et syntaxique des connecteurs, des distinctions conceptuelles et des exemples analysés comme moments constitutifs de la démonstration.</p>
                 </div>
                 <div class="methodo-block">
@@ -4338,7 +4349,7 @@
                     <p>Ne jamais se contenter de redire les phrases de l'auteur sous une autre forme, ni réciter un cours général déconnecté du texte. Penser <em>avec</em> le texte en dégageant ses présupposés ultimes.</p>
                 </div>
                 <div class="methodo-block">
-                    <h3>4. Traitement exhaustif jusqu'au dernier mot & Portée (Conclusion)</h3>
+                    <h3>4. Traitement exhaustif jusqu'au dernier mot et portée (conclusion)</h3>
                     <p>La règle d'or est le traitement intégral : la chute du texte contient souvent sa clé résolutive. La conclusion fait le bilan de l'opération philosophique accomplie par l'auteur.</p>
                 </div>`;
             }
@@ -4346,31 +4357,31 @@
             // Paliers d'évaluation
             const paliersHtml = `
             <div class="methodo-block" style="background: #f8fafc; border-left-color: #64748b;">
-                <h3>📊 Les 5 Paliers Officiels d'Évaluation du Jury (/20)</h3>
+                <h3>📊 Les 5 paliers officiels d'évaluation du jury (/20)</h3>
                 <ul style="list-style: none; padding-left: 0; margin-top: 8px; line-height: 1.7; font-size: 0.92rem;">
-                    <li><strong style="color: #16a34a;">🟢 Palier 5 (15 à 20/20) :</strong> Excellence spéculative, aporie féconde, sursomption dialectique réelle, élégance de style, pensée souveraine avec les auteurs.</li>
-                    <li><strong style="color: #2563eb;">🔵 Palier 4 (12.5 à 14.5/20) :</strong> Solide et admissible confortable. Démonstration rigoureuse, problématisation tenue, définitions exactes, aucun contresens.</li>
-                    <li><strong style="color: #ca8a04;">🟡 Palier 3 (10 à 12/20) :</strong> Admissible au seuil de moyenne. Épreuve comprise, règles respectées, mais prudence ou troisième partie écourtée.</li>
-                    <li><strong style="color: #ea580c;">🟠 Palier 2 (7 à 9.5/20) :</strong> Fragile / Sous la barre. Travail scolaire, présence d'un écueil caractérisé (plan binaire, paraphrase, fausse transition).</li>
-                    <li><strong style="color: #dc2626;">🔴 Palier 1 (0 à 6.5/20) :</strong> Insuffisant / Éliminatoire. Contresens majeurs, absence de problématisation, catalogue d'auteurs hors-sol, devoir amputé.</li>
+                    <li><strong style="color: #16a34a;">🟢 Palier 5 (15 à 20/20) :</strong> excellence spéculative, aporie féconde, sursomption dialectique réelle, élégance de style, pensée souveraine avec les auteurs.</li>
+                    <li><strong style="color: #2563eb;">🔵 Palier 4 (12.5 à 14.5/20) :</strong> solide et admissible confortable. Démonstration rigoureuse, problématisation tenue, définitions exactes, aucun contresens.</li>
+                    <li><strong style="color: #ca8a04;">🟡 Palier 3 (10 à 12/20) :</strong> admissible au seuil de moyenne. Épreuve comprise, règles respectées, mais prudence ou troisième partie écourtée.</li>
+                    <li><strong style="color: #ea580c;">🟠 Palier 2 (7 à 9.5/20) :</strong> fragile / sous la barre. Travail scolaire, présence d'un écueil caractérisé (plan binaire, paraphrase, fausse transition).</li>
+                    <li><strong style="color: #dc2626;">🔴 Palier 1 (0 à 6.5/20) :</strong> insuffisant / éliminatoire. Contresens majeurs, absence de problématisation, catalogue d'auteurs hors-sol, devoir amputé.</li>
                 </ul>
             </div>`;
 
             // Codes tacites & règles implicites
             const codesTacitesHtml = `
             <div class="methodo-block" style="background: #fffbeb; border-left-color: #f59e0b;">
-                <h3 style="color: #b45309;">🤫 Règles Implicites & Codes Tacites Déterminants</h3>
+                <h3 style="color: #b45309;">🤫 Règles implicites et codes tacites déterminants</h3>
                 <p style="font-size: 0.9rem; line-height: 1.6;">
-                    <strong>1. Posture souveraine vs scolaire :</strong> Bannir le ton d'élève qui demande l'autorisation de penser ou qui récite. Voix philosophique adulte dès la première phrase.<br>
-                    <strong>2. Convocation doctrinale par nécessité :</strong> Un auteur n'est jamais convoqué pour décorer mais parce que la crise interne du problème exige son réactif conceptuel.<br>
-                    <strong>3. Sursomption en Partie III :</strong> Ne pas faire « oui et non » ou un compromis tiède, mais un véritable saut qualitatif / déplacement de perspective.<br>
-                    <strong>4. Zéro métadiscours scolaire :</strong> Supprimer les annonces scolaires (« nous allons étudier »). Conduire la progression par des questions philosophiques directes.<br>
-                    ${isExplic ? '<strong>5. Adversaire implicite :</strong> L\'auteur écrit toujours contre une opinion ou une thèse adverse qu\'il faut explicitement débusquer.<br><strong>6. Zéro préambule historique hors-sol :</strong> Entrer immédiatement dans la lettre et le problème du texte sans disserter sur l\'époque.' : '<strong>7. Refus de l\'accroche journalistique :</strong> Entrée d\'emblée conceptuelle, sans citation plaquée ni anecdote d\'actualité.'}
+                    <strong>1. Posture souveraine vs scolaire :</strong> bannir le ton d'élève qui demande l'autorisation de penser ou qui récite. Voix philosophique adulte dès la première phrase.<br>
+                    <strong>2. Convocation doctrinale par nécessité :</strong> un auteur n'est jamais convoqué pour décorer mais parce que la crise interne du problème exige son réactif conceptuel.<br>
+                    <strong>3. Sursomption en partie III :</strong> ne pas faire « oui et non » ou un compromis tiède, mais un véritable saut qualitatif / déplacement de perspective.<br>
+                    <strong>4. Zéro métadiscours scolaire :</strong> supprimer les annonces scolaires (« nous allons étudier »). Conduire la progression par des questions philosophiques directes.<br>
+                    ${isExplic ? '<strong>5. Adversaire implicite :</strong> l\'auteur écrit toujours contre une opinion ou une thèse adverse qu\'il faut explicitement débusquer.<br><strong>6. Zéro préambule historique hors-sol :</strong> entrer immédiatement dans la lettre et le problème du texte sans disserter sur l\'époque.' : '<strong>7. Refus de l\'accroche journalistique :</strong> entrée d\'emblée conceptuelle, sans citation plaquée ni anecdote d\'actualité.'}
                 </p>
             </div>`;
 
             return `
-                <h2>Méthodologie Officielle : ${typeEpreuveLabel}</h2>
+                <h2>Méthodologie officielle : ${typeEpreuveLabel}</h2>
                 <div style="margin-bottom: 12px; font-size: 0.88rem; color: #64748b; font-weight: 600;">
                     🏛️ ${c} &bull; Épreuve : ${ep} &bull; Durée : ${duree} &bull; Mode : ${mode.toUpperCase()}
                 </div>

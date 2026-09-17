@@ -26,3 +26,24 @@ Toutes les réponses, synthèses, rapports et générations de texte en françai
 7. **Numérotation et siècles** :
    - Écrire les siècles en chiffres romains avec exposant : XIXᵉ siècle, XXIᵉ siècle.
    - Utiliser les abréviations ordinales soignées : 1ʳᵉ, 1ᵉʳ, 2ᵈᵉ, 2ᵉ.
+
+---
+
+## Application obligatoire au texte visible de l'interface (UI, HTML, JS)
+
+Ces règles s'appliquent sans exception à **toute modification ou création de texte visible pour l'utilisateur** dans l'application Mentor Concours (fichiers index.html, scripts JavaScript, gabarits, alertes, notifications, etc.) :
+
+1. **Titres, sous-titres, onglets, badges et boutons** :
+   - Casse de phrase stricte (*sentence case*) : seule la première lettre prend une majuscule (ex. : Capes externe, Agrégation interne, Méthodologie officielle, Exigences spécifiques).
+   - Jamais de majuscules sur les adjectifs ou compléments, sauf noms propres.
+   - Jamais d'esperluette & dans les libellés (écrire « et »).
+
+2. **Deux-points dans l'interface** :
+   - Toute mention introduite par deux-points (:) prend une minuscule (ex. : Ex. : le réel..., 🏛️ Exigences spécifiques : dissertation hors-programme).
+
+3. **Accents sur les majuscules** :
+   - Vérifier scrupuleusement les majuscules en début de libellé ou de question (ex. : À-t-on..., Épreuve..., État...).
+
+4. **Ordinaux et durées** :
+   - Écrire 1ʳᵉ, 2ᵈᵉ, 3ᵉ, etc. (et non 1ère, 2ème).
+   - Espace insécable avant le symbole d'heure h (ex. : 7 h, 6 h).
