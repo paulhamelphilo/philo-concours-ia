@@ -1670,24 +1670,17 @@
             <!-- Explication de texte - Sélecteur standard (Introduction / Développement / Copie complète) -->
             <div id="selector-explication" style="display:none;">
                 <div id="explication-custom" style="display:block;">
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <div style="flex: 1;">
-                            <label><strong>Auteur</strong></label>
-                            <input type="text" id="input-custom-author" placeholder="Ex: Spinoza"
-                                oninput="updateCustomExplication()"
-                                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label><strong>Œuvre</strong></label>
-                            <input type="text" id="input-custom-work" placeholder="Ex: Éthique, III"
-                                oninput="updateCustomExplication()"
-                                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
-                        </div>
-                    </div>
                     <label><strong>Texte à expliquer</strong></label>
                     <textarea id="textarea-custom-text" rows="6" placeholder="Collez le texte à expliquer ici..."
                         oninput="updateCustomExplication()"
-                        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; resize: vertical; font-family: inherit;"></textarea>
+                        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; resize: vertical; font-family: inherit; margin-bottom: 10px;"></textarea>
+
+                    <div>
+                        <label><strong>Référence</strong></label>
+                        <input type="text" id="input-custom-ref" placeholder="Auteur, œuvre, etc. (ex: Spinoza, Éthique, III)"
+                            oninput="updateCustomExplication()"
+                            style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
+                    </div>
 
                     <div style="margin-top:12px; text-align:right;">
                         <button type="button" class="btn btn-secondary btn-sm" onclick="toggleExplicationMode(false)">📋 Choisir parmi les textes officiels</button>
@@ -1720,24 +1713,17 @@
                     </div>
                 </div>
                 <div id="explication-arg-custom" style="display:none;">
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <div style="flex: 1;">
-                            <label><strong>Auteur</strong></label>
-                            <input type="text" id="input-custom-arg-author" placeholder="Ex: Descartes"
-                                oninput="updateCustomExplicationArg()"
-                                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label><strong>Œuvre</strong></label>
-                            <input type="text" id="input-custom-arg-work" placeholder="Ex: Discours de la méthode"
-                                oninput="updateCustomExplicationArg()"
-                                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
-                        </div>
-                    </div>
                     <label><strong>Fragment à expliquer</strong></label>
                     <textarea id="textarea-custom-arg-fragment" rows="4"
                         placeholder="Saisissez ou collez le fragment ici..." oninput="updateCustomExplicationArg()"
-                        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; resize: vertical; font-family: inherit;"></textarea>
+                        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px; resize: vertical; font-family: inherit; margin-bottom: 10px;"></textarea>
+
+                    <div>
+                        <label><strong>Référence</strong></label>
+                        <input type="text" id="input-custom-arg-ref" placeholder="Auteur, œuvre, etc. (ex: Descartes, Discours de la méthode)"
+                            oninput="updateCustomExplicationArg()"
+                            style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
+                    </div>
 
                     <div style="margin-top:12px; text-align:right;">
                         <button type="button" class="btn btn-secondary btn-sm"
@@ -2470,7 +2456,7 @@
                 "work": "Humanités",
                 "theme": "La pensée et le langage",
                 "label": "Alain, Humanités — La pensée et le langage",
-                "source": "ALAIN, <em>« Des Poètes »</em>, in <em>Humanités</em>, 1946",
+                "source": "ALAIN, « Des Poètes », in <em>Humanités</em>, 1946",
                 "notes": "(1) « sibyllin » : énigmatique",
                 "structure": [
                     {
@@ -2577,7 +2563,7 @@
                 "work": "Le créateur littéraire et la fantaisie",
                 "theme": "La création littéraire",
                 "label": "Freud, Le créateur littéraire et la fantaisie — La création littéraire",
-                "source": "FREUD, <em>« Le créateur littéraire et la fantaisie »</em> in <em>L’inquiétante étrangeté et autres essais</em>, 1908",
+                "source": "FREUD, « Le créateur littéraire et la fantaisie », in <em>L’inquiétante étrangeté et autres essais</em>, 1908",
                 "notes": "(1) « profanes » : ceux qui ne sont pas des connaisseurs ou des spécialistes",
                 "structure": [
                     {
@@ -4778,12 +4764,10 @@
             const selectExplic = document.getElementById("select-explic-text");
             const selectExplicArg = document.getElementById("select-explic-text-arg");
 
-            const inputCustomAuthor = document.getElementById("input-custom-author");
-            const inputCustomWork = document.getElementById("input-custom-work");
+            const inputCustomRef = document.getElementById("input-custom-ref");
             const textareaCustomText = document.getElementById("textarea-custom-text");
 
-            const inputCustomArgAuthor = document.getElementById("input-custom-arg-author");
-            const inputCustomArgWork = document.getElementById("input-custom-arg-work");
+            const inputCustomArgRef = document.getElementById("input-custom-arg-ref");
             const textareaCustomArgFragment = document.getElementById("textarea-custom-arg-fragment");
 
             const prof = getActiveProfile();
@@ -4803,11 +4787,13 @@
                 isCustomArgumentation: state.isCustomArgumentation,
                 isCustomExplication: state.isCustomExplication,
                 isCustomExplicationArg: state.isCustomExplicationArg,
-                customAuthor: inputCustomAuthor ? inputCustomAuthor.value : '',
-                customWork: inputCustomWork ? inputCustomWork.value : '',
+                customRef: inputCustomRef ? inputCustomRef.value : '',
+                customAuthor: inputCustomRef ? inputCustomRef.value : '',
+                customWork: '',
                 customText: textareaCustomText ? textareaCustomText.value : '',
-                customArgAuthor: inputCustomArgAuthor ? inputCustomArgAuthor.value : '',
-                customArgWork: inputCustomArgWork ? inputCustomArgWork.value : '',
+                customArgRef: inputCustomArgRef ? inputCustomArgRef.value : '',
+                customArgAuthor: inputCustomArgRef ? inputCustomArgRef.value : '',
+                customArgWork: '',
                 customArgFragment: textareaCustomArgFragment ? textareaCustomArgFragment.value : '',
                 explicIdx: selectExplic ? selectExplic.value : '',
                 explicArgIdx: selectExplicArg ? selectExplicArg.value : '',
@@ -5744,11 +5730,11 @@
                         if (preExp) preExp.style.display = 'none';
                         if (custExp) custExp.style.display = 'block';
 
-                        const inputCustomAuthor = document.getElementById("input-custom-author");
-                        const inputCustomWork = document.getElementById("input-custom-work");
+                        const inputCustomRef = document.getElementById("input-custom-ref");
                         const textareaCustomText = document.getElementById("textarea-custom-text");
-                        if (inputCustomAuthor) inputCustomAuthor.value = la.customAuthor || '';
-                        if (inputCustomWork) inputCustomWork.value = la.customWork || '';
+                        if (inputCustomRef) {
+                            inputCustomRef.value = la.customRef || (la.customAuthor ? `${la.customAuthor}${la.customWork ? ', ' + la.customWork : ''}` : (la.customWork || ''));
+                        }
                         if (textareaCustomText) textareaCustomText.value = la.customText || '';
                         updateCustomExplication();
                     } else {
@@ -5770,11 +5756,11 @@
                         if (preArg) preArg.style.display = 'none';
                         if (custArg) custArg.style.display = 'block';
 
-                        const inputCustomArgAuthor = document.getElementById("input-custom-arg-author");
-                        const inputCustomArgWork = document.getElementById("input-custom-arg-work");
+                        const inputCustomArgRef = document.getElementById("input-custom-arg-ref");
                         const textareaCustomArgFragment = document.getElementById("textarea-custom-arg-fragment");
-                        if (inputCustomArgAuthor) inputCustomArgAuthor.value = la.customArgAuthor || '';
-                        if (inputCustomArgWork) inputCustomArgWork.value = la.customArgWork || '';
+                        if (inputCustomArgRef) {
+                            inputCustomArgRef.value = la.customArgRef || (la.customArgAuthor ? `${la.customArgAuthor}${la.customArgWork ? ', ' + la.customArgWork : ''}` : (la.customArgWork || ''));
+                        }
                         if (textareaCustomArgFragment) textareaCustomArgFragment.value = la.customArgFragment || '';
                         updateCustomExplicationArg();
                     } else {
@@ -5940,19 +5926,14 @@
                     // Standard -> Argumentation
                     state.isCustomExplicationArg = state.isCustomExplication;
 
-                    const inputCustomAuthor = document.getElementById("input-custom-author");
-                    const inputCustomWork = document.getElementById("input-custom-work");
+                    const inputCustomRef = document.getElementById("input-custom-ref");
                     const textareaCustomText = document.getElementById("textarea-custom-text");
 
-                    const inputCustomArgAuthor = document.getElementById("input-custom-arg-author");
-                    const inputCustomArgWork = document.getElementById("input-custom-arg-work");
+                    const inputCustomArgRef = document.getElementById("input-custom-arg-ref");
                     const textareaCustomArgFragment = document.getElementById("textarea-custom-arg-fragment");
 
-                    if (inputCustomAuthor && inputCustomArgAuthor) {
-                        inputCustomArgAuthor.value = inputCustomAuthor.value;
-                    }
-                    if (inputCustomWork && inputCustomArgWork) {
-                        inputCustomArgWork.value = inputCustomWork.value;
+                    if (inputCustomRef && inputCustomArgRef) {
+                        inputCustomArgRef.value = inputCustomRef.value;
                     }
                     if (textareaCustomText && textareaCustomArgFragment) {
                         textareaCustomArgFragment.value = textareaCustomText.value;
@@ -5994,19 +5975,14 @@
                         custExp.style.display = state.isCustomExplication ? 'block' : 'none';
                     }
 
-                    const inputCustomAuthor = document.getElementById("input-custom-author");
-                    const inputCustomWork = document.getElementById("input-custom-work");
+                    const inputCustomRef = document.getElementById("input-custom-ref");
                     const textareaCustomText = document.getElementById("textarea-custom-text");
 
-                    const inputCustomArgAuthor = document.getElementById("input-custom-arg-author");
-                    const inputCustomArgWork = document.getElementById("input-custom-arg-work");
+                    const inputCustomArgRef = document.getElementById("input-custom-arg-ref");
                     const textareaCustomArgFragment = document.getElementById("textarea-custom-arg-fragment");
 
-                    if (inputCustomAuthor && inputCustomArgAuthor) {
-                        inputCustomAuthor.value = inputCustomArgAuthor.value;
-                    }
-                    if (inputCustomWork && inputCustomArgWork) {
-                        inputCustomWork.value = inputCustomArgWork.value;
+                    if (inputCustomRef && inputCustomArgRef) {
+                        inputCustomRef.value = inputCustomArgRef.value;
                     }
                     if (textareaCustomText && textareaCustomArgFragment) {
                         textareaCustomText.value = textareaCustomArgFragment.value;
@@ -6156,41 +6132,12 @@
 
             const cData = getActiveAnnalesData();
             if (cData && Array.isArray(cData.dissertation) && cData.dissertation.length > 0) {
-                const recent = [];
-                const older = [];
-
                 cData.dissertation.forEach(item => {
-                    const s = parseInt(item.session, 10);
-                    if (!isNaN(s) && s >= 2020) {
-                        recent.push(item);
-                    } else {
-                        older.push(item);
-                    }
+                    const opt = document.createElement("option");
+                    opt.value = item.title;
+                    opt.textContent = `${item.session} — ${item.title}`;
+                    selectSujet.appendChild(opt);
                 });
-
-                if (recent.length > 0) {
-                    const groupRecent = document.createElement("optgroup");
-                    groupRecent.label = `🏛️ Sessions récentes (2020-2026)`;
-                    recent.forEach(item => {
-                        const opt = document.createElement("option");
-                        opt.value = item.title;
-                        opt.textContent = `${item.session} — ${item.title}`;
-                        groupRecent.appendChild(opt);
-                    });
-                    selectSujet.appendChild(groupRecent);
-                }
-
-                if (older.length > 0) {
-                    const groupOlder = document.createElement("optgroup");
-                    groupOlder.label = `📚 Sessions antérieures (2012-2019)`;
-                    older.forEach(item => {
-                        const opt = document.createElement("option");
-                        opt.value = item.title;
-                        opt.textContent = `${item.session} — ${item.title}`;
-                        groupOlder.appendChild(opt);
-                    });
-                    selectSujet.appendChild(groupOlder);
-                }
 
                 if (prevVal) {
                     selectSujet.value = prevVal;
@@ -6207,41 +6154,12 @@
 
             const cData = getActiveAnnalesData();
             if (cData && Array.isArray(cData.explication) && cData.explication.length > 0) {
-                const recent = [];
-                const older = [];
-
                 cData.explication.forEach((item, idx) => {
-                    const s = parseInt(item.session, 10);
-                    if (!isNaN(s) && s >= 2020) {
-                        recent.push({ item, idx });
-                    } else {
-                        older.push({ item, idx });
-                    }
+                    const opt = document.createElement("option");
+                    opt.value = "annale_" + idx;
+                    opt.textContent = item.label;
+                    selectExp.appendChild(opt);
                 });
-
-                if (recent.length > 0) {
-                    const groupRecent = document.createElement("optgroup");
-                    groupRecent.label = `🏛️ Sessions récentes (2020-2026)`;
-                    recent.forEach(({ item, idx }) => {
-                        const opt = document.createElement("option");
-                        opt.value = "annale_" + idx;
-                        opt.textContent = item.label;
-                        groupRecent.appendChild(opt);
-                    });
-                    selectExp.appendChild(groupRecent);
-                }
-
-                if (older.length > 0) {
-                    const groupOlder = document.createElement("optgroup");
-                    groupOlder.label = `📚 Sessions antérieures (2015-2019)`;
-                    older.forEach(({ item, idx }) => {
-                        const opt = document.createElement("option");
-                        opt.value = "annale_" + idx;
-                        opt.textContent = item.label;
-                        groupOlder.appendChild(opt);
-                    });
-                    selectExp.appendChild(groupOlder);
-                }
 
                 if (prevVal) {
                     selectExp.value = prevVal;
@@ -6308,9 +6226,10 @@
             document.getElementById('explication-predefined').style.display = isCustom ? 'none' : 'block';
             document.getElementById('explication-custom').style.display = isCustom ? 'block' : 'none';
             if (!isCustom) {
-                document.getElementById('input-custom-author').value = '';
-                document.getElementById('input-custom-work').value = '';
-                document.getElementById('textarea-custom-text').value = '';
+                const inputCustomRef = document.getElementById('input-custom-ref');
+                if (inputCustomRef) inputCustomRef.value = '';
+                const textareaCustomText = document.getElementById('textarea-custom-text');
+                if (textareaCustomText) textareaCustomText.value = '';
                 selectExplicText(document.getElementById('select-explic-text').value);
             } else {
                 updateCustomExplication();
@@ -6439,10 +6358,8 @@
                     const preExp = document.getElementById('explication-predefined');
                     if (custExp) custExp.style.display = 'block';
                     if (preExp) preExp.style.display = 'none';
-                    const authorInp = document.getElementById('input-custom-author');
-                    if (authorInp && !authorInp.value) authorInp.value = "Auteur";
-                    const workInp = document.getElementById('input-custom-work');
-                    if (workInp && !workInp.value) workInp.value = sujet;
+                    const refInp = document.getElementById('input-custom-ref');
+                    if (refInp && !refInp.value) refInp.value = sujet || "Texte d'explication";
                 }
             }
 
@@ -6478,22 +6395,24 @@
 
         function updateCustomExplication() {
             saveCurrentDraftToLastRenderedSubject();
-            const author = document.getElementById("input-custom-author").value.trim();
-            const work = document.getElementById("input-custom-work").value.trim();
-            const text = document.getElementById("textarea-custom-text").value.trim();
+            const refInput = document.getElementById("input-custom-ref");
+            const ref = refInput ? refInput.value.trim() : "";
+            const textInput = document.getElementById("textarea-custom-text");
+            const text = textInput ? textInput.value.trim() : "";
 
             if (!text) {
                 state.currentExplicText = null;
             } else {
                 let htmlContent = "";
-                if (author || work) {
-                    htmlContent += `<h3>${author || ''}${author && work ? ', ' : ''}<em>${work || ''}</em></h3>`;
+                if (ref) {
+                    htmlContent += `<h3>${ref}</h3>`;
                 }
                 htmlContent += `<p>${text.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
                 state.currentExplicText = {
-                    author,
-                    work,
-                    label: (author && work) ? `${author}, ${work}` : (author || work || "Texte personnalisé"),
+                    author: ref,
+                    work: "",
+                    reference: ref,
+                    label: ref || "Texte personnalisé",
                     html: htmlContent
                 };
             }
@@ -6509,11 +6428,9 @@
             if (cust) cust.style.display = isCustom ? 'block' : 'none';
 
             if (!isCustom) {
-                const authorInput = document.getElementById("input-custom-arg-author");
-                const workInput = document.getElementById("input-custom-arg-work");
+                const refInput = document.getElementById("input-custom-arg-ref");
                 const fragmentTextarea = document.getElementById("textarea-custom-arg-fragment");
-                if (authorInput) authorInput.value = '';
-                if (workInput) workInput.value = '';
+                if (refInput) refInput.value = '';
                 if (fragmentTextarea) fragmentTextarea.value = '';
                 state.activeFragment = null;
                 state.activeThesis = null;
@@ -6530,8 +6447,8 @@
 
         function updateCustomExplicationArg() {
             saveCurrentDraftToLastRenderedSubject();
-            const author = document.getElementById("input-custom-arg-author") ? document.getElementById("input-custom-arg-author").value.trim() : "";
-            const work = document.getElementById("input-custom-arg-work") ? document.getElementById("input-custom-arg-work").value.trim() : "";
+            const refInput = document.getElementById("input-custom-arg-ref");
+            const ref = refInput ? refInput.value.trim() : "";
             const fragment = document.getElementById("textarea-custom-arg-fragment") ? document.getElementById("textarea-custom-arg-fragment").value.trim() : "";
 
             if (!fragment) {
@@ -6985,15 +6902,15 @@
                 } else {
                     // Expliquer un fragment de texte mode (interactive text)
                     if (state.isCustomExplicationArg) {
-                        const author = document.getElementById("input-custom-arg-author") ? document.getElementById("input-custom-arg-author").value.trim() : "";
-                        const work = document.getElementById("input-custom-arg-work") ? document.getElementById("input-custom-arg-work").value.trim() : "";
+                        const refInput = document.getElementById("input-custom-arg-ref");
+                        const ref = refInput ? refInput.value.trim() : "";
                         const fragment = document.getElementById("textarea-custom-arg-fragment") ? document.getElementById("textarea-custom-arg-fragment").value.trim() : "";
 
                         if (fragment) {
                             hasText = true;
                             let htmlContent = "";
-                            if (author || work) {
-                                htmlContent += `<h3>${author || ''}${author && work ? ', ' : ''}<em>${work || ''}</em></h3>`;
+                            if (ref) {
+                                htmlContent += `<h3>${ref}</h3>`;
                             }
                             htmlContent += `<p style="margin: 0 0 15px 0; text-align: justify; line-height: 1.8;">${fragment.replace(/\n\n+/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
                             textHtml = htmlContent;
@@ -7212,6 +7129,7 @@
                         selectedTextHtml = state.currentExplicText.html || "";
                     }
                     selectedTextTitle = state.currentExplicText.label || state.currentExplicText.title;
+                    sujet = selectedTextTitle || "Explication de texte";
                 }
             }
 
