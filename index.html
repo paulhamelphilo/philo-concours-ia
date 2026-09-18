@@ -2003,9 +2003,9 @@
             color: #ffffff;
         }
 
-        /* Cartes d'annotation au fil du texte (insérées sous la phrase) */
+        /* Cartes d'annotation au fil du texte (masquées par défaut, affichées au clic sur la phrase) */
         .inline-annotation-card {
-            display: block;
+            display: none;
             max-width: 720px;
             width: calc(100% - 32px);
             margin: 12px auto 16px auto;
@@ -2014,7 +2014,7 @@
             border-left: 4px solid #94a3b8;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-size: 13px;
             line-height: 1.5;
@@ -2031,6 +2031,32 @@
         .inline-annotation-card.type-reference { border-left-color: #0284c7; }
         .inline-annotation-card.type-style { border-left-color: #9333ea; }
         .inline-annotation-card.type-etincelle { border-left-color: #16a34a; }
+        .inline-annotation-card.type-atelier { border-left-color: #d97706; background: #fffdf7; }
+
+        .btn-replier-card {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 11px;
+            color: #475569;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+        .btn-replier-card:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .inline-ann-action {
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
 
         .inline-ann-header {
             padding: 8px 14px;
@@ -6178,13 +6204,18 @@
                     </div>
                 `;
 
-                // Placer le tableau de bord juste avant la section "Analyse personnalisée" (h2 contenant "Analyse")
+                // Placer l'Indice général de conformité AU DÉBUT de la section "Analyse personnalisée" (immédiatement après le h2)
                 const h2Analyse = Array.from(doc.querySelectorAll('h2')).find(h => /Analyse\s+personnalis/i.test(h.textContent));
                 if (h2Analyse) {
                     h2Analyse.id = 'sec-analyse-personnalisee';
                     h2Analyse.innerHTML = h2Analyse.innerHTML.replace(/^(\s*2\s*[\.:-]?\s*)/, '');
+                    // Nettoyer un éventuel paragraphe d'instruction du modèle immédiatement sous le titre
+                    let nextEl = h2Analyse.nextElementSibling;
+                    if (nextEl && nextEl.tagName === 'P' && /^\s*\(Découpe/i.test(nextEl.textContent)) {
+                        if (nextEl.parentNode) nextEl.parentNode.removeChild(nextEl);
+                    }
                     if (h2Analyse.parentNode) {
-                        h2Analyse.parentNode.insertBefore(dashboardDiv, h2Analyse);
+                        h2Analyse.parentNode.insertBefore(dashboardDiv, h2Analyse.nextSibling);
                     } else {
                         doc.body.insertBefore(dashboardDiv, doc.body.firstChild);
                     }
@@ -6193,13 +6224,14 @@
                 }
             }
 
-            // Embellissement visuel du Verdict du Double Curseur Étalonné
-            const h2Verdict = Array.from(doc.querySelectorAll('h2')).find(h => /VERDICT\s+DU\s+DOUBLE\s+CURSEUR/i.test(h.textContent));
+            // Embellissement visuel de l'Évaluation globale
+            const h2Verdict = Array.from(doc.querySelectorAll('h2')).find(h => /VERDICT\s+DU\s+DOUBLE\s+CURSEUR|[ÉEe]valuation\s+globale/i.test(h.textContent));
             if (h2Verdict) {
                 const verdictContainer = doc.createElement('div');
                 verdictContainer.className = 'double-curseur-verdict-box';
                 verdictContainer.style.cssText = 'background: #ffffff; border: 2px solid #3b82f6; border-radius: 10px; padding: 20px 24px; margin: 25px 0; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.08);';
 
+                h2Verdict.innerHTML = 'Évaluation globale';
                 h2Verdict.style.cssText = 'color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 10px; margin-top: 0; margin-bottom: 18px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;';
                 
                 const verdictNodes = [h2Verdict];
@@ -6207,15 +6239,31 @@
                 while (cur && cur.tagName !== 'H2') {
                     const next = cur.nextElementSibling;
                     if (cur.tagName === 'H3') {
-                        if (/Curseur\s*1/i.test(cur.textContent)) {
+                        if (/Curseur\s*1|Note\s+estim[ée]e\s+r[ée]elle/i.test(cur.textContent)) {
+                            cur.innerHTML = 'Note estimée réelle de concours';
                             cur.style.cssText = 'background: #f0fdf4; color: #166534; padding: 8px 14px; border-left: 4px solid #16a34a; border-radius: 4px; margin-top: 15px; margin-bottom: 10px; font-size: 1.1rem;';
-                        } else if (/Curseur\s*2/i.test(cur.textContent)) {
-                            cur.style.cssText = 'background: #f8fafc; color: #1e293b; padding: 8px 14px; border-left: 4px solid #475569; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
-                        } else if (/Delta/i.test(cur.textContent)) {
+                        } else if (/Curseur\s*2|Note\s+d['’]exigence/i.test(cur.textContent)) {
+                            cur.innerHTML = 'Note d\'exigence canonique';
                             cur.style.cssText = 'background: #eff6ff; color: #1e40af; padding: 8px 14px; border-left: 4px solid #3b82f6; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
+                        } else if (/Delta|Diagnostic/i.test(cur.textContent)) {
+                            cur.innerHTML = 'Diagnostic pédagogique de l\'écart';
+                            cur.style.cssText = 'background: #f8fafc; color: #334155; padding: 8px 14px; border-left: 4px solid #64748b; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
                         }
+                    } else if (cur.tagName === 'UL' || cur.tagName === 'OL') {
+                        // Supprimer la mention du "Positionnement de cohorte"
+                        cur.querySelectorAll('li').forEach(li => {
+                            if (/Positionnement\s+de\s+cohorte/i.test(li.textContent)) {
+                                if (li.parentNode) li.parentNode.removeChild(li);
+                            } else if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(li.innerHTML)) {
+                                li.innerHTML = li.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
+                            }
+                        });
                     } else if (cur.tagName === 'BLOCKQUOTE') {
-                        cur.style.cssText = 'background: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px 16px; margin: 10px 0; border-radius: 4px; color: #1e3a8a; font-style: normal;';
+                        // Calquer le format du texte de diagnostic sur celui des deux sections précédentes (sans fond bleu)
+                        cur.style.cssText = 'background: transparent; border-left: none; padding: 4px 8px; margin: 8px 0; color: #334155; font-style: normal; line-height: 1.6;';
+                        if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(cur.innerHTML)) {
+                            cur.innerHTML = cur.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
+                        }
                     }
                     verdictNodes.push(cur);
                     cur = next;
@@ -6277,9 +6325,28 @@
                 }
             }
 
-            // Extraction et isolement de la section 3 vers le volet autonome de l'Atelier de réécriture
-            const h2Atelier = Array.from(doc.querySelectorAll('h2')).find(h => /Atelier\s+de\s+r[ée][ée]criture/i.test(h.textContent));
-            let atelierHtml = '';
+            // Suppression intégrale de la section 5 (Éclairages et extraits du jury) en bas du rapport d'évaluation
+            const h2Eclairages = Array.from(doc.querySelectorAll('h2')).find(h => /[ÉEe]clairages\s+et\s+extraits/i.test(h.textContent));
+            if (h2Eclairages) {
+                if (h2Eclairages.previousElementSibling && h2Eclairages.previousElementSibling.tagName === 'HR') {
+                    h2Eclairages.previousElementSibling.parentNode.removeChild(h2Eclairages.previousElementSibling);
+                }
+                let curEcl = h2Eclairages.nextElementSibling;
+                while (curEcl && curEcl.tagName !== 'H2') {
+                    const nextEcl = curEcl.nextElementSibling;
+                    if (curEcl.parentNode) {
+                        curEcl.parentNode.removeChild(curEcl);
+                    }
+                    curEcl = nextEcl;
+                }
+                if (h2Eclairages.parentNode) {
+                    h2Eclairages.parentNode.removeChild(h2Eclairages);
+                }
+            }
+
+            // Extraction et isolement de la section Atelier de réécriture (intégrée directement dans la Copie annotée)
+            const h2Atelier = Array.from(doc.querySelectorAll('h2')).find(h => /Atelier\s+de\s+r[ée][ée]criture|PISTES\s+CONCR[ÈE]TES/i.test(h.textContent));
+            const extractedAtelierCases = [];
             let casCounter = 0;
 
             if (h2Atelier) {
@@ -6287,7 +6354,7 @@
                 if (h2Atelier.previousElementSibling && h2Atelier.previousElementSibling.tagName === 'HR') {
                     h2Atelier.previousElementSibling.parentNode.removeChild(h2Atelier.previousElementSibling);
                 }
-                // Collecter tous les nœuds de la section 3 jusqu'au prochain H2
+                // Collecter tous les nœuds de la section jusqu'au prochain H2
                 const atelierNodes = [];
                 let cur = h2Atelier.nextElementSibling;
                 while (cur && cur.tagName !== 'H2') {
@@ -6296,35 +6363,23 @@
                     cur = next;
                 }
 
-                // Retirer ces nœuds volumineux du document principal pour alléger le rapport
+                // Retirer ces nœuds volumineux du rapport d'évaluation principal
                 atelierNodes.forEach(n => {
                     if (n.parentNode) n.parentNode.removeChild(n);
                 });
 
-                // Suppression du titre H2 de l'Atelier du rapport principal (accessible via l'onglet dédié en haut)
+                // Suppression du titre H2 de l'Atelier du rapport principal
                 if (h2Atelier.parentNode) {
                     h2Atelier.parentNode.removeChild(h2Atelier);
                 }
 
-                // Assembler le volet autonome de l'Atelier de réécriture
-                const atelierWrapper = doc.createElement('div');
-                atelierWrapper.className = 'atelier-panel-wrapper';
-
-                const atelierHeader = doc.createElement('div');
-                atelierHeader.className = 'atelier-main-header';
-                atelierHeader.innerHTML = `
-                    <h2 class="atelier-main-title">🎯 Atelier de réécriture comparative</h2>
-                    <p class="atelier-main-intro">Retrouvez ci-dessous l'analyse clinique des verrous conceptuels de votre devoir, les versions remaniées d'excellence et les questions socratiques de relance.</p>
-                `;
-                atelierWrapper.appendChild(atelierHeader);
-
                 let i = 0;
                 while (i < atelierNodes.length) {
                     const node = atelierNodes[i];
-                    if (node.tagName === 'H3' && /Cas\s*\d+/i.test(node.textContent)) {
+                    if (node.tagName === 'H3' && /(?:Cas\s*(?:n[°o]\s*)?\d+|Mod[ée]lisation)/i.test(node.textContent)) {
                         casCounter++;
                         const casIdx = casCounter;
-                        const casTitle = node.textContent.trim();
+                        const casTitle = node.textContent.replace(/^###\s*/, '').trim();
                         const casNodes = [];
                         i++;
                         while (i < atelierNodes.length && atelierNodes[i].tagName !== 'H3' && atelierNodes[i].tagName !== 'H2') {
@@ -6332,13 +6387,11 @@
                             i++;
                         }
 
-                        // Extraction robuste des 4 composantes du cas
                         let passageInitial = '';
                         let verrou = '';
                         let remaniee = '';
                         let gain = '';
 
-                        // Nettoyage préalable des balises de code éventuelles
                         const fullHtml = casNodes.map(n => n.outerHTML || '').join('');
                         const cleanHtmlNoPre = fullHtml.replace(/<pre><code>([\s\S]*?)<\/code><\/pre>/gi, '$1').replace(/<\/?(?:pre|code)[^>]*>/gi, '');
 
@@ -6349,123 +6402,56 @@
                         if (listItems.length >= 2) {
                             listItems.forEach(li => {
                                 const rawText = li.textContent.trim();
-                                if (/Passage\s+initial|Texte\s+initial/i.test(rawText)) {
-                                    passageInitial = rawText.replace(/^[*\s]*(?:Passage|Texte)\s+initial(?:\s+du\s+candidat)?[*\s]*[:*]+\s*/i, '').trim();
+                                if (/Passage\s+initial|Texte\s+initial|Extrait\s+(?:initial|perfectible)/i.test(rawText)) {
+                                    passageInitial = rawText.replace(/^[*\s]*(?:Passage|Texte|Extrait)\s+(?:initial|perfectible)?(?:\s+du\s+candidat)?[*\s]*[:*]+\s*/i, '').trim();
                                 } else if (/L['’]impens[ée]|Verrou|Diagnostic/i.test(rawText)) {
-                                    verrou = rawText.replace(/^[*\s]*(?:L['’]impens[ée](?:\s+ou\s+le\s+verrou)?|Verrou(?:\s+identifi[ée])?|Diagnostic)[*\s]*[:*]+\s*/i, '').trim();
+                                    verrou = rawText.replace(/^[*\s]*(?:L['’]impens[ée](?:\s+ou\s+le\s+verrou)?|Verrou(?:\s+(?:identifi[ée]|stylistique|conceptuel))?|Diagnostic)[*\s]*[:*]+\s*/i, '').trim();
                                 } else if (/Version\s+remani[ée]e|R[ée][ée]criture/i.test(rawText)) {
                                     remaniee = rawText.replace(/^[*\s]*(?:Version\s+remani[ée]e(?:\s+d['’]excellence)?(?:\s*\([^)]+\))?|R[ée][ée]criture)[*\s]*[:*]+\s*/i, '').trim();
-                                } else if (/B[ée]n[ée]fice\s+philosophique|Gain\s+philosophique|Valeur\s+concours/i.test(rawText)) {
-                                    gain = rawText.replace(/^[*\s]*(?:B[ée]n[ée]fice\s+philosophique(?:\s+obtenu)?|Gain\s+philosophique|Valeur\s+concours)[*\s]*[:*]+\s*/i, '').trim();
+                                } else if (/B[ée]n[ée]fice\s+philosophique|Gain\s+philosophique|Valeur\s+concours|Ce\s+qui\s+fait/i.test(rawText)) {
+                                    gain = rawText.replace(/^[*\s]*(?:B[ée]n[ée]fice\s+philosophique(?:\s+obtenu)?|Gain\s+philosophique|Valeur\s+concours|Ce\s+qui\s+fait\s+la\s+diff[ée]rence(?:\s+pour\s+le\s+jury)?)[*\s]*[:*]+\s*/i, '').trim();
                                 }
                             });
                         }
 
-                        // Fallback par analyse textuelle globale si la liste n'était pas balisée
                         if (!remaniee || !passageInitial) {
                             const fullText = casNodes.map(n => n.textContent.trim()).join('\n');
-                            const mInit = fullText.match(/(?:Passage|Texte)\s+initial(?:\s+du\s+candidat)?\s*[:*]+\s*([^\n]+(?:\n(?!(?:L['’]impens|Verrou|Version|B[ée]n[ée]fice|Gain))[^\n]+)*)/i);
+                            const mInit = fullText.match(/(?:Passage|Texte|Extrait)\s+(?:initial|perfectible)?(?:\s+du\s+candidat)?\s*[:*]+\s*([^\n]+(?:\n(?!(?:L['’]impens|Verrou|Version|B[ée]n[ée]fice|Gain|Ce\s+qui))[^\n]+)*)/i);
                             if (mInit && !passageInitial) passageInitial = mInit[1].trim();
 
-                            const mVerrou = fullText.match(/(?:L['’]impens[ée](?:\s+ou\s+le\s+verrou)?|Verrou(?:\s+identifi[ée])?)\s*[:*]+\s*([^\n]+(?:\n(?!(?:Version|R[ée][ée]criture|B[ée]n[ée]fice|Gain))[^\n]+)*)/i);
+                            const mVerrou = fullText.match(/(?:L['’]impens[ée](?:\s+ou\s+le\s+verrou)?|Verrou(?:\s+(?:identifi[ée]|stylistique|conceptuel))?)\s*[:*]+\s*([^\n]+(?:\n(?!(?:Version|R[ée][ée]criture|B[ée]n[ée]fice|Gain|Ce\s+qui))[^\n]+)*)/i);
                             if (mVerrou && !verrou) verrou = mVerrou[1].trim();
 
-                            const mRem = fullText.match(/(?:Version\s+remani[ée]e(?:\s+d['’]excellence)?(?:\s*\([^)]+\))?|R[ée][ée]criture)\s*[:*]+\s*([\s\S]*?)(?=(?:B[ée]n[ée]fice\s+philosophique|Gain\s+philosophique|Valeur\s+concours|\n###|\Z))/i);
+                            const mRem = fullText.match(/(?:Version\s+remani[ée]e(?:\s+d['’]excellence)?(?:\s*\([^)]+\))?|R[ée][ée]criture)\s*[:*]+\s*([\s\S]*?)(?=(?:B[ée]n[ée]fice\s+philosophique|Gain\s+philosophique|Valeur\s+concours|Ce\s+qui\s+fait|\n###|$))/i);
                             if (mRem && !remaniee) remaniee = mRem[1].trim();
 
-                            const mGain = fullText.match(/(?:B[ée]n[ée]fice\s+philosophique(?:\s+obtenu)?|Gain\s+philosophique|Valeur\s+concours)\s*[:*]+\s*([^\n]+(?:\n(?!\n|###)[^\n]+)*)/i);
+                            const mGain = fullText.match(/(?:B[ée]n[ée]fice\s+philosophique(?:\s+obtenu)?|Gain\s+philosophique|Valeur\s+concours|Ce\s+qui\s+fait\s+la\s+diff[ée]rence(?:\s+pour\s+le\s+jury)?)\s*[:*]+\s*([^\n]+(?:\n(?!\n|###|$))[^\n]+)*/i);
                             if (mGain && !gain) gain = mGain[1].trim();
                         }
 
-                        if (passageInitial) {
-                            passageInitial = passageInitial.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '').trim();
+                        if (passageInitial) passageInitial = passageInitial.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '').trim();
+                        if (remaniee) remaniee = remaniee.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '').trim();
+
+                        if (passageInitial || remaniee) {
+                            extractedAtelierCases.push({
+                                id: casIdx,
+                                casIdx: casIdx,
+                                titre: casTitle,
+                                passageInitial: passageInitial,
+                                verrou: verrou,
+                                remaniee: remaniee,
+                                gain: gain
+                            });
                         }
-                        if (remaniee) {
-                            remaniee = remaniee.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '').trim();
-                        }
-
-                        const cardDiv = doc.createElement('div');
-                        cardDiv.className = 'atelier-case-card';
-                        cardDiv.id = `atelier-card-${casIdx}`;
-
-                        const gainFooterHtml = gain ? `
-                            <div class="atelier-gain-footer">
-                                <div class="atelier-gain-header">🏛️ Valeur ajoutée pour le concours</div>
-                                <div class="atelier-gain-text">${escapeHtml(gain)}</div>
-                            </div>
-                        ` : '';
-
-                        const initialBoxHtml = `
-                            <div class="atelier-sub-title title-initial">❌ Extrait initial du candidat</div>
-                            <div class="atelier-quote-box">« ${escapeHtml(passageInitial || 'Extrait initial relevé')} »</div>
-                            ${verrou ? `
-                                <div class="atelier-sub-title" style="color: #475569;">🔒 Impensé ou verrou identifié</div>
-                                <div class="atelier-verrou-box">${escapeHtml(verrou)}</div>
-                            ` : ''}
-                        `;
-
-                        const remanieeBoxHtml = `
-                            <div class="atelier-sub-title title-remaniee">✨ Réécriture d'excellence pour le concours</div>
-                            <div class="atelier-prose-model">${escapeHtml(remaniee || 'Réécriture proposée')}</div>
-                        `;
-
-                        cardDiv.innerHTML = `
-                            <div class="atelier-case-header">
-                                <div class="atelier-case-title">🎯 ${escapeHtml(casTitle)}</div>
-                                <div class="atelier-toggle-bar">
-                                    <button type="button" class="atelier-toggle-btn btn-view-initial active" onclick="toggleCasView(${casIdx}, 'initial')">
-                                        ❌ Texte initial et verrou
-                                    </button>
-                                    <button type="button" class="atelier-toggle-btn btn-view-remaniee" onclick="toggleCasView(${casIdx}, 'remaniee')">
-                                        ✨ Version remaniée
-                                    </button>
-                                    <button type="button" class="atelier-toggle-btn btn-view-split" onclick="toggleCasView(${casIdx}, 'split')">
-                                        ⚖️ Vue comparative
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="atelier-body">
-                                <div class="atelier-view-initial" style="display: block;">
-                                    ${initialBoxHtml}
-                                </div>
-                                <div class="atelier-view-remaniee" style="display: none;">
-                                    ${remanieeBoxHtml}
-                                </div>
-                                <div class="atelier-view-split" style="display: none;">
-                                    <div class="atelier-split-col">
-                                        ${initialBoxHtml}
-                                    </div>
-                                    <div class="atelier-split-col">
-                                        ${remanieeBoxHtml}
-                                    </div>
-                                </div>
-                            </div>
-                            ${gainFooterHtml}
-                        `;
-
-                        atelierWrapper.appendChild(cardDiv);
-                    } else if (node.tagName === 'H3' && /Questions\s+socratiques/i.test(node.textContent)) {
-                        const socratiqueDiv = doc.createElement('div');
-                        socratiqueDiv.className = 'atelier-socratique-box';
-                        socratiqueDiv.appendChild(node);
-                        i++;
-                        while (i < atelierNodes.length && atelierNodes[i].tagName !== 'H3' && atelierNodes[i].tagName !== 'H2') {
-                            socratiqueDiv.appendChild(atelierNodes[i]);
-                            i++;
-                        }
-                        atelierWrapper.appendChild(socratiqueDiv);
                     } else {
-                        atelierWrapper.appendChild(node);
                         i++;
                     }
                 }
-
-                atelierHtml = atelierWrapper.innerHTML;
             }
 
             return {
                 html: doc.body.innerHTML,
-                atelierHtml: atelierHtml,
+                atelierCases: extractedAtelierCases,
                 casCount: casCounter,
                 sections,
                 globalScore
@@ -6473,50 +6459,37 @@
         }
 
         /* ============ FONCTIONS DE GESTION DES ONGLETS DE CORRECTION ============ */
-        function switchCorrectionTab(tab) {
+        function switchCorrectionTab(tab, shouldScroll = true) {
             const btnRapport = document.getElementById('tab-btn-rapport');
             const btnCopie = document.getElementById('tab-btn-copie');
-            const btnAtelier = document.getElementById('tab-btn-atelier');
             const paneRapport = document.getElementById('pane-rapport-eval');
             const paneCopie = document.getElementById('pane-copie-annotee');
-            const paneAtelier = document.getElementById('pane-atelier-reecriture');
             if (!btnRapport || !btnCopie || !paneRapport || !paneCopie) return;
 
-            // Désactivation de tous les onglets
-            [btnRapport, btnCopie, btnAtelier].forEach(btn => {
-                if (btn) {
-                    btn.classList.remove('active');
-                    btn.setAttribute('aria-selected', 'false');
-                }
-            });
-            [paneRapport, paneCopie, paneAtelier].forEach(pane => {
-                if (pane) pane.style.display = 'none';
-            });
+            btnRapport.classList.remove('active');
+            btnRapport.setAttribute('aria-selected', 'false');
+            btnCopie.classList.remove('active');
+            btnCopie.setAttribute('aria-selected', 'false');
+            paneRapport.style.display = 'none';
+            paneCopie.style.display = 'none';
 
             if (tab === 'copie') {
                 btnCopie.classList.add('active');
                 btnCopie.setAttribute('aria-selected', 'true');
                 paneCopie.style.display = 'block';
-            } else if (tab === 'atelier') {
-                if (btnAtelier) {
-                    btnAtelier.classList.add('active');
-                    btnAtelier.setAttribute('aria-selected', 'true');
-                }
-                if (paneAtelier) {
-                    paneAtelier.style.display = 'block';
-                }
             } else {
                 btnRapport.classList.add('active');
                 btnRapport.setAttribute('aria-selected', 'true');
                 paneRapport.style.display = 'block';
             }
 
-            // Défilement doux vers la zone de travail si on se trouve en contrebas
-            const correctionBox = document.getElementById('correction-box');
-            if (correctionBox) {
-                const boxRect = correctionBox.getBoundingClientRect();
-                if (boxRect.top < 0 || boxRect.top > window.innerHeight) {
-                    correctionBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (shouldScroll) {
+                const correctionBox = document.getElementById('correction-box');
+                if (correctionBox) {
+                    const boxRect = correctionBox.getBoundingClientRect();
+                    if (boxRect.top < 0 || boxRect.top > window.innerHeight) {
+                        correctionBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 }
             }
         }
@@ -6677,35 +6650,43 @@
             if (viewSplit) viewSplit.style.display = (viewType === 'split') ? 'grid' : 'none';
         }
 
-        // Dépliage / repliage d'une note inline sous une phrase
+        // Dépliage / repliage d'une carte de remarque au fil du texte
         function toggleInlineNote(id) {
-            const body = document.getElementById('inline-body-' + id);
-            const lbl = document.getElementById('toggle-lbl-' + id);
-            if (!body) return;
-
-            const isHidden = body.style.display === 'none' || body.style.display === '';
+            const card = document.getElementById('inline-card-' + id);
+            if (!card) return;
+            const isHidden = card.style.display === 'none' || card.style.display === '';
             if (isHidden) {
-                body.style.display = 'block';
-                if (lbl) lbl.innerText = 'Réduire ▴';
+                card.style.display = 'block';
+                const rect = card.getBoundingClientRect();
+                if (rect.bottom > window.innerHeight) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
             } else {
-                body.style.display = 'none';
-                if (lbl) lbl.innerText = 'Déplier ▾';
+                card.style.display = 'none';
+            }
+        }
+
+        // Dépliage / repliage d'une carte d'atelier de réécriture au fil du texte
+        function toggleAtelierInlineCard(id) {
+            const card = document.getElementById('inline-atelier-card-' + id);
+            if (!card) return;
+            const isHidden = card.style.display === 'none' || card.style.display === '';
+            if (isHidden) {
+                card.style.display = 'block';
+                const rect = card.getBoundingClientRect();
+                if (rect.bottom > window.innerHeight) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            } else {
+                card.style.display = 'none';
             }
         }
 
         // Tout déplier ou tout replier dans la copie annotée
         function toggleAllNotes(expand) {
-            const allBodies = document.querySelectorAll('.inline-ann-body');
-            allBodies.forEach(body => {
-                const id = body.id.replace('inline-body-', '');
-                const lbl = document.getElementById('toggle-lbl-' + id);
-                if (expand) {
-                    body.style.display = 'block';
-                    if (lbl) lbl.innerText = 'Réduire ▴';
-                } else {
-                    body.style.display = 'none';
-                    if (lbl) lbl.innerText = 'Déplier ▾';
-                }
+            const allCards = document.querySelectorAll('.inline-annotation-card');
+            allCards.forEach(card => {
+                card.style.display = expand ? 'block' : 'none';
             });
         }
 
@@ -6733,59 +6714,64 @@
                 if (typeKey === 'all' || hl.getAttribute('data-typology-key') === typeKey) {
                     hl.style.opacity = '1';
                 } else {
-                    hl.style.opacity = '0.35';
+                    hl.style.opacity = '0.3';
                 }
             });
         }
 
         function scrollToInlineNote(id) {
-            const card = document.getElementById('inline-card-' + id);
-            const body = document.getElementById('inline-body-' + id);
-            const lbl = document.getElementById('toggle-lbl-' + id);
-            if (card) {
-                const isHidden = !body || body.style.display === 'none' || body.style.display === '';
-                if (isHidden) {
-                    if (body) {
-                        body.style.display = 'block';
-                        if (lbl) lbl.innerText = 'Réduire ▴';
-                    }
-                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    if (body) {
-                        body.style.display = 'none';
-                        if (lbl) lbl.innerText = 'Déplier ▾';
-                    }
-                }
-            }
+            toggleInlineNote(id);
         }
 
         function segmenterEnUnitesDeSens(text) {
             if (!text || typeof text !== 'string') return [];
-            const abbrevRegex = /\b(?:M|Mme|Mlle|cf|éd|ed|op\.?\s*cit|ibid|sq|al|ex|chap|vol|art|p|pp|t|J\.-J|G\.W|I|E)\.$/i;
+            // Regex d'abréviations académiques et initiales d'auteurs (ex. : M. Foucault, cf., op. cit.)
+            const abbrevRegex = /\b(?:M|Mme|Mlle|cf|éd|ed|op\.?\s*cit|ibid|sq|al|ex|chap|vol|art|p|pp|t|ca|i\.?e|e\.?g|etc|[A-ZÀ-ÖØ-ß])\.$/i;
             const units = [];
             let start = 0;
             let inGuillemets = false;
+            let inParenthesis = 0;
+            let inBrackets = 0;
 
             for (let i = 0; i < text.length; i++) {
                 const char = text[i];
                 if (char === '«') inGuillemets = true;
                 else if (char === '»') inGuillemets = false;
+                else if (char === '(') inParenthesis++;
+                else if (char === ')') inParenthesis = Math.max(0, inParenthesis - 1);
+                else if (char === '[') inBrackets++;
+                else if (char === ']') inBrackets = Math.max(0, inBrackets - 1);
 
-                if (!inGuillemets && (char === '.' || char === '?' || char === '!' || char === '…')) {
+                // Ne découper que hors guillemets, parenthèses ou crochets
+                if (!inGuillemets && inParenthesis === 0 && inBrackets === 0 && (char === '.' || char === '?' || char === '!' || char === '…')) {
                     let endPos = i + 1;
                     while (endPos < text.length && (text[endPos] === '»' || text[endPos] === ')' || text[endPos] === ']' || text[endPos] === '"' || text[endPos] === '’' || text[endPos] === '\'')) {
                         endPos++;
                     }
+
                     if (endPos === text.length || /\s/.test(text[endPos])) {
                         const candidate = text.substring(start, endPos).trim();
                         const wordMatch = candidate.match(/\b[A-Za-zÀ-ÖØ-öø-ÿ\.-]+\.$/);
                         if (wordMatch && abbrevRegex.test(wordMatch[0]) && endPos < text.length) {
                             continue;
                         }
+                        // Chiffres de liste ou ordinaux (ex. : 1., 2.)
+                        if (/\b\d+\.$/.test(candidate) && endPos < text.length) {
+                            continue;
+                        }
+
+                        // Vérifier si la suite immédiate commence par une minuscule (continuation de la même phrase)
                         const afterSlice = text.substring(endPos).trim();
                         if (afterSlice.length > 0 && /^[a-zà-öø-ÿ]/.test(afterSlice) && !afterSlice.startsWith('et ') && !afterSlice.startsWith('mais ')) {
                             continue;
                         }
+
+                        // Unité de sens philosophique : agréger les propositions trop courtes (< 75 caractères) avec la phrase suivante
+                        // pour délimiter une véritable unité d'analyse ou de raisonnement philosophique
+                        if (candidate.length < 75 && endPos < text.length) {
+                            continue;
+                        }
+
                         if (candidate.length > 0) {
                             units.push({ start, end: endPos, text: candidate });
                             while (endPos < text.length && /\s/.test(text[endPos])) {
@@ -6799,7 +6785,15 @@
             }
             if (start < text.length) {
                 const rest = text.substring(start).trim();
-                if (rest.length > 0) units.push({ start, end: text.length, text: rest });
+                if (rest.length > 0) {
+                    if (rest.length < 40 && units.length > 0) {
+                        const last = units[units.length - 1];
+                        last.end = text.length;
+                        last.text = text.substring(last.start, text.length).trim();
+                    } else {
+                        units.push({ start, end: text.length, text: rest });
+                    }
+                }
             }
             return units;
         }
@@ -6876,18 +6870,17 @@
                     rafraichirCopieAnnotee(updatedMd, draftText);
 
                     setTimeout(() => {
-                        // Déplier et afficher la dernière carte d'annotation créée
-                        const allCards = document.querySelectorAll('.inline-annotation-card');
-                        if (allCards.length > 0) {
-                            const lastCard = allCards[allCards.length - 1];
-                            const lastCardId = lastCard.id.replace('inline-card-', '');
-                            const lastBody = document.getElementById('inline-body-' + lastCardId);
-                            const lastLbl = document.getElementById('toggle-lbl-' + lastCardId);
-                            if (lastBody) {
-                                lastBody.style.display = 'block';
-                                if (lastLbl) lastLbl.innerText = 'Réduire ▴';
+                        // Trouver et afficher la carte d'annotation correspondant précisément à la proposition analysée
+                        const phraseClean = phrase.toLowerCase().replace(/^[«"“'\s]+|[»"”'\s]+$/g, '').trim();
+                        let targetCard = null;
+                        document.querySelectorAll('.inline-annotation-card').forEach(card => {
+                            if (card.textContent.toLowerCase().includes(phraseClean.substring(0, 35))) {
+                                targetCard = card;
                             }
-                            lastCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        });
+                        if (targetCard) {
+                            targetCard.style.display = 'block';
+                            targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                         }
                     }, 150);
                 } else {
@@ -6901,20 +6894,75 @@
             }
         }
 
-        // Extrait les passages initiaux du candidat signalés dans l'Atelier de réécriture
-        function extrairePassagesAtelier(rawMarkdown) {
+        // Extrait les cas cliniques et réécritures d'excellence de l'Atelier
+        function extraireCasAtelier(rawMarkdown) {
             if (!rawMarkdown || typeof rawMarkdown !== 'string') return [];
-            const passages = [];
-            // Recherche de tous les "Passage initial" ou "Texte initial" dans la section Atelier
-            const patternPassage = /\*\*(?:Passage|Texte)\s+initial(?:\s+du\s+candidat)?\*\*\s*[:*]+\s*([^\n]+)/gi;
+            const cases = [];
+            // Recherche de la section Atelier de réécriture
+            const atelierMatch = rawMarkdown.match(/##\s*(?:4\.?\s*)?(?:🎯\s*)?(?:Atelier\s+de\s+r[ée][ée]criture|PISTES\s+CONCR[ÈE]TES)[^\n]*\n([\s\S]*?)(?=\n##\s*\d|\n##\s*[^#]|$)/i);
+            const atelierText = atelierMatch ? atelierMatch[1] : rawMarkdown;
+
+            const patternCas = /(?:^|\n)###\s*(?:Cas\s*(?:n[°o]\s*)?(\d+)|Mod[ée]lisation[^\n]*)\s*[:\-–—]?\s*([^\n]*)([\s\S]*?)(?=(?:\n###\s*(?:Cas|Mod[ée]lisation|Questions))|$)/gi;
             let m;
-            while ((m = patternPassage.exec(rawMarkdown)) !== null) {
-                const raw = m[1].trim().replace(/^[«\""']\s*/, '').replace(/\s*[»\""']$/, '').trim();
-                if (raw && raw.length >= 8) {
-                    passages.push(raw);
+            let fallbackId = 0;
+            while ((m = patternCas.exec(atelierText)) !== null) {
+                fallbackId++;
+                const id = m[1] ? parseInt(m[1], 10) : fallbackId;
+                const titre = (m[2] || '').trim();
+                const block = m[3] || '';
+
+                let cleanInit = '';
+                let cleanVerrou = '';
+                let cleanRem = '';
+                let cleanGain = '';
+
+                const lines = block.split('\n');
+                let currentField = null;
+
+                for (let line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+
+                    const isInit = /^[*\-\s]*(?:\*\*)?(?:Passage|Texte|Extrait)[^*:]*(?:\*\*)?\s*[:*]+\s*(.*)$/i.exec(trimmed);
+                    const isVerrou = /^[*\-\s]*(?:\*\*)?(?:L['’]impens[ée]|Verrou|Diagnostic)[^*:]*(?:\*\*)?\s*[:*]+\s*(.*)$/i.exec(trimmed);
+                    const isRem = /^[*\-\s]*(?:\*\*)?(?:Version\s+remani[ée]e|R[ée][ée]criture|Mod[ée]lisation)[^*:]*(?:\*\*)?\s*[:*]+\s*(.*)$/i.exec(trimmed);
+                    const isGain = /^[*\-\s]*(?:\*\*)?(?:B[ée]n[ée]fice|Gain|Valeur\s+concours|Ce\s+qui\s+fait)[^*:]*(?:\*\*)?\s*[:*]+\s*(.*)$/i.exec(trimmed);
+
+                    if (isInit) {
+                        currentField = 'init';
+                        cleanInit = isInit[1].trim();
+                    } else if (isVerrou) {
+                        currentField = 'verrou';
+                        cleanVerrou = isVerrou[1].trim();
+                    } else if (isRem) {
+                        currentField = 'rem';
+                        cleanRem = isRem[1].trim();
+                    } else if (isGain) {
+                        currentField = 'gain';
+                        cleanGain = isGain[1].trim();
+                    } else if (currentField) {
+                        if (currentField === 'init') cleanInit += ' ' + trimmed;
+                        else if (currentField === 'verrou') cleanVerrou += ' ' + trimmed;
+                        else if (currentField === 'rem') cleanRem += ' ' + trimmed;
+                        else if (currentField === 'gain') cleanGain += ' ' + trimmed;
+                    }
+                }
+
+                cleanInit = cleanInit.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '').trim();
+                cleanRem = cleanRem.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '').trim();
+
+                if (cleanInit || cleanRem) {
+                    cases.push({
+                        id: id,
+                        titre: titre,
+                        passageInitial: cleanInit,
+                        verrou: cleanVerrou,
+                        remaniee: cleanRem,
+                        gain: cleanGain
+                    });
                 }
             }
-            return passages;
+            return cases;
         }
 
         function rafraichirCopieAnnotee(rawMarkdown, draftText) {
@@ -6923,10 +6971,12 @@
             if (!container) return;
 
             const annotations = extraireAnnotationsChirurgicales(rawMarkdown);
+            const atelierCases = extraireCasAtelier(rawMarkdown);
 
             if (badge) {
-                if (annotations.length > 0) {
-                    badge.innerText = annotations.length;
+                const totalNotes = annotations.length + atelierCases.length;
+                if (totalNotes > 0) {
+                    badge.innerText = totalNotes;
                     badge.style.display = 'inline-flex';
                 } else {
                     badge.style.display = 'none';
@@ -6942,17 +6992,13 @@
                 return;
             }
 
-            if (annotations.length === 0) {
-                // Vérifier s'il y a des passages atelier à afficher malgré tout
-                const passagesAtelierCheck = extrairePassagesAtelier(rawMarkdown);
-                if (passagesAtelierCheck.length === 0) {
-                    container.innerHTML = `
-                        <div style="padding: 30px; text-align: center; color: #64748b; font-style: italic;">
-                            Aucune annotation textuelle chirurgicale détectée dans cette évaluation.
-                        </div>
-                    `;
-                    return;
-                }
+            if (annotations.length === 0 && atelierCases.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 30px; text-align: center; color: #64748b; font-style: italic;">
+                        Aucune annotation textuelle chirurgicale détectée dans cette évaluation.
+                    </div>
+                `;
+                return;
             }
 
             // Recherche de chaque extrait dans le texte du candidat
@@ -6970,22 +7016,24 @@
             });
 
             // Ajout des passages initiaux de l'Atelier de réécriture
-            const passagesAtelier = extrairePassagesAtelier(rawMarkdown);
-            passagesAtelier.forEach((passage, idx) => {
-                const loc = findTextOccurrences(draftText, passage);
-                if (loc) {
-                    intervals.push({
-                        start: loc.start,
-                        end: loc.end,
-                        ann: { id: 'a' + idx, extrait: passage, typologie: 'atelier', observation: '', conseil: '', regle: '', eclairage: '' },
-                        isAtelier: true
-                    });
+            atelierCases.forEach(cas => {
+                if (cas.passageInitial) {
+                    const loc = findTextOccurrences(draftText, cas.passageInitial);
+                    if (loc) {
+                        intervals.push({
+                            start: loc.start,
+                            end: loc.end,
+                            cas: cas,
+                            ann: { id: 'a' + cas.id, extrait: cas.passageInitial, typologie: 'atelier' },
+                            isAtelier: true
+                        });
+                    }
                 }
             });
 
             intervals.sort((a, b) => a.start - b.start);
 
-            // Filtrage des chevauchements éventuels (priorité aux annotations sur les passages atelier)
+            // Filtrage des chevauchements éventuels (priorité aux annotations sur les cas d'atelier)
             const cleanIntervals = [];
             let maxEnd = -1;
             // Passe 1 : annotations normales
@@ -6996,7 +7044,7 @@
                     maxEnd = it.end;
                 }
             });
-            // Passe 2 : passages atelier (seulement si non chevauchés par une annotation)
+            // Passe 2 : passages d'atelier (seulement si non chevauchés par une annotation)
             const usedRanges = cleanIntervals.map(it => ({ s: it.start, e: it.end }));
             intervals.filter(it => it.isAtelier).forEach(it => {
                 const overlaps = usedRanges.some(r => it.start < r.e && it.end > r.s);
@@ -7008,7 +7056,7 @@
             cleanIntervals.sort((a, b) => a.start - b.start);
 
             // Comptage par typologie pour la barre de filtres
-            const counts = { all: annotations.length, conceptuel: 0, logique: 0, reference: 0, style: 0, etincelle: 0 };
+            const counts = { all: annotations.length + atelierCases.length, conceptuel: 0, logique: 0, reference: 0, style: 0, etincelle: 0, atelier: atelierCases.length };
             annotations.forEach(ann => {
                 const info = getTypologieInfo(ann.typologie);
                 if (info.key && counts[info.key] !== undefined) {
@@ -7023,8 +7071,11 @@
                 if (it.start > cursor) {
                     segList.push({ type: 'text', content: draftText.substring(cursor, it.start) });
                 }
-                segList.push({ type: 'highlight', content: draftText.substring(it.start, it.end), ann: it.ann, isAtelier: it.isAtelier });
-                if (!it.isAtelier) {
+                if (it.isAtelier) {
+                    segList.push({ type: 'highlight', content: draftText.substring(it.start, it.end), cas: it.cas, isAtelier: true });
+                    segList.push({ type: 'atelier_card', cas: it.cas });
+                } else {
+                    segList.push({ type: 'highlight', content: draftText.substring(it.start, it.end), ann: it.ann, isAtelier: false });
                     segList.push({ type: 'card', ann: it.ann });
                 }
                 cursor = it.end;
@@ -7092,10 +7143,10 @@
                 } else if (item.type === 'highlight') {
                     const cleanEscaped = formatProse(item.content);
                     if (item.isAtelier) {
-                        curP.push(`<mark class="copie-highlight highlight-atelier" data-typology-key="atelier" onclick="switchCorrectionTab('atelier'); return false;" title="✏️ Passage identifié dans l'Atelier de réécriture — cliquer pour ouvrir l'atelier">${cleanEscaped}<span class="inline-atelier-tag">✏️ Atelier</span></mark>`);
+                        curP.push(`<mark class="copie-highlight highlight-atelier" id="mark-atelier-${item.cas.id}" data-typology-key="atelier" onclick="toggleAtelierInlineCard(${item.cas.id})" title="🎯 Atelier de réécriture — Cas n° ${item.cas.id} : cliquez pour afficher la modélisation rédigée d'excellence">${cleanEscaped}<span class="inline-atelier-tag">🎯 Réécriture d'excellence</span></mark>`);
                     } else {
                         const info = getTypologieInfo(item.ann.typologie);
-                        curP.push(`<mark class="copie-highlight ${info.cls}" id="mark-ann-${item.ann.id}" data-typology-key="${info.key}" onclick="scrollToInlineNote(${item.ann.id})" title="[#${item.ann.id}] ${escapeHtml(info.label)} : cliquez pour afficher ou masquer la remarque">${cleanEscaped}<span class="ann-badge-pill">${item.ann.id}</span></mark>`);
+                        curP.push(`<mark class="copie-highlight ${info.cls}" id="mark-ann-${item.ann.id}" data-typology-key="${info.key}" onclick="toggleInlineNote(${item.ann.id})" title="[#${item.ann.id}] ${escapeHtml(info.label)} : cliquez pour afficher ou masquer la remarque">${cleanEscaped}<span class="ann-badge-pill">${item.ann.id}</span></mark>`);
                     }
                 } else if (item.type === 'card') {
                     const pText = curP.join('').trim();
@@ -7111,21 +7162,67 @@
                     const eclairageText = ann.eclairage ? formatAfterColon(ann.eclairage) : '';
 
                     blocks.push(`
-                        <div class="inline-annotation-card ${info.cardCls}" id="inline-card-${ann.id}" data-typology-key="${info.key}">
+                        <div class="inline-annotation-card ${info.cardCls}" id="inline-card-${ann.id}" data-typology-key="${info.key}" style="display:none;">
                             <div class="inline-ann-header" onclick="toggleInlineNote(${ann.id})">
                                 <div class="inline-ann-title">
                                     <span class="inline-ann-badge">${info.icon} ${escapeHtml(info.label)}</span>
                                     <span class="inline-ann-num">Remarque n° ${ann.id}</span>
                                 </div>
                                 <div class="inline-ann-action">
-                                    <span class="inline-ann-toggle-btn" id="toggle-lbl-${ann.id}">Déplier ▾</span>
+                                    <button type="button" class="btn-replier-card" onclick="event.stopPropagation(); toggleInlineNote(${ann.id})">Replier ✕</button>
                                 </div>
                             </div>
-                            <div class="inline-ann-body" id="inline-body-${ann.id}" style="display:none;">
+                            <div class="inline-ann-body" id="inline-body-${ann.id}">
                                 ${diagText ? `<div class="inline-ann-diag"><strong>Diagnostic :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(diagText) : escapeHtml(diagText)}</div>` : ''}
                                 ${conseilText ? `<div class="inline-ann-conseil"><strong>Conseil du jury :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(conseilText) : escapeHtml(conseilText)}</div>` : ''}
                                 ${regleText ? `<div class="inline-ann-regle"><strong>🤫 Règle implicite :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(regleText) : escapeHtml(regleText)}</div>` : ''}
                                 ${eclairageText ? `<div class="inline-ann-eclairage"><strong>📜 Éclairage du jury :</strong> « ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(eclairageText.replace(/^[«\"\"']\s*/, '').replace(/\s*[»\"\"']$/, '')) : escapeHtml(eclairageText.replace(/^[«\"\"']\s*/, '').replace(/\s*[»\"\"']$/, ''))} »</div>` : ''}
+                            </div>
+                        </div>
+                    `);
+                } else if (item.type === 'atelier_card') {
+                    const pText = curP.join('').trim();
+                    if (pText) blocks.push(`<p class="${isContinuation ? 'copie-p-continuation' : ''}">${pText}</p>`);
+                    curP = [];
+                    isContinuation = true;
+
+                    const cas = item.cas;
+                    blocks.push(`
+                        <div class="inline-annotation-card type-atelier" id="inline-atelier-card-${cas.id}" data-typology-key="atelier" style="display:none;">
+                            <div class="inline-ann-header" onclick="toggleAtelierInlineCard(${cas.id})">
+                                <div class="inline-ann-title">
+                                    <span class="inline-ann-badge">🎯 Réécriture d'excellence</span>
+                                    <span class="inline-ann-num">Cas n° ${cas.id}${cas.titre ? ' : ' + escapeHtml(cas.titre) : ''}</span>
+                                </div>
+                                <div class="inline-ann-action">
+                                    <button type="button" class="btn-replier-card" onclick="event.stopPropagation(); toggleAtelierInlineCard(${cas.id})">Replier ✕</button>
+                                </div>
+                            </div>
+                            <div class="inline-ann-body" id="inline-atelier-body-${cas.id}">
+                                ${cas.passageInitial ? `
+                                    <div class="atelier-block-init" style="margin-bottom: 10px;">
+                                        <div style="font-weight: 700; color: #b91c1c; font-size: 12px; margin-bottom: 4px;">❌ Extrait initial du devoir</div>
+                                        <div style="background: #fef2f2; border-left: 3px solid #ef4444; padding: 8px 12px; border-radius: 4px; font-style: italic; color: #7f1d1d;">« ${escapeHtml(cas.passageInitial)} »</div>
+                                    </div>
+                                ` : ''}
+                                ${cas.verrou ? `
+                                    <div class="atelier-block-verrou" style="margin-bottom: 10px;">
+                                        <div style="font-weight: 700; color: #92400e; font-size: 12px; margin-bottom: 4px;">🔒 Impensé ou verrou conceptuel</div>
+                                        <div style="background: #fffbeb; border-left: 3px solid #f59e0b; padding: 8px 12px; border-radius: 4px; color: #78350f;">${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(cas.verrou) : escapeHtml(cas.verrou)}</div>
+                                    </div>
+                                ` : ''}
+                                ${cas.remaniee ? `
+                                    <div class="atelier-block-remaniee" style="margin-bottom: 10px;">
+                                        <div style="font-weight: 700; color: #166534; font-size: 12px; margin-bottom: 4px;">✨ Modélisation rédigée d'excellence (Agrégation / Capes)</div>
+                                        <div style="background: #f0fdf4; border-left: 3px solid #22c55e; padding: 10px 14px; border-radius: 4px; color: #14532d; line-height: 1.6;">${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(cas.remaniee) : escapeHtml(cas.remaniee)}</div>
+                                    </div>
+                                ` : ''}
+                                ${cas.gain ? `
+                                    <div class="atelier-gain-footer" style="margin-top: 10px; background: #eff6ff; border-left: 3px solid #3b82f6; padding: 8px 12px; border-radius: 4px;">
+                                        <div style="font-weight: 700; color: #1e40af; font-size: 12px; margin-bottom: 2px;">🏛️ Bénéfice philosophique obtenu</div>
+                                        <div style="color: #1e3a8a; font-size: 12px;">${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(cas.gain) : escapeHtml(cas.gain)}</div>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `);
@@ -7139,7 +7236,7 @@
             const toolbarHtml = `
                 <div class="copie-annotee-toolbar">
                     <div class="copie-toolbar-left" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
-                        <span class="copie-toolbar-counter">📝 Copie annotée : ${annotations.length} remarques de jury au fil du texte</span>
+                        <span class="copie-toolbar-counter">📝 Copie annotée : ${annotations.length} remarques de jury ${atelierCases.length > 0 ? 'et ' + atelierCases.length + ' réécritures d\'excellence ' : ''}au fil du texte</span>
                         <span style="font-size: 12px; color: #64748b;">💡 Cliquez sur n'importe quelle proposition non annotée pour déclencher son analyse chirurgicale à la demande.</span>
                     </div>
                     <div class="copie-toolbar-actions">
@@ -7149,6 +7246,7 @@
                 </div>
                 <div class="copie-filter-bar">
                     <button type="button" class="copie-filter-chip active" data-filter="all" onclick="filterAnnotations('all')">Toutes (${counts.all})</button>
+                    ${counts.atelier > 0 ? `<button type="button" class="copie-filter-chip" data-filter="atelier" onclick="filterAnnotations('atelier')">🎯 Réécritures (${counts.atelier})</button>` : ''}
                     ${counts.conceptuel > 0 ? `<button type="button" class="copie-filter-chip" data-filter="conceptuel" onclick="filterAnnotations('conceptuel')">⚠️ Glissements (${counts.conceptuel})</button>` : ''}
                     ${counts.logique > 0 ? `<button type="button" class="copie-filter-chip" data-filter="logique" onclick="filterAnnotations('logique')">⚡ Ruptures (${counts.logique})</button>` : ''}
                     ${counts.reference > 0 ? `<button type="button" class="copie-filter-chip" data-filter="reference" onclick="filterAnnotations('reference')">📚 Références (${counts.reference})</button>` : ''}
@@ -7316,8 +7414,15 @@
         }
 
         function scrollToElement(id) {
-            if (!id) return;
-            const el = document.getElementById(id);
+            if (!id) return false;
+            let el = document.getElementById(id);
+            // Fallbacks robustes si l'identifiant n'est pas trouvé directement
+            if (!el && id === 'sec-regles-implicites') {
+                el = document.querySelector('.regles-implicites-box') || Array.from(document.querySelectorAll('h2')).find(h => /R[èe]gles\s+implicites/i.test(h.textContent));
+            }
+            if (!el && id === 'sec-analyse-personnalisee') {
+                el = document.querySelector('.global-eval-dashboard') || Array.from(document.querySelectorAll('h2')).find(h => /Analyse\s+personnalis/i.test(h.textContent));
+            }
             if (el) {
                 const yOffset = -20;
                 const elementPosition = el.getBoundingClientRect().top;
@@ -7326,7 +7431,9 @@
                     top: offsetPosition,
                     behavior: 'smooth'
                 });
+                return true;
             }
+            return false;
         }
 
         // Mise à jour dynamique de la barre de navigation rapide flottante (Desktop & Mobile)
@@ -7351,9 +7458,9 @@
             // Pastilles de navigation entre sections du rapport (toujours visibles si correction disponible)
             const correctionBox = document.getElementById('correction-box');
             if (correctionBox && correctionBox.style.display !== 'none') {
-                html += `<button type="button" class="quicknav-btn" data-tooltip="Rapport d'évaluation" onclick="switchCorrectionTab('rapport'); scrollToElement('correction-box'); return false;">🏛️</button>`;
-                html += `<button type="button" class="quicknav-btn" data-tooltip="Règles implicites du concours" onclick="switchCorrectionTab('rapport'); setTimeout(()=>{ scrollToElement('sec-regles-implicites') || scrollToElement('correction-box'); }, 30); return false;">🤫</button>`;
-                html += `<button type="button" class="quicknav-btn" data-tooltip="Analyse personnalisée du travail" onclick="switchCorrectionTab('rapport'); setTimeout(()=>{ scrollToElement('sec-analyse-personnalisee') || scrollToElement('correction-box'); }, 30); return false;">🔍</button>`;
+                html += `<button type="button" class="quicknav-btn" data-tooltip="Rapport d'évaluation" onclick="switchCorrectionTab('rapport', false); scrollToElement('correction-box'); return false;">🏛️</button>`;
+                html += `<button type="button" class="quicknav-btn" data-tooltip="Règles implicites du concours" onclick="switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-regles-implicites') || scrollToElement('correction-box'); }, 50); return false;">🤫</button>`;
+                html += `<button type="button" class="quicknav-btn" data-tooltip="Analyse personnalisée du travail" onclick="switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-analyse-personnalisee') || scrollToElement('correction-box'); }, 50); return false;">🔍</button>`;
             }
 
             const validSections = Array.isArray(sectionsList) ? sectionsList.filter(s => s && typeof s.score === 'number') : [];
@@ -7392,7 +7499,7 @@
                 const targetId = chip.getAttribute('data-target') || chip.getAttribute('href')?.replace('#', '') || (chip.classList.contains('global-score-badge') ? 'correction-box' : null);
                 if (targetId) {
                     if (targetId !== 'training-section-container' && targetId !== 'texte-philo-container') {
-                        switchCorrectionTab('rapport');
+                        switchCorrectionTab('rapport', false);
                     }
                     scrollToElement(targetId);
                 }
@@ -8628,7 +8735,6 @@
             }
             let savedCorrectionObj = stored.correction;
             let savedCorrection = null;
-            let savedAtelierHtml = '';
             if (savedCorrectionObj && savedCorrectionObj.html && sujetActif !== '') {
                 const normSavedSujet = savedCorrectionObj.sujet ? getSubjectStorageKey(state.exerciseType, state.mode, savedCorrectionObj.sujet) : currentSubjectKey;
                 if (normSavedSujet === currentSubjectKey) {
@@ -8636,13 +8742,9 @@
                         const currentDraftBySection = extraireTexteParSection(currentText);
                         const reTransformed = transformerRenduCorrection(marked.parse(normaliserMarkdownCorrection(savedCorrectionObj.rawMarkdown)), savedCorrectionObj, currentDraftBySection);
                         savedCorrection = reTransformed.html;
-                        savedAtelierHtml = reTransformed.atelierHtml;
                         savedCorrectionObj.html = reTransformed.html;
                         savedCorrectionObj.atelierHtml = reTransformed.atelierHtml;
                         savedCorrectionObj.atelierCasCount = reTransformed.casCount;
-                    } else if (savedCorrectionObj.atelierHtml) {
-                        savedCorrection = savedCorrectionObj.html;
-                        savedAtelierHtml = savedCorrectionObj.atelierHtml;
                     } else {
                         savedCorrection = savedCorrectionObj.html;
                     }
@@ -8822,9 +8924,6 @@
                                 <button id="tab-btn-copie" type="button" class="correction-tab-btn" role="tab" aria-selected="false" onclick="switchCorrectionTab('copie')">
                                     📝 Copie annotée <span id="badge-nb-annotations" class="badge-annotations-count" style="display: none;">0</span>
                                 </button>
-                                <button id="tab-btn-atelier" type="button" class="correction-tab-btn" role="tab" aria-selected="false" onclick="switchCorrectionTab('atelier')">
-                                    🎯 Atelier de réécriture <span id="badge-nb-atelier" class="badge-annotations-count badge-atelier-count" style="display: none;">0</span>
-                                </button>
                             </div>
 
                             <!-- Volet 1 : Rapport d'évaluation complet -->
@@ -8835,11 +8934,6 @@
                             <!-- Volet 2 : Copie annotée et notes de marge -->
                             <div id="pane-copie-annotee" class="correction-tab-pane" role="tabpanel" style="display: none;">
                                 <div id="copie-annotee-container"></div>
-                            </div>
-
-                            <!-- Volet 3 : Atelier de réécriture comparative -->
-                            <div id="pane-atelier-reecriture" class="correction-tab-pane" role="tabpanel" style="display: none;">
-                                <div id="atelier-reecriture-container">${savedAtelierHtml || ''}</div>
                             </div>
                         </div>
                     </div>
@@ -8859,25 +8953,12 @@
 
             area.innerHTML = workspaceHtml;
 
-            // Si une correction sauvegardée est présente, restaurer également la vue Copie annotée et l'Atelier
+            // Si une correction sauvegardée est présente, restaurer également la vue Copie annotée
             if (savedCorrection && savedCorrectionObj) {
                 const rawMd = savedCorrectionObj.rawMarkdown || '';
                 const storedEntry = prof.subjectsData[getSubjectStorageKey(state.exerciseType, state.mode, sujetActif)];
                 const draft = savedCorrectionObj.draftText || (storedEntry ? storedEntry.workingDraft : '') || currentText;
                 rafraichirCopieAnnotee(rawMd, draft);
-
-                const atelierBadge = document.getElementById('badge-nb-atelier');
-                if (atelierBadge) {
-                    const casCount = (typeof savedCorrectionObj.atelierCasCount === 'number')
-                        ? savedCorrectionObj.atelierCasCount
-                        : (savedAtelierHtml ? (savedAtelierHtml.match(/class="atelier-case-card"/g) || []).length : 0);
-                    if (casCount > 0) {
-                        atelierBadge.innerText = `${casCount} cas`;
-                        atelierBadge.style.display = 'inline-flex';
-                    } else {
-                        atelierBadge.style.display = 'none';
-                    }
-                }
             }
 
             // Synchroniser la barre flottante de navigation rapide et le dock de profils/crans
@@ -9021,14 +9102,10 @@
                 const decoder = new TextDecoder("utf-8");
 
                 document.getElementById("correction-text").innerHTML = "";
-                const containerAtelierInit = document.getElementById("atelier-reecriture-container");
-                if (containerAtelierInit) containerAtelierInit.innerHTML = "";
                 document.getElementById("correction-box").style.display = "block";
                 switchCorrectionTab('rapport');
                 const badgeInit = document.getElementById("badge-nb-annotations");
                 if (badgeInit) badgeInit.style.display = "none";
-                const badgeAtelierInit = document.getElementById("badge-nb-atelier");
-                if (badgeAtelierInit) badgeAtelierInit.style.display = "none";
                 const containerInit = document.getElementById("copie-annotee-container");
                 if (containerInit) containerInit.innerHTML = "";
 
@@ -9050,10 +9127,6 @@
                         const intermediateHtml = marked.parse(normaliserMarkdownCorrection(texteCumule));
                         const intermediateTransformed = transformerRenduCorrection(intermediateHtml, savedCorrectionObj, currentDraftBySection);
                         document.getElementById("correction-text").innerHTML = intermediateTransformed.html;
-                        const streamAtelierContainer = document.getElementById("atelier-reecriture-container");
-                        if (streamAtelierContainer && intermediateTransformed.atelierHtml) {
-                            streamAtelierContainer.innerHTML = intermediateTransformed.atelierHtml;
-                        }
                         updateFloatingQuickNav(intermediateTransformed.sections, intermediateTransformed.globalScore);
 
                         // Mise à jour progressive du badge d'annotations pendant le streaming
@@ -9067,48 +9140,19 @@
                                 streamingBadge.style.display = "none";
                             }
                         }
-
-                        // Mise à jour progressive du badge d'atelier pendant le streaming
-                        const streamingAtelierBadge = document.getElementById("badge-nb-atelier");
-                        if (streamingAtelierBadge) {
-                            if (intermediateTransformed.casCount > 0) {
-                                streamingAtelierBadge.innerText = `${intermediateTransformed.casCount} cas`;
-                                streamingAtelierBadge.style.display = "inline-flex";
-                            } else {
-                                streamingAtelierBadge.style.display = "none";
-                            }
-                        }
                     }
                 } catch (streamError) {
                     texteCumule += "\n\n[Erreur de connexion : le flux a été interrompu par le réseau. Veuillez réessayer si la correction est incomplète.]";
                     const errHtml = marked.parse(normaliserMarkdownCorrection(texteCumule));
                     const errTransformed = transformerRenduCorrection(errHtml, savedCorrectionObj, currentDraftBySection);
                     document.getElementById("correction-text").innerHTML = errTransformed.html;
-                    const errAtelierContainer = document.getElementById("atelier-reecriture-container");
-                    if (errAtelierContainer && errTransformed.atelierHtml) {
-                        errAtelierContainer.innerHTML = errTransformed.atelierHtml;
-                    }
                     updateFloatingQuickNav(errTransformed.sections, errTransformed.globalScore);
                 }
 
                 const correctionHtmlFinale = marked.parse(normaliserMarkdownCorrection(texteCumule));
                 const transformedFinal = transformerRenduCorrection(correctionHtmlFinale, savedCorrectionObj, currentDraftBySection);
                 document.getElementById("correction-text").innerHTML = transformedFinal.html;
-                const finalAtelierContainer = document.getElementById("atelier-reecriture-container");
-                if (finalAtelierContainer && transformedFinal.atelierHtml) {
-                    finalAtelierContainer.innerHTML = transformedFinal.atelierHtml;
-                }
                 updateFloatingQuickNav(transformedFinal.sections, transformedFinal.globalScore);
-
-                const finalAtelierBadge = document.getElementById("badge-nb-atelier");
-                if (finalAtelierBadge) {
-                    if (transformedFinal.casCount > 0) {
-                        finalAtelierBadge.innerText = `${transformedFinal.casCount} cas`;
-                        finalAtelierBadge.style.display = "inline-flex";
-                    } else {
-                        finalAtelierBadge.style.display = "none";
-                    }
-                }
 
                 // Reconstitution finale complète de la copie annotée
                 rafraichirCopieAnnotee(texteCumule, trainingText);
