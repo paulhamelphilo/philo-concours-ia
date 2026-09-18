@@ -2183,6 +2183,16 @@
             to { background-color: #fde68a; }
         }
 
+        @keyframes pulseHighlightNew {
+            0% { outline: 3px solid #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
+            50% { outline: 3px solid #2563eb; box-shadow: 0 0 18px rgba(37, 99, 235, 0.7); }
+            100% { outline: none; box-shadow: none; }
+        }
+
+        .pulse-highlight-new {
+            animation: pulseHighlightNew 2s ease-out;
+        }
+
         /* Surlignage passage atelier de réécriture */
         .copie-highlight.highlight-atelier {
             background-color: rgba(20, 184, 166, 0.15);
@@ -6477,6 +6487,17 @@
                 btnCopie.classList.add('active');
                 btnCopie.setAttribute('aria-selected', 'true');
                 paneCopie.style.display = 'block';
+
+                // Si le conteneur est encore vide pendant un streaming ou après un chargement, l'actualiser immédiatement
+                const container = document.getElementById('copie-annotee-container');
+                if (container && (!container.children || container.children.length === 0)) {
+                    const rawMd = state.streamingTexteCumule || (typeof texteCumule !== 'undefined' ? texteCumule : '');
+                    const txtArea = document.getElementById('training-textarea');
+                    const draft = txtArea ? txtArea.value : '';
+                    if (rawMd && draft) {
+                        rafraichirCopieAnnotee(rawMd, draft);
+                    }
+                }
             } else {
                 btnRapport.classList.add('active');
                 btnRapport.setAttribute('aria-selected', 'true');
@@ -6498,33 +6519,49 @@
             if (!md || typeof md !== 'string') return [];
             const annotations = [];
 
-            // Détection de chaque bloc d'annotation sous la section 2
-            const pattern = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait(?:\s+exact)?\*\*[ \t]*:[ \t]*([^\n]+)([\s\S]*?)(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait|\n##\s*\d|\n---|$)/gi;
+            // Détection robuste de chaque bloc d'annotation chirurgicale
+            const blockPattern = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait(?:\s+exact)?\*\*[ \t]*:[ \t]*([\s\S]*?)(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait|\n##|\n---|$)/gi;
             let match;
             let count = 0;
+            const fieldEnd = '(?=\\n[ \\t]*(?:[-*•]|\\d+\\.)?[ \\t]*\\*\\*|$)';
 
-            while ((match = pattern.exec(md)) !== null) {
+            while ((match = blockPattern.exec(md)) !== null) {
                 count++;
-                const rawExtrait = match[1].replace(/^[«"“'\s]+|[»"”'\s]+$/g, '').trim();
-                const blockRest = match[2] || '';
+                const blockContent = match[1];
 
-                const mTypo = blockRest.match(/\*\*Typologie\*\*[ \t]*:[ \t]*([^\n]+)/i);
-                const mObs = blockRest.match(/\*\*Observation(?:\s+du\s+jury)?\*\*[ \t]*:[ \t]*([^\n]+)/i);
-                const mConseil = blockRest.match(/\*\*Conseil(?:\s+imm[ée]diat)?\*\*[ \t]*:[ \t]*([^\n]+)/i);
-                const mRegle = blockRest.match(/\*\*(?:R[èe]gle\s+implicite(?:\s+ou\s+code\s+tacite)?|Code\s+tacite)\*\*[ \t]*:[ \t]*([^\n]+)/i);
-                const mEclairage = blockRest.match(/\*\*(?:[ÉEe]clairage(?:\s+ou\s+extrait)?(?:\s+du\s+jury)?|Extrait\s+du\s+jury|Rapport\s+du\s+jury)\*\*[ \t]*:[ \t]*([^\n]+)/i);
+                // L'extrait est tout ce qui se trouve entre le début du bloc et le champ suivant (**Typologie, **Observation, etc.)
+                const mField = blockContent.match(/([\s\S]*?)(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*(?:Typologie|Observation|Conseil|R[èe]gle|Code|[ÉEe]clairage))/i);
+                const rawExtrait = mField ? mField[1] : blockContent;
+                const blockRest = mField ? blockContent.substring(rawExtrait.length) : '';
 
-                let cleanExtrait = rawExtrait.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '');
+                let cleanExtrait = rawExtrait.replace(/^[«"“'\s]+|[»"”'\s]+$/g, '').trim();
+                // Remplacement des sauts de ligne internes éventuels insérés par le modèle au sein d'une proposition
+                cleanExtrait = cleanExtrait.replace(/\r?\n\s*/g, ' ').trim();
+
+                function extractField(regexPrefix) {
+                    const pat = new RegExp(regexPrefix + '[ \\t]*:[ \\t]*([\\s\\S]*?)' + fieldEnd, 'i');
+                    const fm = blockRest.match(pat);
+                    if (fm) {
+                        return fm[1].replace(/\r?\n\s*/g, ' ').trim();
+                    }
+                    return '';
+                }
+
+                const mTypo = extractField('\\*\\*Typologie\\*\\*') || 'Glissement conceptuel';
+                const mObs = extractField('\\*\\*Observation(?:\\s+du\\s+jury)?\\*\\*');
+                const mConseil = extractField('\\*\\*Conseil(?:\\s+imm[ée]diat)?\\*\\*');
+                const mRegle = extractField('\\*\\*(?:R[èe]gle\\s+implicite(?:\\s+ou\\s+code\\s+tacite)?|Code\\s+tacite)\\*\\*');
+                const mEclairage = extractField('\\*\\*(?:[ÉEe]clairage(?:\\s+ou\\s+extrait)?(?:\\s+du\\s+jury)?|Extrait\\s+du\\s+jury|Rapport\\s+du\\s+jury)\\*\\*');
 
                 if (cleanExtrait) {
                     annotations.push({
                         id: count,
                         extrait: cleanExtrait,
-                        typologie: mTypo ? mTypo[1].trim() : 'Glissement conceptuel',
-                        observation: mObs ? mObs[1].trim() : '',
-                        conseil: mConseil ? mConseil[1].trim() : '',
-                        regle: mRegle ? mRegle[1].trim() : '',
-                        eclairage: mEclairage ? mEclairage[1].trim() : ''
+                        typologie: mTypo,
+                        observation: mObs,
+                        conseil: mConseil,
+                        regle: mRegle,
+                        eclairage: mEclairage
                     });
                 }
             }
@@ -6593,15 +6630,33 @@
             if (!cleanPhrase) return null;
 
             // 1. Recherche exacte
-            let idx = fullText.indexOf(cleanPhrase);
+            const idx = fullText.indexOf(cleanPhrase);
             if (idx !== -1) {
                 return { start: idx, end: idx + cleanPhrase.length };
             }
 
-            // 2. Recherche insensible à la casse et souple sur les espaces
+            // Construction d'un pattern de mot flexible (tolérance aux apostrophes courbes ' / ’, guillemets « » / " et ponctuations)
+            function escapeWordFlexible(word) {
+                const chars = [];
+                for (let i = 0; i < word.length; i++) {
+                    const ch = word[i];
+                    if (ch === "'" || ch === '’' || ch === '‘') {
+                        chars.push("['’‘]");
+                    } else if (ch === '"' || ch === '«' || ch === '»' || ch === '“' || ch === '”') {
+                        chars.push('["«»“”]');
+                    } else if (/[.*+?^${}()|[\]\\]/.test(ch)) {
+                        chars.push('\\' + ch);
+                    } else {
+                        chars.push(ch);
+                    }
+                }
+                return chars.join('');
+            }
+
+            // 2. Recherche par regex insensible à la casse et souple sur la typographie et les espaces
             const words = cleanPhrase.split(/\s+/).filter(w => w.length > 0);
             if (words.length > 0) {
-                const regexStr = words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+');
+                const regexStr = words.map(escapeWordFlexible).join('\\s+');
                 try {
                     const reg = new RegExp(regexStr, 'i');
                     const match = reg.exec(fullText);
@@ -6611,10 +6666,31 @@
                 } catch (e) {}
             }
 
-            // 3. Correspondance de préfixe pour citations longues
+            // 3. Correspondance d'ancrage Début + Fin (Préfixe + Suffixe) pour citations longues
+            // Garantit que l'intégralité de la proposition est couverte sans coupure au milieu
+            if (words.length >= 6) {
+                const prefixWords = words.slice(0, 3);
+                const suffixWords = words.slice(-3);
+                const prefixRegex = prefixWords.map(escapeWordFlexible).join('\\s+');
+                const suffixRegex = suffixWords.map(escapeWordFlexible).join('\\s+');
+                try {
+                    const regPref = new RegExp(prefixRegex, 'i');
+                    const mPref = regPref.exec(fullText);
+                    if (mPref) {
+                        const remainingText = fullText.substring(mPref.index);
+                        const regSuff = new RegExp(suffixRegex, 'i');
+                        const mSuff = regSuff.exec(remainingText);
+                        if (mSuff && (mSuff.index + mSuff[0].length) >= mPref[0].length) {
+                            return { start: mPref.index, end: mPref.index + mSuff.index + mSuff[0].length };
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            // 4. Repli préfixe pour citations modifiées en terminaison
             if (words.length >= 4) {
                 const prefixWords = words.slice(0, 4);
-                const prefixRegexStr = prefixWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('\\s+');
+                const prefixRegexStr = prefixWords.map(escapeWordFlexible).join('\\s+');
                 try {
                     const reg = new RegExp(prefixRegexStr, 'i');
                     const match = reg.exec(fullText);
@@ -6840,6 +6916,15 @@
 
                 const data = await response.json();
                 if (data && data.success && data.markdown) {
+                    // Normalisation de l'extrait exact pour garantir qu'il correspond mot à mot à la proposition intégrale sélectionnée
+                    let cleanMicroMd = data.markdown.trim();
+                    const extraitRegex = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait(?:\s+exact)?\*\*[ \t]*:[ \t]*[\s\S]*?(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*(?:Typologie|Observation|Conseil|R[èe]gle|Code|[ÉEe]clairage)|\n##|\n---|$)/i;
+                    if (extraitRegex.test(cleanMicroMd)) {
+                        cleanMicroMd = cleanMicroMd.replace(extraitRegex, `\n- **Extrait exact** : « ${phrase.trim()} »\n`);
+                    } else {
+                        cleanMicroMd = `- **Extrait exact** : « ${phrase.trim()} »\n` + cleanMicroMd;
+                    }
+
                     // Récupération robuste via getSubjectStoredDraftAndCorrection pour gérer les crans actifs
                     const stored = getSubjectStoredDraftAndCorrection(state.exerciseType, state.mode, sujetActif);
                     let currentRawMd = (stored.correction && stored.correction.rawMarkdown) ? stored.correction.rawMarkdown : '';
@@ -6849,7 +6934,7 @@
                         if (txtArea) draftText = txtArea.value;
                     }
 
-                    const updatedMd = currentRawMd.trim() + '\n\n' + data.markdown.trim() + '\n';
+                    const updatedMd = currentRawMd.trim() + '\n\n' + cleanMicroMd + '\n';
 
                     // Persister dans le bon emplacement (correction du cran actif ou entrée directe)
                     const prof = getActiveProfile();
@@ -6871,16 +6956,43 @@
 
                     setTimeout(() => {
                         // Trouver et afficher la carte d'annotation correspondant précisément à la proposition analysée
-                        const phraseClean = phrase.toLowerCase().replace(/^[«"“'\s]+|[»"”'\s]+$/g, '').trim();
+                        const phraseClean = phrase.trim();
                         let targetCard = null;
+                        let targetMark = null;
+
+                        // 1. Recherche par attribut data-extrait
                         document.querySelectorAll('.inline-annotation-card').forEach(card => {
-                            if (card.textContent.toLowerCase().includes(phraseClean.substring(0, 35))) {
+                            const ext = card.getAttribute('data-extrait') || '';
+                            if (ext && (ext === phraseClean || ext.includes(phraseClean.substring(0, 35)) || phraseClean.includes(ext.substring(0, 35)))) {
                                 targetCard = card;
                             }
                         });
+
+                        // 2. Recherche de la marque surlignée correspondante
+                        if (targetCard) {
+                            const annId = targetCard.getAttribute('data-annotation-id');
+                            if (annId) {
+                                targetMark = document.getElementById('mark-ann-' + annId);
+                            }
+                        } else {
+                            // Repli sur la dernière carte de remarque créée
+                            const allCards = document.querySelectorAll('.inline-annotation-card:not(.type-atelier)');
+                            if (allCards.length > 0) {
+                                targetCard = allCards[allCards.length - 1];
+                                const annId = targetCard.getAttribute('data-annotation-id');
+                                if (annId) {
+                                    targetMark = document.getElementById('mark-ann-' + annId);
+                                }
+                            }
+                        }
+
                         if (targetCard) {
                             targetCard.style.display = 'block';
                             targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }
+                        if (targetMark) {
+                            targetMark.classList.add('pulse-highlight-new');
+                            setTimeout(() => targetMark.classList.remove('pulse-highlight-new'), 2500);
                         }
                     }, 150);
                 } else {
@@ -7146,7 +7258,7 @@
                         curP.push(`<mark class="copie-highlight highlight-atelier" id="mark-atelier-${item.cas.id}" data-typology-key="atelier" onclick="toggleAtelierInlineCard(${item.cas.id})" title="🎯 Atelier de réécriture — Cas n° ${item.cas.id} : cliquez pour afficher la modélisation rédigée d'excellence">${cleanEscaped}<span class="inline-atelier-tag">🎯 Réécriture d'excellence</span></mark>`);
                     } else {
                         const info = getTypologieInfo(item.ann.typologie);
-                        curP.push(`<mark class="copie-highlight ${info.cls}" id="mark-ann-${item.ann.id}" data-typology-key="${info.key}" onclick="toggleInlineNote(${item.ann.id})" title="[#${item.ann.id}] ${escapeHtml(info.label)} : cliquez pour afficher ou masquer la remarque">${cleanEscaped}<span class="ann-badge-pill">${item.ann.id}</span></mark>`);
+                        curP.push(`<mark class="copie-highlight ${info.cls}" id="mark-ann-${item.ann.id}" data-annotation-id="${item.ann.id}" data-extrait="${escapeHtml(item.ann.extrait)}" data-typology-key="${info.key}" onclick="toggleInlineNote(${item.ann.id})" title="[#${item.ann.id}] ${escapeHtml(info.label)} : cliquez pour afficher ou masquer la remarque">${cleanEscaped}<span class="ann-badge-pill">${item.ann.id}</span></mark>`);
                     }
                 } else if (item.type === 'card') {
                     const pText = curP.join('').trim();
@@ -7162,7 +7274,7 @@
                     const eclairageText = ann.eclairage ? formatAfterColon(ann.eclairage) : '';
 
                     blocks.push(`
-                        <div class="inline-annotation-card ${info.cardCls}" id="inline-card-${ann.id}" data-typology-key="${info.key}" style="display:none;">
+                        <div class="inline-annotation-card ${info.cardCls}" id="inline-card-${ann.id}" data-annotation-id="${ann.id}" data-extrait="${escapeHtml(ann.extrait)}" data-typology-key="${info.key}" style="display:none;">
                             <div class="inline-ann-header" onclick="toggleInlineNote(${ann.id})">
                                 <div class="inline-ann-title">
                                     <span class="inline-ann-badge">${info.icon} ${escapeHtml(info.label)}</span>
@@ -7173,6 +7285,9 @@
                                 </div>
                             </div>
                             <div class="inline-ann-body" id="inline-body-${ann.id}">
+                                <div class="inline-ann-extrait" style="font-size: 13px; color: #475569; font-style: italic; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px dashed #e2e8f0;">
+                                    « ${escapeHtml(ann.extrait)} »
+                                </div>
                                 ${diagText ? `<div class="inline-ann-diag"><strong>Diagnostic :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(diagText) : escapeHtml(diagText)}</div>` : ''}
                                 ${conseilText ? `<div class="inline-ann-conseil"><strong>Conseil du jury :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(conseilText) : escapeHtml(conseilText)}</div>` : ''}
                                 ${regleText ? `<div class="inline-ann-regle"><strong>🤫 Règle implicite :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(regleText) : escapeHtml(regleText)}</div>` : ''}
@@ -7436,7 +7551,7 @@
             return false;
         }
 
-        // Mise à jour dynamique de la barre de navigation rapide flottante (Desktop & Mobile)
+        // Mise à jour incrémentale fluide de la barre de navigation rapide flottante (sans destruction du DOM pour préserver le survol et les clics)
         function updateFloatingQuickNav(sectionsList, globalScore) {
             let nav = document.getElementById('floating-quicknav');
             if (!nav) {
@@ -7447,22 +7562,8 @@
             }
 
             const isExplication = state.exerciseType === 'explication';
-            let html = '';
-
-            if (isExplication) {
-                html += `<button type="button" class="quicknav-btn" data-tooltip="Revenir au texte de l'auteur" onclick="scrollToElement('texte-philo-container'); return false;">📖</button>`;
-            }
-
-            html += `<button type="button" class="quicknav-btn" data-tooltip="Revenir à la zone de rédaction" onclick="scrollToElement('training-section-container'); return false;">✍️</button>`;
-
-            // Pastilles de navigation entre sections du rapport (toujours visibles si correction disponible)
             const correctionBox = document.getElementById('correction-box');
-            if (correctionBox && correctionBox.style.display !== 'none') {
-                html += `<button type="button" class="quicknav-btn" data-tooltip="Rapport d'évaluation" onclick="switchCorrectionTab('rapport', false); scrollToElement('correction-box'); return false;">🏛️</button>`;
-                html += `<button type="button" class="quicknav-btn" data-tooltip="Règles implicites du concours" onclick="switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-regles-implicites') || scrollToElement('correction-box'); }, 50); return false;">🤫</button>`;
-                html += `<button type="button" class="quicknav-btn" data-tooltip="Analyse personnalisée du travail" onclick="switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-analyse-personnalisee') || scrollToElement('correction-box'); }, 50); return false;">🔍</button>`;
-            }
-
+            const hasCorrection = correctionBox && correctionBox.style.display !== 'none';
             const validSections = Array.isArray(sectionsList) ? sectionsList.filter(s => s && typeof s.score === 'number') : [];
 
             // Calculer ou récupérer le score global de conformité
@@ -7471,24 +7572,157 @@
                 finalGlobalScore = Math.round(validSections.reduce((acc, s) => acc + s.score, 0) / validSections.length);
             }
 
-            // Pastille d'indice général de conformité (placée juste sous les boutons de navigation)
+            // Empreinte d'état pour éviter toute manipulation inutile du DOM pendant le streaming
+            const stateKey = `${isExplication}|${hasCorrection}|${finalGlobalScore}|` +
+                validSections.map(s => `${s.anchorId}:${s.score}:${s.name}`).join(';');
+
+            if (nav._lastQuicknavStateKey === stateKey) {
+                return; // État strictement identique, maintien intégral des nœuds DOM et du survol actif
+            }
+            nav._lastQuicknavStateKey = stateKey;
+
+            // 1. Bouton "Texte de l'auteur" (explication)
+            let btnAuteur = document.getElementById('quicknav-btn-auteur');
+            if (isExplication) {
+                if (!btnAuteur) {
+                    btnAuteur = document.createElement('button');
+                    btnAuteur.type = 'button';
+                    btnAuteur.id = 'quicknav-btn-auteur';
+                    btnAuteur.className = 'quicknav-btn';
+                    btnAuteur.setAttribute('data-tooltip', 'Revenir au texte de l\'auteur');
+                    btnAuteur.innerHTML = '📖';
+                    btnAuteur.onclick = () => { scrollToElement('texte-philo-container'); return false; };
+                    nav.insertBefore(btnAuteur, nav.firstChild);
+                }
+            } else if (btnAuteur && btnAuteur.parentNode) {
+                btnAuteur.parentNode.removeChild(btnAuteur);
+            }
+
+            // 2. Bouton "Zone de rédaction"
+            let btnRedac = document.getElementById('quicknav-btn-redaction');
+            if (!btnRedac) {
+                btnRedac = document.createElement('button');
+                btnRedac.type = 'button';
+                btnRedac.id = 'quicknav-btn-redaction';
+                btnRedac.className = 'quicknav-btn';
+                btnRedac.setAttribute('data-tooltip', 'Revenir à la zone de rédaction');
+                btnRedac.innerHTML = '✍️';
+                btnRedac.onclick = () => { scrollToElement('training-section-container'); return false; };
+                const insertBeforeNode = btnAuteur ? btnAuteur.nextSibling : nav.firstChild;
+                nav.insertBefore(btnRedac, insertBeforeNode);
+            }
+
+            // 3. Boutons de navigation du rapport (Rapport, Règles implicites, Analyse personnalisée)
+            let btnRapport = document.getElementById('quicknav-btn-rapport');
+            let btnRegles = document.getElementById('quicknav-btn-regles');
+            let btnAnalyse = document.getElementById('quicknav-btn-analyse');
+
+            if (hasCorrection) {
+                if (!btnRapport) {
+                    btnRapport = document.createElement('button');
+                    btnRapport.type = 'button';
+                    btnRapport.id = 'quicknav-btn-rapport';
+                    btnRapport.className = 'quicknav-btn';
+                    btnRapport.setAttribute('data-tooltip', 'Rapport d\'évaluation');
+                    btnRapport.innerHTML = '🏛️';
+                    btnRapport.onclick = () => { switchCorrectionTab('rapport', false); scrollToElement('correction-box'); return false; };
+                    btnRedac.insertAdjacentElement('afterend', btnRapport);
+                }
+                if (!btnRegles) {
+                    btnRegles = document.createElement('button');
+                    btnRegles.type = 'button';
+                    btnRegles.id = 'quicknav-btn-regles';
+                    btnRegles.className = 'quicknav-btn';
+                    btnRegles.setAttribute('data-tooltip', 'Règles implicites du concours');
+                    btnRegles.innerHTML = '🤫';
+                    btnRegles.onclick = () => { switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-regles-implicites') || scrollToElement('correction-box'); }, 50); return false; };
+                    btnRapport.insertAdjacentElement('afterend', btnRegles);
+                }
+                if (!btnAnalyse) {
+                    btnAnalyse = document.createElement('button');
+                    btnAnalyse.type = 'button';
+                    btnAnalyse.id = 'quicknav-btn-analyse';
+                    btnAnalyse.className = 'quicknav-btn';
+                    btnAnalyse.setAttribute('data-tooltip', 'Analyse personnalisée du travail');
+                    btnAnalyse.innerHTML = '🔍';
+                    btnAnalyse.onclick = () => { switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-analyse-personnalisee') || scrollToElement('correction-box'); }, 50); return false; };
+                    btnRegles.insertAdjacentElement('afterend', btnAnalyse);
+                }
+            } else {
+                if (btnRapport && btnRapport.parentNode) btnRapport.parentNode.removeChild(btnRapport);
+                if (btnRegles && btnRegles.parentNode) btnRegles.parentNode.removeChild(btnRegles);
+                if (btnAnalyse && btnAnalyse.parentNode) btnAnalyse.parentNode.removeChild(btnAnalyse);
+            }
+
+            // 4. Pastille de score global (mise à jour en place de la pastille existante)
+            let globalPill = document.getElementById('quicknav-global-pill');
             if (typeof finalGlobalScore === 'number') {
                 const globalColors = getScoreColorClass(finalGlobalScore);
-                html += `<a href="#correction-box" class="quicknav-global-pill ${globalColors.pill}" data-tooltip="Indice général de conformité : ${finalGlobalScore}/100" data-target="correction-box" onclick="scrollToElement('correction-box'); return false;">${finalGlobalScore}</a>`;
+                if (!globalPill) {
+                    globalPill = document.createElement('a');
+                    globalPill.id = 'quicknav-global-pill';
+                    globalPill.href = '#correction-box';
+                    globalPill.setAttribute('data-target', 'correction-box');
+                    globalPill.onclick = () => { scrollToElement('correction-box'); return false; };
+                    const refNode = btnAnalyse || btnRedac;
+                    refNode.insertAdjacentElement('afterend', globalPill);
+                }
+                globalPill.className = 'quicknav-global-pill ' + globalColors.pill;
+                globalPill.setAttribute('data-tooltip', 'Indice général de conformité : ' + finalGlobalScore + '/100');
+                if (globalPill.innerText !== String(finalGlobalScore)) {
+                    globalPill.innerText = finalGlobalScore;
+                }
+            } else if (globalPill && globalPill.parentNode) {
+                globalPill.parentNode.removeChild(globalPill);
             }
 
+            // 5. Séparateur
+            let divider = document.getElementById('quicknav-divider');
             if (validSections.length > 0) {
-                html += `<div class="quicknav-divider"></div>`;
-                validSections.forEach((s, idx) => {
-                    const shortCode = getShortSectionCode(s.name, idx, validSections);
-                    const colors = getScoreColorClass(s.score);
-                    html += `<a href="#${s.anchorId}" class="quicknav-section-pill ${colors.pill}" data-tooltip="${s.name} — ${s.score}/100" data-target="${s.anchorId}" onclick="scrollToElement('${s.anchorId}'); return false;">${shortCode}</a>`;
-                });
+                if (!divider) {
+                    divider = document.createElement('div');
+                    divider.id = 'quicknav-divider';
+                    divider.className = 'quicknav-divider';
+                    const refNode = globalPill || btnAnalyse || btnRedac;
+                    refNode.insertAdjacentElement('afterend', divider);
+                }
+            } else if (divider && divider.parentNode) {
+                divider.parentNode.removeChild(divider);
             }
 
-            if (nav.innerHTML !== html) {
-                nav.innerHTML = html;
-            }
+            // 6. Pastilles de section ordonnées (mises à jour en place ou ajoutées sans détruire les existantes)
+            const targetAnchorIds = new Set(validSections.map(s => s.anchorId));
+            // Retirer les pastilles orphelines
+            nav.querySelectorAll('.quicknav-section-pill').forEach(pill => {
+                const aid = pill.getAttribute('data-target');
+                if (!targetAnchorIds.has(aid) && pill.parentNode) {
+                    pill.parentNode.removeChild(pill);
+                }
+            });
+
+            // Insérer ou mettre à jour chaque pastille de section
+            let prevNode = divider || globalPill || btnAnalyse || btnRedac;
+            validSections.forEach((s, idx) => {
+                const shortCode = getShortSectionCode(s.name, idx, validSections);
+                const colors = getScoreColorClass(s.score);
+                const tooltipText = s.name + ' — ' + s.score + '/100';
+                let pill = document.getElementById('quicknav-pill-' + s.anchorId);
+
+                if (!pill) {
+                    pill = document.createElement('a');
+                    pill.id = 'quicknav-pill-' + s.anchorId;
+                    pill.href = '#' + s.anchorId;
+                    pill.setAttribute('data-target', s.anchorId);
+                    pill.onclick = () => { scrollToElement(s.anchorId); return false; };
+                    prevNode.insertAdjacentElement('afterend', pill);
+                }
+                pill.className = 'quicknav-section-pill ' + colors.pill;
+                pill.setAttribute('data-tooltip', tooltipText);
+                if (pill.innerText !== shortCode) {
+                    pill.innerText = shortCode;
+                }
+                prevNode = pill;
+            });
         }
 
         // Navigation fluide instantanée via les badges et pastilles de section (actif en continu, même pendant le streaming)
@@ -9115,7 +9349,10 @@
                 });
 
                 let texteCumule = "";
+                state.streamingTexteCumule = "";
                 const currentDraftBySection = extraireTexteParSection(trainingText);
+                let lastCopieRefresh = 0;
+                let lastAnnotCount = 0;
 
                 try {
                     while (true) {
@@ -9124,6 +9361,7 @@
 
                         const chunk = decoder.decode(value, { stream: true });
                         texteCumule += chunk;
+                        state.streamingTexteCumule = texteCumule;
                         const intermediateHtml = marked.parse(normaliserMarkdownCorrection(texteCumule));
                         const intermediateTransformed = transformerRenduCorrection(intermediateHtml, savedCorrectionObj, currentDraftBySection);
                         document.getElementById("correction-text").innerHTML = intermediateTransformed.html;
@@ -9140,13 +9378,25 @@
                                 streamingBadge.style.display = "none";
                             }
                         }
+
+                        // Si l'utilisateur est sur l'onglet Copie annotée pendant le streaming, actualiser la vue de manière cadencée
+                        const paneCopie = document.getElementById("pane-copie-annotee");
+                        const now = Date.now();
+                        if (paneCopie && paneCopie.style.display === "block" && (streamedAnnotations.length !== lastAnnotCount || now - lastCopieRefresh > 2000)) {
+                            lastAnnotCount = streamedAnnotations.length;
+                            lastCopieRefresh = now;
+                            rafraichirCopieAnnotee(texteCumule, trainingText);
+                        }
                     }
                 } catch (streamError) {
                     texteCumule += "\n\n[Erreur de connexion : le flux a été interrompu par le réseau. Veuillez réessayer si la correction est incomplète.]";
+                    state.streamingTexteCumule = texteCumule;
                     const errHtml = marked.parse(normaliserMarkdownCorrection(texteCumule));
                     const errTransformed = transformerRenduCorrection(errHtml, savedCorrectionObj, currentDraftBySection);
                     document.getElementById("correction-text").innerHTML = errTransformed.html;
                     updateFloatingQuickNav(errTransformed.sections, errTransformed.globalScore);
+                } finally {
+                    state.streamingTexteCumule = null;
                 }
 
                 const correctionHtmlFinale = marked.parse(normaliserMarkdownCorrection(texteCumule));
