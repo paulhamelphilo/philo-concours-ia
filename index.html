@@ -2183,11 +2183,11 @@
             padding: 20px;
         }
 
-        .atelier-view-remaniee {
+        .atelier-view-initial {
             display: block;
         }
 
-        .atelier-view-initial {
+        .atelier-view-remaniee {
             display: none;
         }
 
@@ -6143,10 +6143,14 @@
                 }
             }
 
-            // Embellissement et allègement de la section 2 : Annotations chirurgicales de la copie
+            // Suppression complète de la section 2 (Annotations chirurgicales) du rapport d'évaluation (accessible via l'onglet dédié en haut)
             const h2Annotations = Array.from(doc.querySelectorAll('h2')).find(h => /Annotations\s+chirurgicales/i.test(h.textContent));
             if (h2Annotations) {
-                // Suppression intégrale des listes et extraits bruts d'annotations dans le rapport d'évaluation
+                // Suppression d'un séparateur hr immédiatement antérieur s'il existe
+                if (h2Annotations.previousElementSibling && h2Annotations.previousElementSibling.tagName === 'HR') {
+                    h2Annotations.previousElementSibling.parentNode.removeChild(h2Annotations.previousElementSibling);
+                }
+                // Suppression intégrale des listes et extraits bruts d'annotations dans le rapport d'évaluation jusqu'au prochain H2
                 let curAnn = h2Annotations.nextElementSibling;
                 while (curAnn && curAnn.tagName !== 'H2') {
                     const nextAnn = curAnn.nextElementSibling;
@@ -6155,29 +6159,22 @@
                     }
                     curAnn = nextAnn;
                 }
-
-                // Insertion exclusive de la bannière concise invitant à consulter l'onglet Copie annotée
-                const bannerDiv = doc.createElement('div');
-                bannerDiv.className = 'switch-to-copie-banner';
-                bannerDiv.innerHTML = `
-                    <span>💡 <strong>Visualisation au fil du texte :</strong> retrouvez l'ensemble des annotations chirurgicales insérées directement sous vos phrases dans l'onglet dédié.</span>
-                    <button type="button" class="switch-to-copie-btn" onclick="switchCorrectionTab('copie')">
-                        📝 Ouvrir la copie annotée
-                    </button>
-                `;
-                if (h2Annotations.nextElementSibling) {
-                    h2Annotations.parentNode.insertBefore(bannerDiv, h2Annotations.nextElementSibling);
-                } else {
-                    h2Annotations.parentNode.appendChild(bannerDiv);
+                // Suppression du titre H2 de la section 2
+                if (h2Annotations.parentNode) {
+                    h2Annotations.parentNode.removeChild(h2Annotations);
                 }
             }
 
-            // Extraction et isolement de la section 3 : Atelier de réécriture comparative
+            // Extraction et isolement de la section 3 vers le volet autonome de l'Atelier de réécriture
             const h2Atelier = Array.from(doc.querySelectorAll('h2')).find(h => /Atelier\s+de\s+r[ée][ée]criture/i.test(h.textContent));
             let atelierHtml = '';
             let casCounter = 0;
 
             if (h2Atelier) {
+                // Suppression d'un séparateur hr immédiatement antérieur s'il existe
+                if (h2Atelier.previousElementSibling && h2Atelier.previousElementSibling.tagName === 'HR') {
+                    h2Atelier.previousElementSibling.parentNode.removeChild(h2Atelier.previousElementSibling);
+                }
                 // Collecter tous les nœuds de la section 3 jusqu'au prochain H2
                 const atelierNodes = [];
                 let cur = h2Atelier.nextElementSibling;
@@ -6192,19 +6189,9 @@
                     if (n.parentNode) n.parentNode.removeChild(n);
                 });
 
-                // Placer dans le rapport une bannière élégante d'accès rapide vers l'Atelier
-                const bannerAtelier = doc.createElement('div');
-                bannerAtelier.className = 'switch-to-atelier-banner';
-                bannerAtelier.innerHTML = `
-                    <span>🎯 <strong>Atelier de réécriture :</strong> retrouvez les versions remaniées d'excellence, diagnostics cliniques et questions socratiques de relance dans l'onglet dédié.</span>
-                    <button type="button" class="switch-to-atelier-btn" onclick="switchCorrectionTab('atelier')">
-                        🎯 Ouvrir l'atelier de réécriture
-                    </button>
-                `;
-                if (h2Atelier.nextElementSibling) {
-                    h2Atelier.parentNode.insertBefore(bannerAtelier, h2Atelier.nextElementSibling);
-                } else {
-                    h2Atelier.parentNode.appendChild(bannerAtelier);
+                // Suppression du titre H2 de l'Atelier du rapport principal (accessible via l'onglet dédié en haut)
+                if (h2Atelier.parentNode) {
+                    h2Atelier.parentNode.removeChild(h2Atelier);
                 }
 
                 // Assembler le volet autonome de l'Atelier de réécriture
@@ -6314,11 +6301,11 @@
                             <div class="atelier-case-header">
                                 <div class="atelier-case-title">🎯 ${escapeHtml(casTitle)}</div>
                                 <div class="atelier-toggle-bar">
-                                    <button type="button" class="atelier-toggle-btn btn-view-remaniee active" onclick="toggleCasView(${casIdx}, 'remaniee')">
-                                        ✨ Version remaniée
-                                    </button>
-                                    <button type="button" class="atelier-toggle-btn btn-view-initial" onclick="toggleCasView(${casIdx}, 'initial')">
+                                    <button type="button" class="atelier-toggle-btn btn-view-initial active" onclick="toggleCasView(${casIdx}, 'initial')">
                                         ❌ Texte initial et verrou
+                                    </button>
+                                    <button type="button" class="atelier-toggle-btn btn-view-remaniee" onclick="toggleCasView(${casIdx}, 'remaniee')">
+                                        ✨ Version remaniée
                                     </button>
                                     <button type="button" class="atelier-toggle-btn btn-view-split" onclick="toggleCasView(${casIdx}, 'split')">
                                         ⚖️ Vue comparative
@@ -6326,13 +6313,13 @@
                                 </div>
                             </div>
                             <div class="atelier-body">
-                                <div class="atelier-view-remaniee">
-                                    ${remanieeBoxHtml}
-                                </div>
-                                <div class="atelier-view-initial">
+                                <div class="atelier-view-initial" style="display: block;">
                                     ${initialBoxHtml}
                                 </div>
-                                <div class="atelier-view-split">
+                                <div class="atelier-view-remaniee" style="display: none;">
+                                    ${remanieeBoxHtml}
+                                </div>
+                                <div class="atelier-view-split" style="display: none;">
                                     <div class="atelier-split-col">
                                         ${initialBoxHtml}
                                     </div>
@@ -6552,25 +6539,25 @@
             return null;
         }
 
-        // Bascule cliquable de la vue de l'atelier (Version remaniée / Texte initial / Vue comparative)
+        // Bascule cliquable de la vue de l'atelier (Texte initial et verrou / Version remaniée / Vue comparative)
         function toggleCasView(casIdx, viewType) {
             const card = document.getElementById('atelier-card-' + casIdx);
             if (!card) return;
 
-            const btnRemaniee = card.querySelector('.btn-view-remaniee');
             const btnInitial = card.querySelector('.btn-view-initial');
+            const btnRemaniee = card.querySelector('.btn-view-remaniee');
             const btnSplit = card.querySelector('.btn-view-split');
 
-            const viewRemaniee = card.querySelector('.atelier-view-remaniee');
             const viewInitial = card.querySelector('.atelier-view-initial');
+            const viewRemaniee = card.querySelector('.atelier-view-remaniee');
             const viewSplit = card.querySelector('.atelier-view-split');
 
-            if (btnRemaniee) btnRemaniee.classList.toggle('active', viewType === 'remaniee');
             if (btnInitial) btnInitial.classList.toggle('active', viewType === 'initial');
+            if (btnRemaniee) btnRemaniee.classList.toggle('active', viewType === 'remaniee');
             if (btnSplit) btnSplit.classList.toggle('active', viewType === 'split');
 
-            if (viewRemaniee) viewRemaniee.style.display = (viewType === 'remaniee') ? 'block' : 'none';
             if (viewInitial) viewInitial.style.display = (viewType === 'initial') ? 'block' : 'none';
+            if (viewRemaniee) viewRemaniee.style.display = (viewType === 'remaniee') ? 'block' : 'none';
             if (viewSplit) viewSplit.style.display = (viewType === 'split') ? 'grid' : 'none';
         }
 
@@ -8295,10 +8282,7 @@
             if (savedCorrectionObj && savedCorrectionObj.html && sujetActif !== '') {
                 const normSavedSujet = savedCorrectionObj.sujet ? getSubjectStorageKey(state.exerciseType, state.mode, savedCorrectionObj.sujet) : currentSubjectKey;
                 if (normSavedSujet === currentSubjectKey) {
-                    if (savedCorrectionObj.atelierHtml) {
-                        savedCorrection = savedCorrectionObj.html;
-                        savedAtelierHtml = savedCorrectionObj.atelierHtml;
-                    } else if (savedCorrectionObj.rawMarkdown) {
+                    if (savedCorrectionObj.rawMarkdown) {
                         const currentDraftBySection = extraireTexteParSection(currentText);
                         const reTransformed = transformerRenduCorrection(marked.parse(normaliserMarkdownCorrection(savedCorrectionObj.rawMarkdown)), savedCorrectionObj, currentDraftBySection);
                         savedCorrection = reTransformed.html;
@@ -8306,6 +8290,9 @@
                         savedCorrectionObj.html = reTransformed.html;
                         savedCorrectionObj.atelierHtml = reTransformed.atelierHtml;
                         savedCorrectionObj.atelierCasCount = reTransformed.casCount;
+                    } else if (savedCorrectionObj.atelierHtml) {
+                        savedCorrection = savedCorrectionObj.html;
+                        savedAtelierHtml = savedCorrectionObj.atelierHtml;
                     } else {
                         savedCorrection = savedCorrectionObj.html;
                     }
