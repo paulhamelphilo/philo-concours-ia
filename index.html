@@ -2108,6 +2108,55 @@
             margin: 0;
         }
 
+        .inline-ann-regle {
+            padding: 8px 12px;
+            background: #fffbeb;
+            border-left: 2px solid #f59e0b;
+            border-radius: 4px;
+            color: #92400e;
+            font-size: 12.5px;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        .inline-ann-eclairage {
+            padding: 8px 12px;
+            background: #eff6ff;
+            border-left: 2px solid #3b82f6;
+            border-radius: 4px;
+            color: #1e40af;
+            font-size: 12.5px;
+            line-height: 1.5;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* Unités de sens interactives non annotées (micro-analyse à la demande) */
+        .unite-sens-unannotated {
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 1px 2px;
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
+            position: relative;
+        }
+
+        .unite-sens-unannotated:hover {
+            background-color: rgba(59, 130, 246, 0.09);
+            box-shadow: 0 0 0 1.5px rgba(59, 130, 246, 0.35);
+        }
+
+        .unite-sens-unannotated.loading-micro {
+            background-color: #fef3c7 !important;
+            box-shadow: 0 0 0 2px #f59e0b !important;
+            animation: pulseMicro 1s infinite alternate;
+            cursor: wait;
+        }
+
+        @keyframes pulseMicro {
+            from { background-color: #fef3c7; }
+            to { background-color: #fde68a; }
+        }
+
         /* Cartes de l'Atelier comparatif avant / après */
         .atelier-case-card {
             background: #ffffff;
@@ -6143,7 +6192,33 @@
                 }
             }
 
-            // Suppression complète de la section 2 (Annotations chirurgicales) du rapport d'évaluation (accessible via l'onglet dédié en haut)
+            // Embellissement visuel de la section Règles implicites et codes tacites du concours
+            const h2Regles = Array.from(doc.querySelectorAll('h2')).find(h => /R[èe]gles\s+implicites/i.test(h.textContent));
+            if (h2Regles) {
+                if (h2Regles.previousElementSibling && h2Regles.previousElementSibling.tagName === 'HR') {
+                    h2Regles.previousElementSibling.parentNode.removeChild(h2Regles.previousElementSibling);
+                }
+                const reglesContainer = doc.createElement('div');
+                reglesContainer.className = 'regles-implicites-box';
+                reglesContainer.style.cssText = 'background: #fffbeb; border: 1.5px solid #fde68a; border-left: 5px solid #f59e0b; border-radius: 10px; padding: 20px 24px; margin: 25px 0; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.08);';
+
+                h2Regles.style.cssText = 'color: #92400e; border-bottom: 2px solid #fde68a; padding-bottom: 10px; margin-top: 0; margin-bottom: 16px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;';
+
+                const reglesNodes = [h2Regles];
+                let cur = h2Regles.nextElementSibling;
+                while (cur && cur.tagName !== 'H2') {
+                    const next = cur.nextElementSibling;
+                    reglesNodes.push(cur);
+                    cur = next;
+                }
+
+                if (h2Regles.parentNode) {
+                    h2Regles.parentNode.insertBefore(reglesContainer, h2Regles);
+                    reglesNodes.forEach(node => reglesContainer.appendChild(node));
+                }
+            }
+
+            // Suppression complète de la section des Annotations chirurgicales du rapport d'évaluation (accessible via l'onglet dédié en haut)
             const h2Annotations = Array.from(doc.querySelectorAll('h2')).find(h => /Annotations\s+chirurgicales/i.test(h.textContent));
             if (h2Annotations) {
                 // Suppression d'un séparateur hr immédiatement antérieur s'il existe
@@ -6426,6 +6501,8 @@
                 const mTypo = blockRest.match(/\*\*Typologie\*\*[ \t]*:[ \t]*([^\n]+)/i);
                 const mObs = blockRest.match(/\*\*Observation(?:\s+du\s+jury)?\*\*[ \t]*:[ \t]*([^\n]+)/i);
                 const mConseil = blockRest.match(/\*\*Conseil(?:\s+imm[ée]diat)?\*\*[ \t]*:[ \t]*([^\n]+)/i);
+                const mRegle = blockRest.match(/\*\*(?:R[èe]gle\s+implicite(?:\s+ou\s+code\s+tacite)?|Code\s+tacite)\*\*[ \t]*:[ \t]*([^\n]+)/i);
+                const mEclairage = blockRest.match(/\*\*(?:[ÉEe]clairage(?:\s+ou\s+extrait)?(?:\s+du\s+jury)?|Extrait\s+du\s+jury|Rapport\s+du\s+jury)\*\*[ \t]*:[ \t]*([^\n]+)/i);
 
                 let cleanExtrait = rawExtrait.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, '');
 
@@ -6435,7 +6512,9 @@
                         extrait: cleanExtrait,
                         typologie: mTypo ? mTypo[1].trim() : 'Glissement conceptuel',
                         observation: mObs ? mObs[1].trim() : '',
-                        conseil: mConseil ? mConseil[1].trim() : ''
+                        conseil: mConseil ? mConseil[1].trim() : '',
+                        regle: mRegle ? mRegle[1].trim() : '',
+                        eclairage: mEclairage ? mEclairage[1].trim() : ''
                     });
                 }
             }
@@ -6635,6 +6714,135 @@
             }
         }
 
+        function segmenterEnUnitesDeSens(text) {
+            if (!text || typeof text !== 'string') return [];
+            const abbrevRegex = /\b(?:M|Mme|Mlle|cf|éd|ed|op\.?\s*cit|ibid|sq|al|ex|chap|vol|art|p|pp|t|J\.-J|G\.W|I|E)\.$/i;
+            const units = [];
+            let start = 0;
+            let inGuillemets = false;
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (char === '«') inGuillemets = true;
+                else if (char === '»') inGuillemets = false;
+
+                if (!inGuillemets && (char === '.' || char === '?' || char === '!' || char === '…')) {
+                    let endPos = i + 1;
+                    while (endPos < text.length && (text[endPos] === '»' || text[endPos] === ')' || text[endPos] === ']' || text[endPos] === '"' || text[endPos] === '’' || text[endPos] === '\'')) {
+                        endPos++;
+                    }
+                    if (endPos === text.length || /\s/.test(text[endPos])) {
+                        const candidate = text.substring(start, endPos).trim();
+                        const wordMatch = candidate.match(/\b[A-Za-zÀ-ÖØ-öø-ÿ\.-]+\.$/);
+                        if (wordMatch && abbrevRegex.test(wordMatch[0]) && endPos < text.length) {
+                            continue;
+                        }
+                        const afterSlice = text.substring(endPos).trim();
+                        if (afterSlice.length > 0 && /^[a-zà-öø-ÿ]/.test(afterSlice) && !afterSlice.startsWith('et ') && !afterSlice.startsWith('mais ')) {
+                            continue;
+                        }
+                        if (candidate.length > 0) {
+                            units.push({ start, end: endPos, text: candidate });
+                            while (endPos < text.length && /\s/.test(text[endPos])) {
+                                endPos++;
+                            }
+                            start = endPos;
+                            i = endPos - 1;
+                        }
+                    }
+                }
+            }
+            if (start < text.length) {
+                const rest = text.substring(start).trim();
+                if (rest.length > 0) units.push({ start, end: text.length, text: rest });
+            }
+            return units;
+        }
+
+        async function declencherMicroAnnotation(spanEl) {
+            if (!spanEl || spanEl.classList.contains('loading-micro')) return;
+            const encPhrase = spanEl.getAttribute('data-phrase');
+            const phrase = encPhrase ? decodeURIComponent(encPhrase) : spanEl.textContent.trim();
+            if (!phrase || phrase.length < 4) return;
+
+            const parentP = spanEl.closest('p');
+            const contexte = parentP ? parentP.textContent.trim() : '';
+
+            spanEl.classList.add('loading-micro');
+            spanEl.setAttribute('title', '⏳ Analyse chirurgicale en cours par le jury...');
+
+            const sujetActif = obtenirSujetActif();
+            const targetConcours = state.concours || 'Capes Externe';
+            const targetEpreuve = state.epreuve || (state.exerciseType === 'explication' ? 'Explication de texte' : 'Dissertation');
+
+            try {
+                const body = {
+                    action: 'micro_annotation',
+                    phrase: phrase,
+                    contexte: contexte,
+                    sujet: sujetActif,
+                    concours: targetConcours,
+                    epreuve: targetEpreuve,
+                    type: state.exerciseType
+                };
+
+                if (state.exerciseType === 'explication' && state.currentExplicText) {
+                    body.selectedTextTitle = state.currentExplicText.label || state.currentExplicText.title;
+                    body.selectedTextHtml = state.currentExplicText.html || '';
+                }
+
+                const response = await fetch(CLOUD_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) throw new Error('Le serveur a retourné une erreur ' + response.status);
+
+                const data = await response.json();
+                if (data && data.success && data.markdown) {
+                    const prof = getActiveProfile();
+                    const subKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
+                    const storedEntry = prof.subjectsData[subKey];
+                    let currentRawMd = '';
+                    let draftText = '';
+
+                    if (storedEntry && storedEntry.correction) {
+                        currentRawMd = storedEntry.correction.rawMarkdown || '';
+                        draftText = storedEntry.correction.draftText || storedEntry.workingDraft || '';
+                    }
+                    if (!draftText) {
+                        const txtArea = document.getElementById('training-textarea');
+                        if (txtArea) draftText = txtArea.value;
+                    }
+
+                    const updatedMd = currentRawMd.trim() + '\n\n' + data.markdown.trim() + '\n';
+
+                    if (storedEntry && storedEntry.correction) {
+                        storedEntry.correction.rawMarkdown = updatedMd;
+                    }
+                    persistStorageData();
+
+                    rafraichirCopieAnnotee(updatedMd, draftText);
+
+                    setTimeout(() => {
+                        const marks = document.querySelectorAll('.copie-highlight');
+                        if (marks.length > 0) {
+                            const lastMark = marks[marks.length - 1];
+                            lastMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 120);
+                } else {
+                    throw new Error(data.error || 'Réponse invalide du serveur');
+                }
+            } catch (err) {
+                console.error('Erreur micro-annotation:', err);
+                spanEl.classList.remove('loading-micro');
+                spanEl.setAttribute('title', 'Erreur lors de l\'analyse. Cliquez pour réessayer.');
+                alert('La micro-analyse n\'a pas pu aboutir : ' + (err.message || 'veuillez réessayer.'));
+            }
+        }
+
         function rafraichirCopieAnnotee(rawMarkdown, draftText) {
             const container = document.getElementById('copie-annotee-container');
             const badge = document.getElementById('badge-nb-annotations');
@@ -6753,8 +6961,26 @@
                             curP = [];
                             isContinuation = false;
                         }
-                        const cleanEscaped = formatProse(part);
-                        if (cleanEscaped) curP.push(cleanEscaped);
+                        const cleanPart = part.trim();
+                        if (cleanPart) {
+                            const units = segmenterEnUnitesDeSens(cleanPart);
+                            if (units.length > 0) {
+                                units.forEach(u => {
+                                    const cleanText = formatProse(u.text);
+                                    if (cleanText) {
+                                        if (u.text.trim().length >= 4) {
+                                            const encPhrase = encodeURIComponent(u.text.trim());
+                                            curP.push(`<span class="unite-sens-unannotated" data-phrase="${encPhrase}" onclick="declencherMicroAnnotation(this)" title="🔍 Cliquer pour obtenir l'analyse de concours de cette proposition">${cleanText}</span> `);
+                                        } else {
+                                            curP.push(cleanText + ' ');
+                                        }
+                                    }
+                                });
+                            } else {
+                                const cleanEscaped = formatProse(cleanPart);
+                                if (cleanEscaped) curP.push(cleanEscaped + ' ');
+                            }
+                        }
                     });
                 } else if (item.type === 'highlight') {
                     const info = getTypologieInfo(item.ann.typologie);
@@ -6770,6 +6996,8 @@
                     const info = getTypologieInfo(ann.typologie);
                     const diagText = ann.observation ? formatAfterColon(ann.observation) : '';
                     const conseilText = ann.conseil ? formatAfterColon(ann.conseil) : '';
+                    const regleText = ann.regle ? formatAfterColon(ann.regle) : '';
+                    const eclairageText = ann.eclairage ? formatAfterColon(ann.eclairage) : '';
 
                     blocks.push(`
                         <div class="inline-annotation-card ${info.cardCls}" id="inline-card-${ann.id}" data-typology-key="${info.key}">
@@ -6785,6 +7013,8 @@
                             <div class="inline-ann-body" id="inline-body-${ann.id}">
                                 ${diagText ? `<div class="inline-ann-diag"><strong>Diagnostic :</strong> ${escapeHtml(diagText)}</div>` : ''}
                                 ${conseilText ? `<div class="inline-ann-conseil"><strong>Conseil du jury :</strong> ${escapeHtml(conseilText)}</div>` : ''}
+                                ${regleText ? `<div class="inline-ann-regle"><strong>🤫 Règle implicite :</strong> ${escapeHtml(regleText)}</div>` : ''}
+                                ${eclairageText ? `<div class="inline-ann-eclairage"><strong>📜 Éclairage du jury :</strong> « ${escapeHtml(eclairageText.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, ''))} »</div>` : ''}
                             </div>
                         </div>
                     `);
@@ -6797,8 +7027,9 @@
             // Construction de la barre d'outils et des filtres
             const toolbarHtml = `
                 <div class="copie-annotee-toolbar">
-                    <div class="copie-toolbar-left">
+                    <div class="copie-toolbar-left" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
                         <span class="copie-toolbar-counter">📝 Copie annotée : ${annotations.length} remarques de jury au fil du texte</span>
+                        <span style="font-size: 12px; color: #64748b;">💡 Cliquez sur n'importe quelle proposition non annotée pour déclencher son analyse chirurgicale à la demande.</span>
                     </div>
                     <div class="copie-toolbar-actions">
                         <button type="button" class="btn-toolbar" onclick="toggleAllNotes(true)">▾ Tout déplier</button>
