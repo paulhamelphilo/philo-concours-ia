@@ -2157,6 +2157,29 @@
             to { background-color: #fde68a; }
         }
 
+        /* Surlignage passage atelier de réécriture */
+        .copie-highlight.highlight-atelier {
+            background-color: rgba(20, 184, 166, 0.15);
+            border-bottom: 2px dashed #0d9488;
+            color: #134e4a;
+        }
+
+        /* Mini-carte d'information atelier (inline, non cliquable) */
+        .inline-atelier-tag {
+            display: inline-block;
+            margin: 0 0 2px 4px;
+            padding: 1px 7px;
+            font-size: 10.5px;
+            font-weight: 700;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            border-radius: 10px;
+            background: #ccfbf1;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
         /* Cartes de l'Atelier comparatif avant / après */
         .atelier-case-card {
             background: #ffffff;
@@ -6801,16 +6824,10 @@
 
                 const data = await response.json();
                 if (data && data.success && data.markdown) {
-                    const prof = getActiveProfile();
-                    const subKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
-                    const storedEntry = prof.subjectsData[subKey];
-                    let currentRawMd = '';
-                    let draftText = '';
-
-                    if (storedEntry && storedEntry.correction) {
-                        currentRawMd = storedEntry.correction.rawMarkdown || '';
-                        draftText = storedEntry.correction.draftText || storedEntry.workingDraft || '';
-                    }
+                    // Récupération robuste via getSubjectStoredDraftAndCorrection pour gérer les crans actifs
+                    const stored = getSubjectStoredDraftAndCorrection(state.exerciseType, state.mode, sujetActif);
+                    let currentRawMd = (stored.correction && stored.correction.rawMarkdown) ? stored.correction.rawMarkdown : '';
+                    let draftText = stored.draft || '';
                     if (!draftText) {
                         const txtArea = document.getElementById('training-textarea');
                         if (txtArea) draftText = txtArea.value;
@@ -6818,20 +6835,39 @@
 
                     const updatedMd = currentRawMd.trim() + '\n\n' + data.markdown.trim() + '\n';
 
-                    if (storedEntry && storedEntry.correction) {
-                        storedEntry.correction.rawMarkdown = updatedMd;
+                    // Persister dans le bon emplacement (correction du cran actif ou entrée directe)
+                    const prof = getActiveProfile();
+                    const subKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
+                    const storedEntry = prof.subjectsData[subKey];
+                    if (storedEntry) {
+                        const crans = Array.isArray(storedEntry.crans) ? storedEntry.crans : [];
+                        const activeCranId = storedEntry.activeCranId;
+                        const activeCran = (typeof activeCranId === 'number') ? crans.find(c => c.id === activeCranId) : null;
+                        if (activeCran && activeCran.correction) {
+                            activeCran.correction.rawMarkdown = updatedMd;
+                        } else if (storedEntry.correction) {
+                            storedEntry.correction.rawMarkdown = updatedMd;
+                        }
                     }
                     persistStorageData();
 
                     rafraichirCopieAnnotee(updatedMd, draftText);
 
                     setTimeout(() => {
-                        const marks = document.querySelectorAll('.copie-highlight');
-                        if (marks.length > 0) {
-                            const lastMark = marks[marks.length - 1];
-                            lastMark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // Déplier et afficher la dernière carte d'annotation créée
+                        const allCards = document.querySelectorAll('.inline-annotation-card');
+                        if (allCards.length > 0) {
+                            const lastCard = allCards[allCards.length - 1];
+                            const lastCardId = lastCard.id.replace('inline-card-', '');
+                            const lastBody = document.getElementById('inline-body-' + lastCardId);
+                            const lastLbl = document.getElementById('toggle-lbl-' + lastCardId);
+                            if (lastBody) {
+                                lastBody.classList.remove('collapsed');
+                                if (lastLbl) lastLbl.innerText = 'Replier ▴';
+                            }
+                            lastCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }
-                    }, 120);
+                    }, 150);
                 } else {
                     throw new Error(data.error || 'Réponse invalide du serveur');
                 }
@@ -6841,6 +6877,22 @@
                 spanEl.setAttribute('title', 'Erreur lors de l\'analyse. Cliquez pour réessayer.');
                 alert('La micro-analyse n\'a pas pu aboutir : ' + (err.message || 'veuillez réessayer.'));
             }
+        }
+
+        // Extrait les passages initiaux du candidat signalés dans l'Atelier de réécriture
+        function extrairePassagesAtelier(rawMarkdown) {
+            if (!rawMarkdown || typeof rawMarkdown !== 'string') return [];
+            const passages = [];
+            // Recherche de tous les "Passage initial" ou "Texte initial" dans la section Atelier
+            const patternPassage = /\*\*(?:Passage|Texte)\s+initial(?:\s+du\s+candidat)?\*\*\s*[:*]+\s*([^\n]+)/gi;
+            let m;
+            while ((m = patternPassage.exec(rawMarkdown)) !== null) {
+                const raw = m[1].trim().replace(/^[«\""']\s*/, '').replace(/\s*[»\""']$/, '').trim();
+                if (raw && raw.length >= 8) {
+                    passages.push(raw);
+                }
+            }
+            return passages;
         }
 
         function rafraichirCopieAnnotee(rawMarkdown, draftText) {
@@ -6869,12 +6921,16 @@
             }
 
             if (annotations.length === 0) {
-                container.innerHTML = `
-                    <div style="padding: 30px; text-align: center; color: #64748b; font-style: italic;">
-                        Aucune annotation textuelle chirurgicale détectée dans cette évaluation.
-                    </div>
-                `;
-                return;
+                // Vérifier s'il y a des passages atelier à afficher malgré tout
+                const passagesAtelierCheck = extrairePassagesAtelier(rawMarkdown);
+                if (passagesAtelierCheck.length === 0) {
+                    container.innerHTML = `
+                        <div style="padding: 30px; text-align: center; color: #64748b; font-style: italic;">
+                            Aucune annotation textuelle chirurgicale détectée dans cette évaluation.
+                        </div>
+                    `;
+                    return;
+                }
             }
 
             // Recherche de chaque extrait dans le texte du candidat
@@ -6885,22 +6941,49 @@
                     intervals.push({
                         start: loc.start,
                         end: loc.end,
-                        ann: ann
+                        ann: ann,
+                        isAtelier: false
+                    });
+                }
+            });
+
+            // Ajout des passages initiaux de l'Atelier de réécriture
+            const passagesAtelier = extrairePassagesAtelier(rawMarkdown);
+            passagesAtelier.forEach((passage, idx) => {
+                const loc = findTextOccurrences(draftText, passage);
+                if (loc) {
+                    intervals.push({
+                        start: loc.start,
+                        end: loc.end,
+                        ann: { id: 'a' + idx, extrait: passage, typologie: 'atelier', observation: '', conseil: '', regle: '', eclairage: '' },
+                        isAtelier: true
                     });
                 }
             });
 
             intervals.sort((a, b) => a.start - b.start);
 
-            // Filtrage des chevauchements éventuels
+            // Filtrage des chevauchements éventuels (priorité aux annotations sur les passages atelier)
             const cleanIntervals = [];
             let maxEnd = -1;
-            intervals.forEach(it => {
+            // Passe 1 : annotations normales
+            const annotationIntervals = intervals.filter(it => !it.isAtelier);
+            annotationIntervals.forEach(it => {
                 if (it.start >= maxEnd) {
                     cleanIntervals.push(it);
                     maxEnd = it.end;
                 }
             });
+            // Passe 2 : passages atelier (seulement si non chevauchés par une annotation)
+            const usedRanges = cleanIntervals.map(it => ({ s: it.start, e: it.end }));
+            intervals.filter(it => it.isAtelier).forEach(it => {
+                const overlaps = usedRanges.some(r => it.start < r.e && it.end > r.s);
+                if (!overlaps) {
+                    cleanIntervals.push(it);
+                    usedRanges.push({ s: it.start, e: it.end });
+                }
+            });
+            cleanIntervals.sort((a, b) => a.start - b.start);
 
             // Comptage par typologie pour la barre de filtres
             const counts = { all: annotations.length, conceptuel: 0, logique: 0, reference: 0, style: 0, etincelle: 0 };
@@ -6918,8 +7001,10 @@
                 if (it.start > cursor) {
                     segList.push({ type: 'text', content: draftText.substring(cursor, it.start) });
                 }
-                segList.push({ type: 'highlight', content: draftText.substring(it.start, it.end), ann: it.ann });
-                segList.push({ type: 'card', ann: it.ann });
+                segList.push({ type: 'highlight', content: draftText.substring(it.start, it.end), ann: it.ann, isAtelier: it.isAtelier });
+                if (!it.isAtelier) {
+                    segList.push({ type: 'card', ann: it.ann });
+                }
                 cursor = it.end;
             });
             if (cursor < draftText.length) {
@@ -6983,9 +7068,13 @@
                         }
                     });
                 } else if (item.type === 'highlight') {
-                    const info = getTypologieInfo(item.ann.typologie);
                     const cleanEscaped = formatProse(item.content);
-                    curP.push(`<mark class="copie-highlight ${info.cls}" id="mark-ann-${item.ann.id}" data-typology-key="${info.key}" onclick="scrollToInlineNote(${item.ann.id})" title="[#${item.ann.id}] ${escapeHtml(info.label)} : cliquez pour afficher la remarque">${cleanEscaped}<span class="ann-badge-pill">${item.ann.id}</span></mark>`);
+                    if (item.isAtelier) {
+                        curP.push(`<mark class="copie-highlight highlight-atelier" data-typology-key="atelier" title="✏️ Passage identifié dans l'Atelier de réécriture">${cleanEscaped}<span class="inline-atelier-tag">✏️ Atelier</span></mark>`);
+                    } else {
+                        const info = getTypologieInfo(item.ann.typologie);
+                        curP.push(`<mark class="copie-highlight ${info.cls}" id="mark-ann-${item.ann.id}" data-typology-key="${info.key}" onclick="scrollToInlineNote(${item.ann.id})" title="[#${item.ann.id}] ${escapeHtml(info.label)} : cliquez pour afficher la remarque">${cleanEscaped}<span class="ann-badge-pill">${item.ann.id}</span></mark>`);
+                    }
                 } else if (item.type === 'card') {
                     const pText = curP.join('').trim();
                     if (pText) blocks.push(`<p class="${isContinuation ? 'copie-p-continuation' : ''}">${pText}</p>`);
@@ -7007,14 +7096,14 @@
                                     <span class="inline-ann-num">Remarque n° ${ann.id}</span>
                                 </div>
                                 <div class="inline-ann-action">
-                                    <span class="inline-ann-toggle-btn" id="toggle-lbl-${ann.id}">Replier ▴</span>
+                                    <span class="inline-ann-toggle-btn" id="toggle-lbl-${ann.id}">Déplier ▾</span>
                                 </div>
                             </div>
-                            <div class="inline-ann-body" id="inline-body-${ann.id}">
-                                ${diagText ? `<div class="inline-ann-diag"><strong>Diagnostic :</strong> ${escapeHtml(diagText)}</div>` : ''}
-                                ${conseilText ? `<div class="inline-ann-conseil"><strong>Conseil du jury :</strong> ${escapeHtml(conseilText)}</div>` : ''}
-                                ${regleText ? `<div class="inline-ann-regle"><strong>🤫 Règle implicite :</strong> ${escapeHtml(regleText)}</div>` : ''}
-                                ${eclairageText ? `<div class="inline-ann-eclairage"><strong>📜 Éclairage du jury :</strong> « ${escapeHtml(eclairageText.replace(/^[«"“']\s*/, '').replace(/\s*[»"”']$/, ''))} »</div>` : ''}
+                            <div class="inline-ann-body collapsed" id="inline-body-${ann.id}">
+                                ${diagText ? `<div class="inline-ann-diag"><strong>Diagnostic :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(diagText) : escapeHtml(diagText)}</div>` : ''}
+                                ${conseilText ? `<div class="inline-ann-conseil"><strong>Conseil du jury :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(conseilText) : escapeHtml(conseilText)}</div>` : ''}
+                                ${regleText ? `<div class="inline-ann-regle"><strong>🤫 Règle implicite :</strong> ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(regleText) : escapeHtml(regleText)}</div>` : ''}
+                                ${eclairageText ? `<div class="inline-ann-eclairage"><strong>📜 Éclairage du jury :</strong> « ${(typeof marked !== 'undefined' && marked.parseInline) ? marked.parseInline(eclairageText.replace(/^[«\""']\s*/, '').replace(/\s*[»\""']$/, '')) : escapeHtml(eclairageText.replace(/^[«\""']\s*/, '').replace(/\s*[»\""']$/, ''))} »</div>` : ''}
                             </div>
                         </div>
                     `);
