@@ -6519,27 +6519,26 @@
             if (!md || typeof md !== 'string') return [];
             const annotations = [];
 
-            // Détection robuste de chaque bloc d'annotation chirurgicale
-            const blockPattern = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait(?:\s+exact)?\*\*[ \t]*:[ \t]*([\s\S]*?)(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait|\n##|\n---|$)/gi;
+            // Détection robuste de chaque bloc d'annotation chirurgicale, tolérante aux deux-points intra ou extra astérisques
+            const blockPattern = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*(?:\*\*)?Extrait(?:\s+exact)?(?:\s*:\s*\*\*|\*\*\s*:[ \t]*|[ \t]*:[ \t]*)([\s\S]*?)(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*(?:\*\*)?Extrait(?:\s+exact)?(?:\s*:\s*\*\*|\*\*\s*:[ \t]*|[ \t]*:[ \t]*)|\n##|\n---|$)/gi;
             let match;
             let count = 0;
-            const fieldEnd = '(?=\\n[ \\t]*(?:[-*•]|\\d+\\.)?[ \\t]*\\*\\*|$)';
+            const fieldEnd = '(?=\\n[ \\t]*(?:[-*•]|\\d+\\.)?[ \\t]*(?:\\*\\*)?[A-Za-zÀ-ÖØ-öø-ÿ][^:\\n]+(?:\\s*:\\s*\\*\\*|\\*\\*\\s*:[ \\t]*|[ \\t]*:[ \\t]*)|$)';
 
             while ((match = blockPattern.exec(md)) !== null) {
-                count++;
                 const blockContent = match[1];
 
-                // L'extrait est tout ce qui se trouve entre le début du bloc et le champ suivant (**Typologie, **Observation, etc.)
-                const mField = blockContent.match(/([\s\S]*?)(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*(?:Typologie|Observation|Conseil|R[èe]gle|Code|[ÉEe]clairage))/i);
+                // L'extrait est tout ce qui se trouve entre le début du bloc et le champ suivant
+                const mField = blockContent.match(/([\s\S]*?)(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*(?:\*\*)?(?:Typologie|Observation|Diagnostic|Conseil|Piste|Recommandation|R[èe]gle|Code|Usage|[ÉEe]clairage|Extrait\s+du\s+jury|Rapport|Citation))/i);
                 const rawExtrait = mField ? mField[1] : blockContent;
                 const blockRest = mField ? blockContent.substring(rawExtrait.length) : '';
 
                 let cleanExtrait = rawExtrait.replace(/^[«"“'\s]+|[»"”'\s]+$/g, '').trim();
-                // Remplacement des sauts de ligne internes éventuels insérés par le modèle au sein d'une proposition
+                // Remplacement des sauts de ligne internes éventuels insérés au sein d'une proposition
                 cleanExtrait = cleanExtrait.replace(/\r?\n\s*/g, ' ').trim();
 
-                function extractField(regexPrefix) {
-                    const pat = new RegExp(regexPrefix + '[ \\t]*:[ \\t]*([\\s\\S]*?)' + fieldEnd, 'i');
+                function extractField(fieldRegexNames) {
+                    const pat = new RegExp('(?:^|\\n)[ \\t]*(?:[-*•]|\\d+\\.)?[ \\t]*(?:\\*\\*)?(?:' + fieldRegexNames + ')(?:\\s*:\\s*\\*\\*|\\*\\*\\s*:[ \\t]*|[ \\t]*:[ \\t]*)([\\s\\S]*?)' + fieldEnd, 'i');
                     const fm = blockRest.match(pat);
                     if (fm) {
                         return fm[1].replace(/\r?\n\s*/g, ' ').trim();
@@ -6547,13 +6546,16 @@
                     return '';
                 }
 
-                const mTypo = extractField('\\*\\*Typologie\\*\\*') || 'Glissement conceptuel';
-                const mObs = extractField('\\*\\*Observation(?:\\s+du\\s+jury)?\\*\\*');
-                const mConseil = extractField('\\*\\*Conseil(?:\\s+imm[ée]diat)?\\*\\*');
-                const mRegle = extractField('\\*\\*(?:R[èe]gle\\s+implicite(?:\\s+ou\\s+code\\s+tacite)?|Code\\s+tacite)\\*\\*');
-                const mEclairage = extractField('\\*\\*(?:[ÉEe]clairage(?:\\s+ou\\s+extrait)?(?:\\s+du\\s+jury)?|Extrait\\s+du\\s+jury|Rapport\\s+du\\s+jury)\\*\\*');
+                const mTypo = extractField('Typologie(?:\\s+du\\s+jury)?|Cat[ée]gorie|Type(?:\\s+de\\s+remarque)?|Nature') || 'Glissement conceptuel';
+                const mObs = extractField('Observation(?:\\s+du\\s+jury)?|Diagnostic(?:\\s+(?:du\\s+jury|conceptuel))?|Analyse(?:\\s+du\\s+jury)?|Remarque(?:\\s+du\\s+jury)?|Commentaire(?:\\s+du\\s+jury)?');
+                const mConseil = extractField('Conseil(?:\\s+(?:imm[ée]diat|du\\s+jury|m[ée]thodologique))?|Piste(?:\\s+d[\'’]am[ée]lioration)?|Recommandation(?:\\s+du\\s+jury)?|Rem[ée]diation');
+                const mRegle = extractField('R[èe]gle(?:\\s+implicite)?(?:\\s+(?:ou\\s+code\\s+tacite|du\\s+jury))?|Code\\s+(?:tacite|implicite)|Usage(?:\\s+de\\s+s[ée]ance\\s+pl[ée]ni[èe]re|\\s+du\\s+jury)?|Attendu(?:\\s+m[ée]thodologique)?');
+                const mEclairage = extractField('[ÉEe]clairage(?:\\s+(?:ou\\s+extrait)?(?:\\s+du\\s+jury)?)?|Extrait\\s+(?:du\\s+jury|de\\s+rapport)|Rapport\\s+(?:du|de)\\s+jury|Citation(?:\\s+du\\s+jury)?|Attendu\\s+officiel');
 
-                if (cleanExtrait) {
+                // Une remarque annotée valide doit impérativement comporter au moins un diagnostic ou un conseil
+                // afin d'éviter toute carte vide ne contenant que l'extrait textuel
+                if (cleanExtrait && (mObs || mConseil || mRegle || mEclairage)) {
+                    count++;
                     annotations.push({
                         id: count,
                         extrait: cleanExtrait,
@@ -6916,13 +6918,21 @@
 
                 const data = await response.json();
                 if (data && data.success && data.markdown) {
-                    // Normalisation de l'extrait exact pour garantir qu'il correspond mot à mot à la proposition intégrale sélectionnée
+                    // Nettoyage et normalisation de l'extrait exact pour garantir qu'il correspond mot à mot à la proposition sélectionnée
                     let cleanMicroMd = data.markdown.trim();
-                    const extraitRegex = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*Extrait(?:\s+exact)?\*\*[ \t]*:[ \t]*[\s\S]*?(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*\*\*(?:Typologie|Observation|Conseil|R[èe]gle|Code|[ÉEe]clairage)|\n##|\n---|$)/i;
+                    cleanMicroMd = cleanMicroMd.replace(/^```(?:markdown)?\r?\n/i, '').replace(/\r?\n```$/i, '').trim();
+
+                    const extraitRegex = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*(?:\*\*)?Extrait(?:\s+exact)?(?:\s*:\s*\*\*|\*\*\s*:[ \t]*|[ \t]*:[ \t]*)[\s\S]*?(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*(?:\*\*)?(?:Typologie|Observation|Diagnostic|Conseil|Piste|Recommandation|R[èe]gle|Code|Usage|[ÉEe]clairage|Extrait\s+du\s+jury|Rapport|Citation)|\n##|\n---|$)/i;
                     if (extraitRegex.test(cleanMicroMd)) {
                         cleanMicroMd = cleanMicroMd.replace(extraitRegex, `\n- **Extrait exact** : « ${phrase.trim()} »\n`);
                     } else {
                         cleanMicroMd = `- **Extrait exact** : « ${phrase.trim()} »\n` + cleanMicroMd;
+                    }
+
+                    // Vérification que l'analyse est complète et comporte un diagnostic ou un conseil
+                    const candidateAnns = extraireAnnotationsChirurgicales(cleanMicroMd);
+                    if (candidateAnns.length === 0) {
+                        throw new Error("L'analyse retournée par le jury est incomplète. Veuillez relancer la remarque sur cette unité de sens.");
                     }
 
                     // Récupération robuste via getSubjectStoredDraftAndCorrection pour gérer les crans actifs
