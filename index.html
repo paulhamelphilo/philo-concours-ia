@@ -6006,8 +6006,8 @@
 
         function normaliserMarkdownCorrection(md) {
             if (!md || typeof md !== 'string') return '';
-            // Détecter et restructurer proprement chaque bloc Pistes d'amélioration
-            return md.replace(/(####\s*Pistes\s+d['’]am[ée]lioration[^\n]*\n)([\s\S]*?)(?=\n\s*(?:---|###|$)|$)/gi, (match, header, content) => {
+            // Détecter et restructurer proprement chaque bloc Pistes d'amélioration (globales ou chirurgicales)
+            return md.replace(/(####\s*(?:Pistes\s+d['’]am[ée]lioration[^\n]*|Piste\s+d['’]am[ée]lioration[^\n]*)\n)([\s\S]*?)(?=\n\s*(?:---|###|####|$)|$)/gi, (match, header, content) => {
                 const rawLines = content.split('\n');
                 const validLines = [];
                 for (let line of rawLines) {
@@ -6143,7 +6143,7 @@
                     if (h4Pistes) {
                         let el = h4Pistes.nextElementSibling;
                         let targetBq = cardDiv.querySelector('blockquote');
-                        while (el) {
+                        while (el && !['H4', 'H3', 'H2'].includes(el.tagName)) {
                             const next = el.nextElementSibling;
                             if (el.tagName === 'BLOCKQUOTE') {
                                 if (!el.textContent.trim()) {
@@ -9161,12 +9161,12 @@
                         </div>
                         <div id="loading-msg" class="loading">Le correcteur IA analyse votre travail conformément à la méthodologie, veuillez patienter (environ 5 à 10 secondes)<span class="loading-dots"></span></div>
                         <div id="correction-box" style="${savedCorrection ? 'display: block;' : 'display: none;'}">
-                            <!-- Barre d'onglets commutable en sentence case -->
-                            <div class="correction-tabs-bar" role="tablist">
+                            <!-- Barre d'onglets commutable (onglet Copie annotée masqué pour le test) -->
+                            <div class="correction-tabs-bar" role="tablist" style="display: none;">
                                 <button id="tab-btn-rapport" type="button" class="correction-tab-btn active" role="tab" aria-selected="true" onclick="switchCorrectionTab('rapport')">
                                     🏛️ Rapport d'évaluation
                                 </button>
-                                <button id="tab-btn-copie" type="button" class="correction-tab-btn" role="tab" aria-selected="false" onclick="switchCorrectionTab('copie')">
+                                <button id="tab-btn-copie" type="button" class="correction-tab-btn" role="tab" aria-selected="false" style="display: none;" onclick="switchCorrectionTab('copie')">
                                     📝 Copie annotée <span id="badge-nb-annotations" class="badge-annotations-count" style="display: none;">0</span>
                                 </button>
                             </div>
