@@ -8966,6 +8966,7 @@
 
             const maxLength = 100000;
             
+            const prof = getActiveProfile();
             const sujetActif = obtenirSujetActif();
             const currentSubjectKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
             lastRenderedSubjectKey = currentSubjectKey;
@@ -9200,7 +9201,7 @@
             // Si une correction sauvegardée est présente, restaurer également la vue Copie annotée
             if (savedCorrection && savedCorrectionObj) {
                 const rawMd = savedCorrectionObj.rawMarkdown || '';
-                const storedEntry = prof.subjectsData[getSubjectStorageKey(state.exerciseType, state.mode, sujetActif)];
+                const storedEntry = (prof && prof.subjectsData) ? prof.subjectsData[getSubjectStorageKey(state.exerciseType, state.mode, sujetActif)] : null;
                 const draft = savedCorrectionObj.draftText || (storedEntry ? storedEntry.workingDraft : '') || currentText;
                 rafraichirCopieAnnotee(rawMd, draft);
             }
@@ -9483,6 +9484,10 @@
                 updateLastActiveState();
                 persistStorageData();
                 updateFloatingProfileDock();
+                const btnSecondary = document.querySelector(".btn-secondary");
+                if (btnSecondary) {
+                    btnSecondary.innerText = "Effacer la correction";
+                }
             } catch (error) {
                 alert("Erreur lors de la communication avec le correcteur : " + error.message);
             } finally {
