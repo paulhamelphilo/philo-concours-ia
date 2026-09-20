@@ -2622,7 +2622,7 @@
 
         <div class="main-nav-unified" style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 20px 0; padding: 12px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; flex-wrap: wrap; gap: 10px;">
             <div style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--primary-color); font-weight: 600;">
-                <span>🏛️ Espace de Rédaction & d'Évaluation Unifié</span>
+                <span>🏛️ Espace de rédaction et d'évaluation unifié</span>
                 <span style="font-weight: normal; color: #64748b; font-size: 0.85rem;">(Saisie libre : copie complète, introduction, partie ou fragment)</span>
             </div>
             <div>
@@ -5330,10 +5330,22 @@
             return storageData.profiles[pid];
         }
 
+        function getContextKey(concours, epreuve) {
+            const c = concours || state.concours || 'Agrégation Interne';
+            const ep = epreuve || state.epreuve || (state.exerciseType === 'dissertation' ? 'Dissertation' : 'Explication de texte');
+            return `${c}_${ep}`;
+        }
+
         function getSubjectStorageKey(exerciseType, mode, sujet) {
-            const ex = (exerciseType || 'dissertation').trim().toLowerCase();
-            const md = (mode || 'redaction').trim().toLowerCase();
-            const s = (sujet || '').trim().replace(/[’'`]/g, "'").replace(/\s+/g, ' ');
+            const ex = (exerciseType || (typeof state !== 'undefined' ? state.exerciseType : '') || 'dissertation').trim().toLowerCase();
+            const md = (mode || (typeof state !== 'undefined' ? state.mode : '') || 'redaction').trim().toLowerCase();
+            let s = (sujet !== undefined && sujet !== null && sujet !== '') ? sujet : (typeof obtenirSujetActif === 'function' ? obtenirSujetActif() : '');
+            s = (s || '').trim();
+            // Normalisation des apostrophes typographiques et espaces insécables
+            s = s.replace(/[\u2019\u2018\u0060\u00B4]/g, "'")
+                 .replace(/[\u00A0\u202F\s]+/g, ' ');
+            // Retrait d'un éventuel préfixe d'année/session pour aligner "2026 — Sujet" et "Sujet"
+            s = s.replace(/^\d{4}\s*[—–-]\s*/, '').trim();
             return `${ex}_${md}:${s}`;
         }
 
@@ -5349,7 +5361,6 @@
                         storageData.profiles = parsedV2.profiles;
                         const activeProf = getActiveProfile();
                         storageData.lastActive = activeProf.lastActive || {};
-                        storageData.subjectsData = activeProf.subjectsData || {};
                         return;
                     }
                 }
@@ -5367,6 +5378,7 @@
                             lastActive: (parsedV1.lastActive && typeof parsedV1.lastActive === 'object')
                                 ? { ...storageData.profiles[1].lastActive, ...parsedV1.lastActive }
                                 : { ...storageData.profiles[1].lastActive },
+                            lastActiveByContext: {},
                             subjectsData: {}
                         };
 
@@ -5405,7 +5417,6 @@
                         }
                         storageData.profiles = { 1: prof1 };
                         storageData.lastActive = prof1.lastActive;
-                        storageData.subjectsData = prof1.subjectsData;
                         persistStorageData();
                         return;
                     }
@@ -5419,10 +5430,34 @@
             try {
                 const prof = getActiveProfile();
                 storageData.lastActive = prof.lastActive || {};
-                storageData.subjectsData = prof.subjectsData || {};
-                localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(storageData));
+                // Supprimer la duplication inutile de subjectsData à la racine (gain de 50% de mémoire localStorage)
+                delete storageData.subjectsData;
+
+                try {
+                    localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(storageData));
+                } catch (quotaErr) {
+                    console.warn("Quota localStorage dépassé, allègement préventif des fragments HTML recalculables :", quotaErr);
+                    // Purge sécurisée des fragments HTML dérivés : render() sait les recalculer fidèlement depuis rawMarkdown
+                    if (storageData.profiles) {
+                        Object.values(storageData.profiles).forEach(p => {
+                            if (p && p.subjectsData) {
+                                Object.values(p.subjectsData).forEach(sub => {
+                                    if (sub && Array.isArray(sub.crans)) {
+                                        sub.crans.forEach(c => {
+                                            if (c && c.correction && c.correction.rawMarkdown) {
+                                                delete c.correction.html;
+                                                delete c.correction.atelierHtml;
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(storageData));
+                }
             } catch (e) {
-                console.warn("Erreur sauvegarde localStorage:", e);
+                console.warn("Erreur sauvegarde localStorage :", e);
             }
         }
 
@@ -5443,7 +5478,20 @@
                     const fbKey = getSubjectStorageKey(exerciseType, fbMode, sujet);
                     if (prof.subjectsData[fbKey]) {
                         entry = prof.subjectsData[fbKey];
-                        // Migration transparente sans perte
+                        prof.subjectsData[key] = entry;
+                        break;
+                    }
+                }
+            }
+
+            // Recherche élargie par correspondance robuste si non trouvé
+            if (!entry && prof.subjectsData && sujet) {
+                const cleanS = (sujet || '').trim().replace(/[\u2019\u2018\u0060\u00B4]/g, "'").replace(/[\u00A0\u202F\s]+/g, ' ').toLowerCase();
+                const cleanNoYear = cleanS.replace(/^\d{4}\s*[-—–]\s*/, '').trim();
+                for (const existingKey of Object.keys(prof.subjectsData)) {
+                    const normExisting = existingKey.replace(/[\u2019\u2018\u0060\u00B4]/g, "'").replace(/[\u00A0\u202F\s]+/g, ' ').toLowerCase();
+                    if (normExisting.endsWith(':' + cleanS) || normExisting.endsWith(':' + cleanNoYear)) {
+                        entry = prof.subjectsData[existingKey];
                         prof.subjectsData[key] = entry;
                         break;
                     }
@@ -5541,6 +5589,25 @@
             const textareaCustomArgFragment = document.getElementById("textarea-custom-arg-fragment");
 
             const prof = getActiveProfile();
+            if (!prof.lastActiveByContext) {
+                prof.lastActiveByContext = {};
+            }
+            const ctxKey = getContextKey(state.concours, state.epreuve);
+            prof.lastActiveByContext[ctxKey] = {
+                sujet: selectSujet ? selectSujet.value : '',
+                customSujet: inputCustomSujet ? inputCustomSujet.value : '',
+                isCustomDissertation: state.isCustomDissertation,
+                explicIdx: selectExplic ? selectExplic.value : '',
+                isCustomExplication: state.isCustomExplication,
+                customRef: inputCustomRef ? inputCustomRef.value : '',
+                customText: textareaCustomText ? textareaCustomText.value : '',
+                notionArg: selectNotionArg ? selectNotionArg.value : '',
+                sujetArgIdx: selectSujetArg ? selectSujetArg.value : '',
+                customThesis: inputCustomThesis ? inputCustomThesis.value : '',
+                activeThesis: state.activeThesis || '',
+                thesisOrientation: state.thesisOrientation || null
+            };
+
             prof.lastActive = {
                 concours: state.concours,
                 epreuve: state.epreuve,
@@ -6020,7 +6087,7 @@
         function normaliserMarkdownCorrection(md) {
             if (!md || typeof md !== 'string') return '';
             // Détecter et restructurer proprement chaque bloc Pistes d'amélioration (globales ou chirurgicales)
-            return md.replace(/(####\s*(?:Pistes\s+d['’]am[ée]lioration[^\n]*|Piste\s+d['’]am[ée]lioration[^\n]*)\n)([\s\S]*?)(?=\n\s*(?:---|###|####|$)|$)/gi, (match, header, content) => {
+            return md.replace(/(#{4,5}\s*(?:Pistes\s+d['’]am[ée]lioration[^\n]*|Piste\s+d['’]am[ée]lioration[^\n]*)\n)([\s\S]*?)(?=\n\s*(?:---|###|####|#####|$)|$)/gi, (match, header, content) => {
                 const rawLines = content.split('\n');
                 const validLines = [];
                 for (let line of rawLines) {
@@ -7825,8 +7892,20 @@
 
             if (state.exerciseType === 'dissertation') {
                 if (state.mode !== 'argumentation') {
-                    // Restore Dissertation standard (default to custom true)
-                    state.isCustomDissertation = (la.isCustomDissertation !== undefined) ? !!la.isCustomDissertation : true;
+                    // Restore Dissertation standard
+                    const ctxKey = getContextKey(state.concours, state.epreuve);
+                    const savedCtx = (prof && prof.lastActiveByContext) ? prof.lastActiveByContext[ctxKey] : null;
+
+                    if (savedCtx && typeof savedCtx.isCustomDissertation === 'boolean') {
+                        state.isCustomDissertation = savedCtx.isCustomDissertation;
+                    } else if (la.isCustomDissertation !== undefined) {
+                        state.isCustomDissertation = !!la.isCustomDissertation;
+                    } else if (la.sujet || (savedCtx && savedCtx.sujet)) {
+                        state.isCustomDissertation = false;
+                    } else {
+                        state.isCustomDissertation = false;
+                    }
+
                     const preDis = document.getElementById('dissertation-predefined');
                     const custDis = document.getElementById('dissertation-custom');
                     if (state.isCustomDissertation) {
@@ -7835,32 +7914,16 @@
 
                         const inputCustomSujet = document.getElementById("input-custom-sujet");
                         if (inputCustomSujet) {
-                            inputCustomSujet.value = la.customSujet || '';
+                            inputCustomSujet.value = (savedCtx && savedCtx.customSujet) ? savedCtx.customSujet : (la.customSujet || '');
                         }
                     } else {
                         if (preDis) preDis.style.display = 'block';
                         if (custDis) custDis.style.display = 'none';
 
-                        const selectNotion = document.getElementById("select-notion");
                         const selectSujet = document.getElementById("select-sujet");
-                        if (selectNotion) {
-                            selectNotion.value = la.notion || '';
-                            if (selectSujet) {
-                                selectSujet.innerHTML = '<option value="">-- Sélectionnez un sujet --</option>';
-                                if (la.notion && sujetsPhilo[la.notion]) {
-                                    selectSujet.disabled = false;
-                                    sujetsPhilo[la.notion].forEach(s => {
-                                        const opt = document.createElement("option"); opt.value = s.question; opt.textContent = s.question;
-                                        selectSujet.appendChild(opt);
-                                    });
-                                    selectSujet.value = la.sujet || '';
-                                } else {
-                                    selectSujet.disabled = true;
-                                    selectSujet.value = '';
-                                }
-                            }
-                        } else if (selectSujet && la.sujet) {
-                            selectSujet.value = la.sujet;
+                        const targetSujet = (savedCtx && savedCtx.sujet) ? savedCtx.sujet : (la.sujet || '');
+                        if (selectSujet && targetSujet) {
+                            selectSujet.value = targetSujet;
                         }
                     }
                 } else {
@@ -8250,6 +8313,7 @@
 
         function setExerciseTypeAndEpreuve(type, epreuve) {
             preserveTrainingText();
+            updateLastActiveState();
             state.exerciseType = type;
             state.epreuve = epreuve;
 
@@ -8271,6 +8335,7 @@
 
         function setConcours(cName) {
             preserveTrainingText();
+            updateLastActiveState();
             state.concours = cName;
 
             // Boutons de concours
@@ -8315,43 +8380,163 @@
 
             const defaultOpt = document.createElement("option");
             defaultOpt.value = "";
-            defaultOpt.textContent = `-- Sélectionnez une annale officielle : ${state.concours} --`;
+            defaultOpt.textContent = `-- Sélectionnez une annale officielle (${state.concours}) --`;
             selectSujet.appendChild(defaultOpt);
 
             const cData = getActiveAnnalesData();
+            let targetVal = '';
+            let bestEvaluatedVal = '';
+            let bestEvaluatedTs = -1;
+
+            const prof = getActiveProfile();
+            const ctxKey = getContextKey(state.concours, state.epreuve);
+            const savedCtx = (prof && prof.lastActiveByContext) ? prof.lastActiveByContext[ctxKey] : null;
+
             if (cData && Array.isArray(cData.dissertation) && cData.dissertation.length > 0) {
                 cData.dissertation.forEach(item => {
                     const opt = document.createElement("option");
                     opt.value = item.title;
-                    opt.textContent = `${item.session} — ${item.title}`;
+
+                    // Badge dynamique des corrections / brouillons enregistrés
+                    let badgeText = '';
+                    const stored = getSubjectStoredDraftAndCorrection('dissertation', 'redaction', item.title);
+                    if (stored && Array.isArray(stored.crans) && stored.crans.length > 0) {
+                        const count = stored.crans.length;
+                        const latestCran = stored.crans[stored.crans.length - 1];
+                        const score = (latestCran && typeof latestCran.score === 'number') ? `${latestCran.score}/100` : '';
+                        badgeText = ` 🟢 (${count} évaluation${count > 1 ? 's' : ''}${score ? ' — ' + score : ''})`;
+                        const cranTs = (latestCran && latestCran.timestamp) ? latestCran.timestamp : 0;
+                        if (cranTs >= bestEvaluatedTs) {
+                            bestEvaluatedTs = cranTs;
+                            bestEvaluatedVal = item.title;
+                        }
+                    } else if (stored && typeof stored.draft === 'string' && stored.draft.trim() !== '') {
+                        const stripped = stored.draft.replace(/\[[^\]]+\]/g, '').trim();
+                        if (stripped !== '') {
+                            badgeText = ' 📝 (brouillon)';
+                        }
+                    }
+
+                    opt.textContent = `${item.session} — ${item.title}${badgeText}`;
                     selectSujet.appendChild(opt);
                 });
 
-                if (prevVal) {
-                    selectSujet.value = prevVal;
+                const allTitles = cData.dissertation.map(d => d.title);
+                if (savedCtx && savedCtx.sujet && allTitles.includes(savedCtx.sujet)) {
+                    targetVal = savedCtx.sujet;
+                } else if (prevVal && allTitles.includes(prevVal)) {
+                    targetVal = prevVal;
+                } else if (bestEvaluatedVal) {
+                    targetVal = bestEvaluatedVal;
+                }
+
+                if (targetVal) {
+                    selectSujet.value = targetVal;
                 }
             }
             selectSujet.disabled = false;
+
+            // Restauration du mode personnalisé vs annales pour la dissertation
+            const inputCustomSujet = document.getElementById("input-custom-sujet");
+            if (savedCtx) {
+                if (typeof savedCtx.isCustomDissertation === 'boolean') {
+                    state.isCustomDissertation = savedCtx.isCustomDissertation;
+                } else if (targetVal) {
+                    state.isCustomDissertation = false;
+                }
+                if (savedCtx.customSujet && inputCustomSujet) {
+                    inputCustomSujet.value = savedCtx.customSujet;
+                }
+            } else if (targetVal && !state.isCustomDissertation) {
+                state.isCustomDissertation = false;
+            }
+
+            const preDis = document.getElementById('dissertation-predefined');
+            const custDis = document.getElementById('dissertation-custom');
+            if (preDis && custDis) {
+                preDis.style.display = state.isCustomDissertation ? 'none' : 'block';
+                custDis.style.display = state.isCustomDissertation ? 'block' : 'none';
+            }
         }
 
         function populateExplicConcours() {
             const selectExp = document.getElementById("select-explic-text");
             if (!selectExp) return;
             const prevVal = selectExp.value;
-            selectExp.innerHTML = `<option value="">-- Sélectionnez un texte officiel : ${state.concours} --</option>`;
+            selectExp.innerHTML = `<option value="">-- Sélectionnez un texte officiel (${state.concours}) --</option>`;
 
             const cData = getActiveAnnalesData();
+            let targetVal = '';
+            let bestEvaluatedVal = '';
+            let bestEvaluatedTs = -1;
+
+            const prof = getActiveProfile();
+            const ctxKey = getContextKey(state.concours, state.epreuve);
+            const savedCtx = (prof && prof.lastActiveByContext) ? prof.lastActiveByContext[ctxKey] : null;
+
             if (cData && Array.isArray(cData.explication) && cData.explication.length > 0) {
                 cData.explication.forEach((item, idx) => {
                     const opt = document.createElement("option");
-                    opt.value = "annale_" + idx;
-                    opt.textContent = item.label;
+                    const optVal = "annale_" + idx;
+                    opt.value = optVal;
+
+                    let badgeText = '';
+                    const stored = getSubjectStoredDraftAndCorrection('explication', 'redaction', item.label || item.title);
+                    if (stored && Array.isArray(stored.crans) && stored.crans.length > 0) {
+                        const count = stored.crans.length;
+                        const latestCran = stored.crans[stored.crans.length - 1];
+                        const score = (latestCran && typeof latestCran.score === 'number') ? `${latestCran.score}/100` : '';
+                        badgeText = ` 🟢 (${count} évaluation${count > 1 ? 's' : ''}${score ? ' — ' + score : ''})`;
+                        const cranTs = (latestCran && latestCran.timestamp) ? latestCran.timestamp : 0;
+                        if (cranTs >= bestEvaluatedTs) {
+                            bestEvaluatedTs = cranTs;
+                            bestEvaluatedVal = optVal;
+                        }
+                    } else if (stored && typeof stored.draft === 'string' && stored.draft.trim() !== '') {
+                        const stripped = stored.draft.replace(/\[[^\]]+\]/g, '').trim();
+                        if (stripped !== '') {
+                            badgeText = ' 📝 (brouillon)';
+                        }
+                    }
+
+                    opt.textContent = `${item.label}${badgeText}`;
                     selectExp.appendChild(opt);
                 });
 
-                if (prevVal) {
-                    selectExp.value = prevVal;
+                const allVals = cData.explication.map((_, idx) => "annale_" + idx);
+                if (savedCtx && savedCtx.explicIdx && allVals.includes(savedCtx.explicIdx)) {
+                    targetVal = savedCtx.explicIdx;
+                } else if (prevVal && allVals.includes(prevVal)) {
+                    targetVal = prevVal;
+                } else if (bestEvaluatedVal) {
+                    targetVal = bestEvaluatedVal;
                 }
+
+                if (targetVal) {
+                    selectExp.value = targetVal;
+                    selectExplicText(targetVal, true);
+                }
+            }
+
+            if (savedCtx) {
+                if (typeof savedCtx.isCustomExplication === 'boolean') {
+                    state.isCustomExplication = savedCtx.isCustomExplication;
+                }
+                const inputCustomRef = document.getElementById('input-custom-ref');
+                if (inputCustomRef && savedCtx.customRef) {
+                    inputCustomRef.value = savedCtx.customRef;
+                }
+                const textareaCustomText = document.getElementById('textarea-custom-text');
+                if (textareaCustomText && savedCtx.customText) {
+                    textareaCustomText.value = savedCtx.customText;
+                }
+            }
+
+            const preExp = document.getElementById('explication-predefined');
+            const custExp = document.getElementById('explication-custom');
+            if (preExp && custExp) {
+                preExp.style.display = state.isCustomExplication ? 'none' : 'block';
+                custExp.style.display = state.isCustomExplication ? 'block' : 'none';
             }
         }
 
@@ -8359,12 +8544,12 @@
             populateExplicConcours();
         }
 
-        function selectExplicText(val) {
+        function selectExplicText(val, skipRender) {
             saveCurrentDraftToLastRenderedSubject();
             if (!val) {
                 state.currentExplicTextIndex = null;
                 state.currentExplicText = null;
-                render();
+                if (!skipRender) render();
                 return;
             }
 
@@ -8394,34 +8579,34 @@
                     state.currentExplicText = state.explicTexts[idx];
                 }
             }
-            render();
+            if (!skipRender) render();
         }
 
         function toggleDissertationMode(isCustom) {
             saveCurrentDraftToLastRenderedSubject();
             state.isCustomDissertation = isCustom;
-            document.getElementById('dissertation-predefined').style.display = isCustom ? 'none' : 'block';
-            document.getElementById('dissertation-custom').style.display = isCustom ? 'block' : 'none';
-            if (!isCustom) {
-                document.getElementById('input-custom-sujet').value = '';
-            }
+            const pre = document.getElementById('dissertation-predefined');
+            const cust = document.getElementById('dissertation-custom');
+            if (pre) pre.style.display = isCustom ? 'none' : 'block';
+            if (cust) cust.style.display = isCustom ? 'block' : 'none';
+            updateLastActiveState();
             render();
         }
 
         function toggleExplicationMode(isCustom) {
             saveCurrentDraftToLastRenderedSubject();
             state.isCustomExplication = isCustom;
-            document.getElementById('explication-predefined').style.display = isCustom ? 'none' : 'block';
-            document.getElementById('explication-custom').style.display = isCustom ? 'block' : 'none';
+            const pre = document.getElementById('explication-predefined');
+            const cust = document.getElementById('explication-custom');
+            if (pre) pre.style.display = isCustom ? 'none' : 'block';
+            if (cust) cust.style.display = isCustom ? 'block' : 'none';
             if (!isCustom) {
-                const inputCustomRef = document.getElementById('input-custom-ref');
-                if (inputCustomRef) inputCustomRef.value = '';
-                const textareaCustomText = document.getElementById('textarea-custom-text');
-                if (textareaCustomText) textareaCustomText.value = '';
-                selectExplicText(document.getElementById('select-explic-text').value);
+                const selExp = document.getElementById('select-explic-text');
+                if (selExp) selectExplicText(selExp.value);
             } else {
                 updateCustomExplication();
             }
+            updateLastActiveState();
             render();
         }
 
@@ -8969,7 +9154,10 @@
             }
 
             if (state.exerciseType === 'explication') {
-                populateExplicTextSelector();
+                const selExp = document.getElementById("select-explic-text");
+                if (selExp && selExp.options.length <= 1) {
+                    populateExplicTextSelector();
+                }
             }
 
             // Sync the selected thesis display for dissertation or other modes
