@@ -21,6 +21,9 @@
     -->
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏛️</text></svg>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="annales_data.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6084,6 +6087,26 @@
             return sections;
         }
 
+        function appliquerRenduLatex(element) {
+            if (!element) return;
+            const renderFn = window.renderMathInElement || (typeof renderMathInElement === 'function' ? renderMathInElement : null);
+            if (renderFn) {
+                try {
+                    renderFn(element, {
+                        delimiters: [
+                            { left: '$$', right: '$$', display: true },
+                            { left: '$', right: '$', display: false },
+                            { left: '\\(', right: '\\)', display: false },
+                            { left: '\\[', right: '\\]', display: true }
+                        ],
+                        throwOnError: false
+                    });
+                } catch (err) {
+                    console.warn("Avertissement : Erreur lors du rendu KaTeX :", err);
+                }
+            }
+        }
+
         function normaliserMarkdownCorrection(md) {
             if (!md || typeof md !== 'string') return '';
             // Détecter et restructurer proprement chaque bloc Pistes d'amélioration (globales ou chirurgicales)
@@ -7466,6 +7489,7 @@
                     ${blocks.join('\n')}
                 </div>
             `;
+            appliquerRenduLatex(container);
         }
 
         // Extraction intelligente du numéro de section (chiffre arabe, chiffre romain ou ordinal)
@@ -9399,8 +9423,12 @@
 
             area.innerHTML = workspaceHtml;
 
-            // Si une correction sauvegardée est présente, restaurer également la vue Copie annotée
+            // Si une correction sauvegardée est présente, restaurer également la vue Copie annotée et appliquer KaTeX
             if (savedCorrection && savedCorrectionObj) {
+                const corrEl = document.getElementById("correction-text");
+                if (corrEl) {
+                    appliquerRenduLatex(corrEl);
+                }
                 const rawMd = savedCorrectionObj.rawMarkdown || '';
                 const storedEntry = (prof && prof.subjectsData) ? prof.subjectsData[getSubjectStorageKey(state.exerciseType, state.mode, sujetActif)] : null;
                 const draft = savedCorrectionObj.draftText || (storedEntry ? storedEntry.workingDraft : '') || currentText;
@@ -9605,7 +9633,11 @@
                     state.streamingTexteCumule = texteCumule;
                     const errHtml = marked.parse(normaliserMarkdownCorrection(texteCumule));
                     const errTransformed = transformerRenduCorrection(errHtml, savedCorrectionObj, currentDraftBySection);
-                    document.getElementById("correction-text").innerHTML = errTransformed.html;
+                    const corrTextElErr = document.getElementById("correction-text");
+                    if (corrTextElErr) {
+                        corrTextElErr.innerHTML = errTransformed.html;
+                        appliquerRenduLatex(corrTextElErr);
+                    }
                     updateFloatingQuickNav(errTransformed.sections, errTransformed.globalScore);
                 } finally {
                     state.streamingTexteCumule = null;
@@ -9613,7 +9645,11 @@
 
                 const correctionHtmlFinale = marked.parse(normaliserMarkdownCorrection(texteCumule));
                 const transformedFinal = transformerRenduCorrection(correctionHtmlFinale, savedCorrectionObj, currentDraftBySection);
-                document.getElementById("correction-text").innerHTML = transformedFinal.html;
+                const corrTextEl = document.getElementById("correction-text");
+                if (corrTextEl) {
+                    corrTextEl.innerHTML = transformedFinal.html;
+                    appliquerRenduLatex(corrTextEl);
+                }
                 updateFloatingQuickNav(transformedFinal.sections, transformedFinal.globalScore);
 
                 // Reconstitution finale complète de la copie annotée
