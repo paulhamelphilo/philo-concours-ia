@@ -683,55 +683,92 @@
         }
 
         /* ==========================================================================
-           Bordure latérale gauche reliant analyse et pistes pour chaque nœud critique
+           Case nœud critique avec bordure latérale gauche englobant le titre et fond léger
            ========================================================================== */
         .noeud-critique-block {
-            margin: 22px 0 18px 0;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 4.5px solid #0ea5e9;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin: 22px 0 20px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.2s ease;
         }
 
+        .noeud-critique-block:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Titre du nœud critique intégré directement dans la barre gauche */
         .noeud-critique-block > h4 {
             color: #1e3a8a;
             font-size: 15.5px;
             font-weight: 700;
-            margin-top: 18px;
-            margin-bottom: 10px;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
             gap: 6px;
-            border-bottom: 1px dashed #cbd5e1;
-            padding-bottom: 4px;
         }
 
-        /* Trait vertical à gauche (accolade d'interface) reliant analyse et pistes spécifiques */
-        .noeud-critique-body {
-            border-left: 4px solid #0ea5e9;
-            padding-left: 18px;
-            margin: 10px 0 20px 4px;
+        /* Harmonisation de la bordure et du fond léger selon le palier de la section */
+        .card-tier-1 .noeud-critique-block {
+            border-left-color: #22c55e;
+            background: #fcfdfc;
+            border-color: #e2ece4;
+        }
+        .card-tier-2 .noeud-critique-block {
+            border-left-color: #0ea5e9;
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+        .card-tier-3 .noeud-critique-block {
+            border-left-color: #f59e0b;
+            background: #fffdfa;
+            border-color: #faedd0;
+        }
+        .card-tier-4 .noeud-critique-block {
+            border-left-color: #f97316;
+            background: #fffaf5;
+            border-color: #fae4d2;
+        }
+        .card-tier-5 .noeud-critique-block {
+            border-left-color: #ef4444;
+            background: #fdf8f8;
+            border-color: #f9dcdc;
         }
 
-        /* Couleur de la bordure latérale synchronisée avec le palier de la section */
-        .card-tier-1 .noeud-critique-body { border-left-color: #22c55e; }
-        .card-tier-2 .noeud-critique-body { border-left-color: #0ea5e9; }
-        .card-tier-3 .noeud-critique-body { border-left-color: #f59e0b; }
-        .card-tier-4 .noeud-critique-body { border-left-color: #f97316; }
-        .card-tier-5 .noeud-critique-body { border-left-color: #ef4444; }
-
-        .noeud-critique-body h5 {
+        .noeud-critique-block h5 {
             color: #334155;
             font-size: 14px;
             font-weight: 600;
-            margin-top: 12px;
+            margin-top: 14px;
             margin-bottom: 6px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .noeud-critique-body p {
+        .noeud-critique-block p {
             color: #1e293b;
             line-height: 1.65;
             margin: 0 0 12px 0;
             font-size: 15px;
+        }
+
+        /* Encadré des pistes d'amélioration à l'intérieur de la case du nœud critique */
+        .noeud-critique-block blockquote {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3.5px solid currentColor;
+            border-radius: 4px;
+            padding: 12px 16px;
+            margin: 10px 0 8px 0;
+            color: #1e293b;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
 
@@ -6203,16 +6240,13 @@
                 h4El.textContent = cleanTitle;
                 blockDiv.appendChild(h4El);
 
-                // Corps indenté avec bordure latérale à gauche reliant l'analyse et les pistes
-                const bodyDiv = ownerDoc.createElement('div');
-                bodyDiv.className = 'noeud-critique-body';
-
+                // Ajout de tous les nœuds de contenu (analyse critique et pistes d'amélioration) directement dans la case
                 contentNodes.forEach(node => {
-                    bodyDiv.appendChild(node);
+                    blockDiv.appendChild(node);
                 });
 
                 // Harmonisation des pistes d'amélioration dans un blockquote si elles sont orphelines
-                const hPistes = Array.from(bodyDiv.querySelectorAll('h4, h5')).find(h => /pistes?\s+d['’]am[ée]lioration/i.test(h.textContent));
+                const hPistes = Array.from(blockDiv.querySelectorAll('h4, h5')).find(h => /pistes?\s+d['’]am[ée]lioration/i.test(h.textContent));
                 if (hPistes) {
                     let pSibling = hPistes.nextElementSibling;
                     let bq = null;
@@ -6233,8 +6267,6 @@
                         loosePistes.forEach(p => bq.appendChild(p));
                     }
                 }
-
-                blockDiv.appendChild(bodyDiv);
 
                 if (headerEl.parentNode) {
                     headerEl.parentNode.replaceChild(blockDiv, headerEl);
