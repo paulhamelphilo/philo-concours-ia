@@ -6317,6 +6317,7 @@
                 }).join('');
 
                 const dashboardDiv = doc.createElement('div');
+                dashboardDiv.id = 'indice-general-conformite';
                 dashboardDiv.className = `global-eval-dashboard dashboard-tier-${globalColors.tier}`;
                 dashboardDiv.innerHTML = `
                     <div class="dashboard-header">
@@ -7674,6 +7675,9 @@
             if (!el && id === 'sec-analyse-personnalisee') {
                 el = document.querySelector('.global-eval-dashboard') || Array.from(document.querySelectorAll('h2')).find(h => /Analyse\s+personnalis/i.test(h.textContent));
             }
+            if (!el && id === 'indice-general-conformite') {
+                el = document.querySelector('.global-eval-dashboard');
+            }
             if (el) {
                 const yOffset = -20;
                 const elementPosition = el.getBoundingClientRect().top;
@@ -7797,9 +7801,9 @@
                 if (!globalPill) {
                     globalPill = document.createElement('a');
                     globalPill.id = 'quicknav-global-pill';
-                    globalPill.href = '#correction-box';
-                    globalPill.setAttribute('data-target', 'correction-box');
-                    globalPill.onclick = () => { scrollToElement('correction-box'); return false; };
+                    globalPill.href = '#indice-general-conformite';
+                    globalPill.setAttribute('data-target', 'indice-general-conformite');
+                    globalPill.onclick = () => { scrollToElement('indice-general-conformite'); return false; };
                     const refNode = btnAnalyse || btnRedac;
                     refNode.insertAdjacentElement('afterend', globalPill);
                 }
