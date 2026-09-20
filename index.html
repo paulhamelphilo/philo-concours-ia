@@ -1702,6 +1702,14 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Justification du texte courant dans le rapport d'évaluation */
+        #correction-text p,
+        #correction-text li {
+            text-align: justify;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+        }
+
         /* Bannières d'accès rapide dans le rapport d'évaluation */
         .switch-to-copie-banner {
             display: flex;
