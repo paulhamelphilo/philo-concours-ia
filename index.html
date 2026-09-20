@@ -683,136 +683,57 @@
         }
 
         /* ==========================================================================
-           Conteneur de nœud critique avec accolade propre à gauche
+           Bordure latérale gauche reliant analyse et pistes pour chaque nœud critique
            ========================================================================== */
-        .noeud-critique-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 16px 18px 16px 14px;
-            margin: 22px 0 16px 0;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-            transition: box-shadow 0.2s ease;
+        .noeud-critique-block {
+            margin: 22px 0 18px 0;
         }
 
-        .noeud-critique-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-        }
-
-        .noeud-critique-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            padding-bottom: 10px;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .noeud-critique-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: #eff6ff;
-            color: #1e40af;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 6px;
-            border: 1px solid #bfdbfe;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-
-        .noeud-critique-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1e293b;
-            line-height: 1.4;
-            margin: 0;
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .noeud-critique-body {
-            display: flex;
-            align-items: stretch;
-            gap: 14px;
-            position: relative;
-        }
-
-        /* Colonne de l'accolade propre à gauche */
-        .noeud-critique-bracket-col {
-            width: 22px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: stretch;
-            justify-content: center;
-            color: #0284c7;
-            padding: 2px 0;
-        }
-
-        .noeud-bracket-svg {
-            width: 100%;
-            height: 100%;
-            min-height: 90px;
-            display: block;
-            overflow: visible;
-        }
-
-        /* Harmonisation des couleurs de l'accolade et du badge selon le palier de notation de la carte */
-        .card-tier-1 .noeud-critique-bracket-col { color: #16a34a; }
-        .card-tier-1 .noeud-critique-badge { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
-
-        .card-tier-2 .noeud-critique-bracket-col { color: #0284c7; }
-        .card-tier-2 .noeud-critique-badge { background: #f0f9ff; color: #0369a1; border-color: #bae6fd; }
-
-        .card-tier-3 .noeud-critique-bracket-col { color: #d97706; }
-        .card-tier-3 .noeud-critique-badge { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-
-        .card-tier-4 .noeud-critique-bracket-col { color: #ea580c; }
-        .card-tier-4 .noeud-critique-badge { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
-
-        .card-tier-5 .noeud-critique-bracket-col { color: #dc2626; }
-        .card-tier-5 .noeud-critique-badge { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
-
-        .noeud-critique-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .noeud-critique-content h4,
-        .noeud-critique-content h5 {
-            font-size: 14.5px;
-            font-weight: 700;
+        .noeud-critique-block > h4 {
             color: #1e3a8a;
-            margin-top: 10px;
-            margin-bottom: 8px;
+            font-size: 15.5px;
+            font-weight: 700;
+            margin-top: 18px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 6px;
-            border-bottom: 1px dashed #e2e8f0;
+            border-bottom: 1px dashed #cbd5e1;
             padding-bottom: 4px;
         }
 
-        .noeud-critique-content p {
-            font-size: 14.5px;
-            line-height: 1.65;
-            color: #1e293b;
-            margin-bottom: 12px;
+        /* Trait vertical à gauche (accolade d'interface) reliant analyse et pistes spécifiques */
+        .noeud-critique-body {
+            border-left: 4px solid #0ea5e9;
+            padding-left: 18px;
+            margin: 10px 0 20px 4px;
         }
 
-        .noeud-critique-content blockquote {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-left: 4px solid currentColor;
-            border-radius: 6px;
-            padding: 12px 16px;
-            margin: 10px 0 12px 0;
-            color: #1e293b;
+        /* Couleur de la bordure latérale synchronisée avec le palier de la section */
+        .card-tier-1 .noeud-critique-body { border-left-color: #22c55e; }
+        .card-tier-2 .noeud-critique-body { border-left-color: #0ea5e9; }
+        .card-tier-3 .noeud-critique-body { border-left-color: #f59e0b; }
+        .card-tier-4 .noeud-critique-body { border-left-color: #f97316; }
+        .card-tier-5 .noeud-critique-body { border-left-color: #ef4444; }
+
+        .noeud-critique-body h5 {
+            color: #334155;
             font-size: 14px;
-            line-height: 1.6;
+            font-weight: 600;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
+
+        .noeud-critique-body p {
+            color: #1e293b;
+            line-height: 1.65;
+            margin: 0 0 12px 0;
+            font-size: 15px;
+        }
+
 
 
         @media (max-width: 600px) {
@@ -6231,7 +6152,7 @@
             });
         }
 
-        // Transformation et regroupement des nœuds critiques avec accolade propre à gauche
+        // Regroupement sobre des nœuds critiques avec bordure latérale gauche (accolade d'interface)
         function transformerNoeudsCritiques(rootEl, ownerDoc) {
             if (!rootEl) return;
 
@@ -6248,7 +6169,7 @@
             }
 
             const candidates = Array.from(rootEl.querySelectorAll('h3, h4, h5, p')).filter(el => {
-                if (el.closest('.noeud-critique-card')) return false;
+                if (el.closest('.noeud-critique-block')) return false;
                 return isNoeudCritiqueHeader(el);
             });
 
@@ -6272,58 +6193,26 @@
                     sibling = sibling.nextElementSibling;
                 }
 
-                // Création du conteneur de carte de nœud critique
-                const card = ownerDoc.createElement('div');
-                card.className = 'noeud-critique-card';
+                // Conteneur sobre du nœud critique
+                const blockDiv = ownerDoc.createElement('div');
+                blockDiv.className = 'noeud-critique-block';
 
-                // Extraction du badge et du titre
-                const rawText = headerEl.textContent.replace(/[\[\]]/g, '').trim();
-                const colonIdx = rawText.indexOf(':');
-                let badgeText = '';
-                let titleText = '';
-                if (colonIdx !== -1) {
-                    badgeText = rawText.substring(0, colonIdx).trim();
-                    titleText = rawText.substring(colonIdx + 1).trim();
-                } else {
-                    badgeText = rawText;
-                    titleText = '';
-                }
+                // Titre standard H4 naturel (nettoyé d'éventuels crochets extérieurs)
+                const cleanTitle = headerEl.textContent.replace(/^\[+|\]+$/g, '').trim();
+                const h4El = ownerDoc.createElement('h4');
+                h4El.textContent = cleanTitle;
+                blockDiv.appendChild(h4El);
 
-                // 1. En-tête du nœud critique
-                const headerDiv = ownerDoc.createElement('div');
-                headerDiv.className = 'noeud-critique-header';
-                headerDiv.innerHTML = `
-                    <span class="noeud-critique-badge">🎯 ${escapeHtml(badgeText)}</span>
-                    ${titleText ? `<h4 class="noeud-critique-title">${escapeHtml(titleText)}</h4>` : ''}
-                `;
-                card.appendChild(headerDiv);
-
-                // 2. Corps avec l'accolade propre à gauche reliant Analyse critique et Pistes d'amélioration
+                // Corps indenté avec bordure latérale à gauche reliant l'analyse et les pistes
                 const bodyDiv = ownerDoc.createElement('div');
                 bodyDiv.className = 'noeud-critique-body';
 
-                const bracketCol = ownerDoc.createElement('div');
-                bracketCol.className = 'noeud-critique-bracket-col';
-                bracketCol.setAttribute('aria-hidden', 'true');
-                bracketCol.setAttribute('title', 'Accolade reliant l\'analyse critique et les pistes d\'amélioration à ce nœud');
-                bracketCol.innerHTML = `
-                    <svg class="noeud-bracket-svg" viewBox="0 0 20 100" preserveAspectRatio="none">
-                        <path d="M 18,2 C 12,2 7,6 7,12 L 7,42 C 7,46 3,49 1,50 C 3,51 7,54 7,58 L 7,88 C 7,94 12,98 18,98" 
-                              fill="none" stroke="currentColor" stroke-width="2.6" vector-effect="non-scaling-stroke" stroke-linecap="round" />
-                    </svg>
-                `;
-                bodyDiv.appendChild(bracketCol);
-
-                const contentDiv = ownerDoc.createElement('div');
-                contentDiv.className = 'noeud-critique-content';
-
-                // Déplacer les nœuds d'analyse et de pistes dans la zone délimitée par l'accolade
                 contentNodes.forEach(node => {
-                    contentDiv.appendChild(node);
+                    bodyDiv.appendChild(node);
                 });
 
                 // Harmonisation des pistes d'amélioration dans un blockquote si elles sont orphelines
-                const hPistes = Array.from(contentDiv.querySelectorAll('h4, h5')).find(h => /pistes?\s+d['’]am[ée]lioration/i.test(h.textContent));
+                const hPistes = Array.from(bodyDiv.querySelectorAll('h4, h5')).find(h => /pistes?\s+d['’]am[ée]lioration/i.test(h.textContent));
                 if (hPistes) {
                     let pSibling = hPistes.nextElementSibling;
                     let bq = null;
@@ -6345,11 +6234,10 @@
                     }
                 }
 
-                bodyDiv.appendChild(contentDiv);
-                card.appendChild(bodyDiv);
+                blockDiv.appendChild(bodyDiv);
 
                 if (headerEl.parentNode) {
-                    headerEl.parentNode.replaceChild(card, headerEl);
+                    headerEl.parentNode.replaceChild(blockDiv, headerEl);
                 }
             });
         }
