@@ -2586,62 +2586,6 @@
                 style="margin-top: 15px; padding: 12px; background-color: #e8f4f8; border-left: 5px solid var(--accent-color); border-radius: 4px; font-weight: bold; color: var(--primary-color); display: none;">
             </div>
 
-            <!-- Modale d'upload de copie complète post-concours -->
-            <div id="copy-upload-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.65); z-index:10000; align-items:center; justify-content:center; padding:15px; box-sizing:border-box;">
-                <div style="background:#fff; border-radius:12px; max-width:680px; width:100%; max-height:92vh; overflow-y:auto; padding:25px; box-shadow:0 20px 40px rgba(0,0,0,0.3); position:relative;">
-                    <button onclick="closeCopyUploadModal()" style="position:absolute; top:15px; right:15px; background:transparent; border:none; font-size:22px; cursor:pointer; color:#64748b;">✕</button>
-                    <h2 style="margin-top:0; color:var(--primary-color); font-size:1.35rem; display:flex; align-items:center; gap:8px;">
-                        🏛️ Évaluer une copie complète de concours
-                    </h2>
-                    <p style="color:#475569; font-size:0.92rem; line-height:1.5; margin-bottom:18px;">
-                        Déposez votre copie complète (obtenue après le concours ou rédigée en entraînement) pour recevoir un diagnostic intégral, les citations des jurys correspondantes et une évaluation sur 20.
-                    </p>
-
-                    <div style="margin-bottom:15px;">
-                        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:0.9rem;">Sujet ou texte de la copie :</label>
-                        <input type="text" id="upload-modal-sujet" placeholder="Ex: Le réel se réduit-il à ce qui est vérifiable ?" style="width:100%; padding:9px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; font-size:0.95rem;">
-                    </div>
-
-                    <!-- Zone Drag and Drop -->
-                    <div id="upload-dropzone" onclick="document.getElementById('upload-file-input').click()"
-                        style="border:2px dashed #94a3b8; border-radius:8px; padding:25px 15px; text-align:center; background:#f8fafc; cursor:pointer; transition:all 0.2s; margin-bottom:15px;">
-                        <div style="font-size:2rem; margin-bottom:8px;">📄</div>
-                        <div style="font-weight:600; color:#334155; margin-bottom:4px;">Glissez-déposez votre copie ici ou <span style="color:var(--accent-color); text-decoration:underline;">parcourez vos fichiers</span></div>
-                        <div style="font-size:0.8rem; color:#64748b;">Formats acceptés : PDF numérique, TXT, Markdown (.pdf, .txt, .md)</div>
-                        <input type="file" id="upload-file-input" accept=".pdf,.txt,.md" style="display:none;" onchange="handleCopyFileSelected(this.files[0])">
-                    </div>
-
-                    <div id="upload-status-alert" style="display:none; padding:10px 14px; border-radius:6px; margin-bottom:15px; font-size:0.88rem;"></div>
-
-                    <div style="margin-bottom:18px;">
-                        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:0.9rem;">Contenu de la copie (retranscription ou collage direct) :</label>
-                        <textarea id="upload-modal-content" rows="10" maxlength="100000" placeholder="Le texte de votre copie extrait du fichier apparaîtra ici. Vous pouvez également coller directement votre texte..."
-                            oninput="updateUploadCharCount(this.value); preserveAndCount(this);" onkeydown="handleTextareaKeydown(event, this)" onfocus="handleTextareaFocus(this)" onpaste="handleTextareaPaste(event, this)"
-                            style="width:100%; padding:10px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; font-family:inherit; font-size:0.9rem; line-height:1.6;"></textarea>
-                        <div id="upload-char-count" style="text-align:right; font-size:0.8rem; color:#64748b; margin-top:4px;">0 / 100 000 caractères</div>
-                    </div>
-
-                    <div style="display:flex; justify-content:flex-end; gap:10px;">
-                        <button type="button" class="btn btn-secondary" onclick="closeCopyUploadModal()">Annuler</button>
-                        <button type="button" class="btn" onclick="confirmCopyUpload()" style="background-color:var(--primary-color); color:#fff; font-weight:600;">
-                            🚀 Valider et charger dans l'éditeur
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="main-nav-unified" style="display: flex; justify-content: space-between; align-items: center; margin: 10px 0 20px 0; padding: 12px 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; flex-wrap: wrap; gap: 10px;">
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--primary-color); font-weight: 600;">
-                <span>🏛️ Espace de rédaction et d'évaluation unifié</span>
-                <span style="font-weight: normal; color: #64748b; font-size: 0.85rem;">(Saisie libre : copie complète, introduction, partie ou fragment)</span>
-            </div>
-            <div>
-                <button type="button" class="btn btn-sm" onclick="openCopyUploadModal()"
-                    style="background-color: var(--primary-color); color: #fff; display: inline-flex; align-items: center; gap: 6px; padding: 7px 15px; font-weight: 600; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    📤 Uploader une copie (PDF, TXT, MD)
-                </button>
-            </div>
         </div>
 
 
