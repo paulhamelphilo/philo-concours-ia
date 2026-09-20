@@ -682,6 +682,63 @@
             border-left-color: #ef4444;
         }
 
+        /* Bloc nœud critique : accolade à gauche reliant analyse et pistes */
+        .node-critique-block {
+            position: relative;
+            margin: 18px 0 10px 0;
+            padding-left: 20px;
+        }
+
+        .node-critique-block::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            background: currentColor;
+            border-radius: 2px;
+            opacity: 0.25;
+        }
+
+        /* Accolade top (crochet supérieur) */
+        .node-critique-block::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 10px;
+            height: 3px;
+            background: currentColor;
+            opacity: 0.25;
+            border-radius: 0 2px 0 0;
+        }
+
+        /* Ligne de fermeture basse via ::before du wrapper intérieur */
+        .node-critique-block-inner::after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: -20px;
+            bottom: 6px;
+            width: 10px;
+            height: 3px;
+            background: currentColor;
+            opacity: 0.25;
+            border-radius: 0 0 2px 0;
+        }
+
+        .node-critique-block-inner {
+            position: relative;
+        }
+
+        /* Couleur de l'accolade selon le tier de la carte */
+        .section-feedback-card.card-tier-1 .node-critique-block { color: #22c55e; }
+        .section-feedback-card.card-tier-2 .node-critique-block { color: #0ea5e9; }
+        .section-feedback-card.card-tier-3 .node-critique-block { color: #f59e0b; }
+        .section-feedback-card.card-tier-4 .node-critique-block { color: #f97316; }
+        .section-feedback-card.card-tier-5 .node-critique-block { color: #ef4444; }
+
         @media (max-width: 600px) {
             .section-feedback-card {
                 padding: 16px;
@@ -6233,7 +6290,40 @@
                         }
                     }
 
-                    // Supprimer l'élément brut de score s'il existe
+                    // Regroupement des nœuds critiques dans un wrapper avec accolade visuelle à gauche
+                    // Un nœud critique est un h4 dont le titre contient « Nœud critique » ou suit le pattern [Nœud critique N : ...]
+                    const nodeCritiqueH4s = Array.from(cardDiv.querySelectorAll('h4')).filter(h => {
+                        const t = h.textContent.replace(/[\[\]]/g, '').trim();
+                        return /Nou?d\s+critique|N[oœ]ud\s+dialectique/i.test(t);
+                    });
+
+                    nodeCritiqueH4s.forEach(h4Node => {
+                        // Collecter tous les éléments frères du h4 jusqu'au prochain h4 ou h3
+                        const nodesToWrap = [h4Node];
+                        let sibling = h4Node.nextElementSibling;
+                        while (sibling && !['H4', 'H3', 'H2'].includes(sibling.tagName)) {
+                            nodesToWrap.push(sibling);
+                            sibling = sibling.nextElementSibling;
+                        }
+
+                        // Créer le wrapper avec accolade
+                        const blockWrapper = doc.createElement('div');
+                        blockWrapper.className = 'node-critique-block';
+
+                        const innerWrapper = doc.createElement('div');
+                        innerWrapper.className = 'node-critique-block-inner';
+                        blockWrapper.appendChild(innerWrapper);
+
+                        // Insérer le wrapper avant le premier élément du groupe
+                        if (h4Node.parentNode) {
+                            h4Node.parentNode.insertBefore(blockWrapper, h4Node);
+                        }
+
+                        // Déplacer les éléments dans le wrapper
+                        nodesToWrap.forEach(n => innerWrapper.appendChild(n));
+                    });
+
+
                     if (scoreElement && scoreElement.parentNode) {
                         scoreElement.parentNode.removeChild(scoreElement);
                     }
