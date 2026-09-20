@@ -6368,23 +6368,29 @@
                 while (cur && cur.tagName !== 'H2') {
                     const next = cur.nextElementSibling;
                     if (cur.tagName === 'H3') {
-                        if (/Curseur\s*1|Note\s+estim[ée]e\s+r[ée]elle/i.test(cur.textContent)) {
-                            cur.innerHTML = 'Note estimée réelle de concours';
+                        if (/Curseur\s*1|Note\s+estim[ée]e\s+r[ée]elle|[ÉEe]valuation\s+selon\s+les\s+exigences\s+r[ée]elles/i.test(cur.textContent)) {
+                            cur.innerHTML = 'Évaluation selon les exigences réelles du concours';
                             cur.style.cssText = 'background: #f0fdf4; color: #166534; padding: 8px 14px; border-left: 4px solid #16a34a; border-radius: 4px; margin-top: 15px; margin-bottom: 10px; font-size: 1.1rem;';
-                        } else if (/Curseur\s*2|Note\s+d['’]exigence/i.test(cur.textContent)) {
-                            cur.innerHTML = 'Note d\'exigence canonique';
+                        } else if (/Curseur\s*2|Note\s+d['’]exigence|[ÉEe]valuation\s+selon\s+les\s+exigences\s+canoniques/i.test(cur.textContent)) {
+                            cur.innerHTML = 'Évaluation selon les exigences canoniques';
                             cur.style.cssText = 'background: #eff6ff; color: #1e40af; padding: 8px 14px; border-left: 4px solid #3b82f6; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
                         } else if (/Delta|Diagnostic/i.test(cur.textContent)) {
                             cur.innerHTML = 'Diagnostic pédagogique de l\'écart';
                             cur.style.cssText = 'background: #f8fafc; color: #334155; padding: 8px 14px; border-left: 4px solid #64748b; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
                         }
                     } else if (cur.tagName === 'UL' || cur.tagName === 'OL') {
-                        // Supprimer la mention du "Positionnement de cohorte"
+                        // Supprimer la mention du "Positionnement de cohorte" ou des paliers
                         cur.querySelectorAll('li').forEach(li => {
-                            if (/Positionnement\s+de\s+cohorte/i.test(li.textContent)) {
+                            if (/Positionnement\s+de\s+cohorte|^[^:]*palier/i.test(li.textContent.trim())) {
                                 if (li.parentNode) li.parentNode.removeChild(li);
-                            } else if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(li.innerHTML)) {
-                                li.innerHTML = li.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
+                            } else {
+                                if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(li.innerHTML)) {
+                                    li.innerHTML = li.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
+                                }
+                                // Retirer toute mention de palier résiduelle (ex. : | palier 4, - palier 5, etc.)
+                                if (/(\s*\|\s*|\s*[-–—]\s*|\s*\(\s*)palier\s*\d+[^)]*\)?/i.test(li.innerHTML)) {
+                                    li.innerHTML = li.innerHTML.replace(/(\s*\|\s*|\s*[-–—]\s*)palier\s*\d+/gi, '').replace(/\s*\(\s*palier\s*\d+[^)]*\)/gi, '');
+                                }
                             }
                         });
                     } else if (cur.tagName === 'BLOCKQUOTE') {
