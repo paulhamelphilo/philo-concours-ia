@@ -2419,6 +2419,14 @@
             line-height: 1.6;
             margin: 0;
         }
+
+        /* Masquage des docks et barres d'outils flottantes lors de l'impression */
+        @media print {
+            .floating-profile-dock,
+            .floating-quicknav {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 
