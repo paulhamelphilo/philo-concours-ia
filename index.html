@@ -6123,8 +6123,13 @@
                 const validLines = [];
                 for (let line of rawLines) {
                     const trimmed = line.trim();
-                    // Supprimer les chevrons isolés qui ouvrent/ferment des blockquotes vides
-                    if (trimmed === '>' || trimmed === '') continue;
+                    if (trimmed === '>' || trimmed === '') {
+                        // Conserver un chevron vide comme séparation de paragraphe dans le blockquote
+                        if (validLines.length > 0 && validLines[validLines.length - 1] !== '>') {
+                            validLines.push('>');
+                        }
+                        continue;
+                    }
                     // Nettoyer les chevrons existants et ajouter un chevron standard par ligne
                     if (trimmed.startsWith('>')) {
                         const inner = trimmed.replace(/^>\s*/, '').trim();
@@ -6132,6 +6137,9 @@
                     } else {
                         validLines.push('> ' + trimmed);
                     }
+                }
+                while (validLines.length > 0 && validLines[validLines.length - 1] === '>') {
+                    validLines.pop();
                 }
                 if (validLines.length === 0) {
                     return header + '> Aucune piste d\'amélioration significative.\n\n';
@@ -7376,7 +7384,7 @@
                 } else if (item.type === 'highlight') {
                     const cleanEscaped = formatProse(item.content);
                     if (item.isAtelier) {
-                        curP.push(`<mark class="copie-highlight highlight-atelier" id="mark-atelier-${item.cas.id}" data-typology-key="atelier" onclick="toggleAtelierInlineCard(${item.cas.id})" title="🎯 Atelier de réécriture — Cas n° ${item.cas.id} : cliquez pour afficher la modélisation rédigée d'excellence">${cleanEscaped}<span class="inline-atelier-tag">🎯 Réécriture d'excellence</span></mark>`);
+                        curP.push(`<mark class="copie-highlight highlight-atelier" id="mark-atelier-${item.cas.id}" data-typology-key="atelier" onclick="toggleAtelierInlineCard(${item.cas.id})" title="Atelier de réécriture — Cas n° ${item.cas.id} : cliquez pour afficher la modélisation rédigée d'excellence">${cleanEscaped}<span class="inline-atelier-tag">Réécriture d'excellence</span></mark>`);
                     } else {
                         const info = getTypologieInfo(item.ann.typologie);
                         curP.push(`<mark class="copie-highlight ${info.cls}" id="mark-ann-${item.ann.id}" data-annotation-id="${item.ann.id}" data-extrait="${escapeHtml(item.ann.extrait)}" data-typology-key="${info.key}" onclick="toggleInlineNote(${item.ann.id})" title="[#${item.ann.id}] ${escapeHtml(info.label)} : cliquez pour afficher ou masquer la remarque">${cleanEscaped}<span class="ann-badge-pill">${item.ann.id}</span></mark>`);
@@ -7427,7 +7435,7 @@
                         <div class="inline-annotation-card type-atelier" id="inline-atelier-card-${cas.id}" data-typology-key="atelier" style="display:none;">
                             <div class="inline-ann-header" onclick="toggleAtelierInlineCard(${cas.id})">
                                 <div class="inline-ann-title">
-                                    <span class="inline-ann-badge">🎯 Réécriture d'excellence</span>
+                                    <span class="inline-ann-badge">✨ Réécriture d'excellence</span>
                                     <span class="inline-ann-num">Cas n° ${cas.id}${cas.titre ? ' : ' + escapeHtml(cas.titre) : ''}</span>
                                 </div>
                                 <div class="inline-ann-action">
@@ -7482,7 +7490,7 @@
                 </div>
                 <div class="copie-filter-bar">
                     <button type="button" class="copie-filter-chip active" data-filter="all" onclick="filterAnnotations('all')">Toutes (${counts.all})</button>
-                    ${counts.atelier > 0 ? `<button type="button" class="copie-filter-chip" data-filter="atelier" onclick="filterAnnotations('atelier')">🎯 Réécritures (${counts.atelier})</button>` : ''}
+                    ${counts.atelier > 0 ? `<button type="button" class="copie-filter-chip" data-filter="atelier" onclick="filterAnnotations('atelier')">✨ Réécritures (${counts.atelier})</button>` : ''}
                     ${counts.conceptuel > 0 ? `<button type="button" class="copie-filter-chip" data-filter="conceptuel" onclick="filterAnnotations('conceptuel')">⚠️ Glissements (${counts.conceptuel})</button>` : ''}
                     ${counts.logique > 0 ? `<button type="button" class="copie-filter-chip" data-filter="logique" onclick="filterAnnotations('logique')">⚡ Ruptures (${counts.logique})</button>` : ''}
                     ${counts.reference > 0 ? `<button type="button" class="copie-filter-chip" data-filter="reference" onclick="filterAnnotations('reference')">📚 Références (${counts.reference})</button>` : ''}
