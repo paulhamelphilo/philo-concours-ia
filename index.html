@@ -2517,13 +2517,7 @@
             margin: 0;
         }
 
-        /* En-tête structuré du rapport d'évaluation */
-        .rapport-eval-header {
-            margin-bottom: 22px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
+        /* En-tête structuré du rapport d'évaluation : titre centré, métadonnées justifiées à gauche */
         .rapport-eval-header {
             text-align: center;
             margin: 15px auto 25px auto;
@@ -2533,31 +2527,35 @@
             width: 100%;
         }
 
+        #correction-box .rapport-eval-header h2,
         .rapport-eval-header h2 {
-            margin: 0 auto 14px auto !important;
+            display: block !important;
             text-align: center !important;
+            justify-content: center !important;
+            margin: 0 auto 14px auto !important;
             color: var(--primary-color, #1a2a3a);
             font-size: 1.75rem !important;
             font-weight: 700;
             letter-spacing: 0.5px;
             border-bottom: none !important;
             padding-bottom: 0 !important;
-            display: block;
+            width: 100% !important;
         }
 
         .rapport-eval-meta {
             display: block;
-            text-align: center;
+            text-align: left !important;
             margin: 0 auto;
             font-size: 15px;
             color: #334155;
             line-height: 1.8;
+            width: 100%;
         }
 
         .rapport-eval-meta-item {
             display: block;
             margin: 6px 0;
-            text-align: center;
+            text-align: left !important;
             clear: both;
         }
 
@@ -2658,7 +2656,7 @@
                 display: block !important;
             }
 
-            /* En-tête du rapport d'évaluation : centré, solennel et avec retours à la ligne distincts */
+            /* En-tête du rapport d'évaluation : titre centré, métadonnées justifiées à gauche */
             .rapport-eval-header {
                 display: block !important;
                 text-align: center !important;
@@ -2670,6 +2668,7 @@
                 width: 100% !important;
             }
 
+            #correction-box .rapport-eval-header h2,
             .rapport-eval-header h2 {
                 display: block !important;
                 text-align: center !important;
@@ -2679,20 +2678,22 @@
                 font-weight: 700 !important;
                 break-after: avoid !important;
                 page-break-after: avoid !important;
+                width: 100% !important;
             }
 
             .rapport-eval-meta {
                 display: block !important;
-                text-align: center !important;
-                margin: 0 auto !important;
+                text-align: left !important;
+                margin: 0 !important;
                 font-size: 11pt !important;
                 line-height: 1.8 !important;
+                width: 100% !important;
             }
 
             .rapport-eval-meta-item {
                 display: block !important;
                 margin: 5px 0 !important;
-                text-align: center !important;
+                text-align: left !important;
                 clear: both !important;
             }
 
@@ -6406,6 +6407,17 @@
 
         function normaliserMarkdownCorrection(md) {
             if (!md || typeof md !== 'string') return '';
+
+            // Normaliser l'en-tête du rapport d'évaluation pour garantir que chaque métadonnée (Concours, Sujet, Nature)
+            // soit sur son propre paragraphe séparé par une ligne vide
+            md = md.replace(/(#+\s*🏛️?\s*Rapport\s+d['’]évaluation[^\n]*\n)([\s\S]*?)(?=\n\s*---|\n\s*##|$)/i, (match, title, meta) => {
+                let cleanedMeta = meta;
+                cleanedMeta = cleanedMeta.replace(/\s*(Concours(?:\s+cibl[eé])?\s*[:*]+)/gi, '\n\n$1');
+                cleanedMeta = cleanedMeta.replace(/\s*(Sujet(?:\s*\/\s*texte)?\s*[:*]+)/gi, '\n\n$1');
+                cleanedMeta = cleanedMeta.replace(/\s*(Nature\s+du\s+travail(?:\s+identifi[eé])?\s*[:*]+)/gi, '\n\n$1');
+                return title.trim() + '\n\n' + cleanedMeta.trim() + '\n\n';
+            });
+
             // Détecter et restructurer proprement chaque bloc Pistes d'amélioration (globales ou chirurgicales)
             return md.replace(/(#{4,5}\s*(?:Pistes\s+d['’]am[ée]lioration[^\n]*|Piste\s+d['’]am[ée]lioration[^\n]*)\n)([\s\S]*?)(?=\n\s*(?:---|###|####|#####|$)|$)/gi, (match, header, content) => {
                 const rawLines = content.split('\n');
@@ -6523,15 +6535,50 @@
         }
 
         function restructurerEnteteRapport(doc) {
-            const h1 = doc.querySelector('h1');
-            if (!h1) return;
+            // Identifier le titre principal du rapport (h1 ou h2 selon les flux)
+            let titleEl = Array.from(doc.querySelectorAll('h1, h2')).find(h => /^🏛️?\s*Rapport\s+d['’]évaluation/i.test(h.textContent.trim()));
+            if (!titleEl) {
+                const firstH1 = doc.querySelector('h1');
+                if (firstH1) titleEl = firstH1;
+            }
+
+            // S'il existe déjà un en-tête structuré (ex: rechargement de cache), assainir d'éventuelles pollutions résiduelles
+            const existingHeader = doc.querySelector('.rapport-eval-header');
+            if (existingHeader) {
+                const items = existingHeader.querySelectorAll('.rapport-eval-meta-item');
+                items.forEach(item => {
+                    const labelEl = item.querySelector('.rapport-eval-meta-label');
+                    const valEl = item.querySelector('.rapport-eval-meta-value');
+                    if (labelEl && valEl) {
+                        const lbl = (labelEl.textContent || '').toLowerCase();
+                        let val = (valEl.textContent || '').trim();
+                        if (lbl.includes('concours')) {
+                            val = val.replace(/(?:Sujet(?:\s*\/\s*texte)?|Nature\s+du\s+travail)[\s\S]*$/i, '').trim();
+                            val = val.replace(/Agrégation\s+Externe/gi, 'Agrégation externe')
+                                     .replace(/Agrégation\s+Interne/gi, 'Agrégation interne')
+                                     .replace(/Capes\s+Externe/gi, 'Capes externe');
+                            valEl.textContent = val;
+                        } else if (lbl.includes('sujet')) {
+                            val = val.replace(/(?:Nature\s+du\s+travail|Concours(?:\s+cibl[eé])?)[\s\S]*$/i, '').trim();
+                            val = val.replace(/^[\s«"“”*]+|[\s»"“”*]+$/g, '').trim();
+                            if (val) val = `« ${val} »`;
+                            valEl.textContent = val;
+                        } else if (lbl.includes('nature')) {
+                            val = val.replace(/(?:Concours(?:\s+cibl[eé])?|Sujet(?:\s*\/\s*texte)?)[\s\S]*$/i, '').trim();
+                            valEl.textContent = val;
+                        }
+                    }
+                });
+            }
+
+            if (!titleEl) return;
 
             // Retirer l'éventuelle icône 🏛️ du titre de rapport
-            let rawH1Text = h1.textContent.replace(/^[🏛️\s\-\:]+/, '').trim();
+            let rawH1Text = titleEl.textContent.replace(/^[🏛️\s\-\:]+/, '').trim();
 
-            // Extraire le concours s'il était accolé dans le H1 (ex: "Rapport d'évaluation : Agrégation Externe — Dissertation...")
+            // Extraire le concours s'il était accolé dans le titre (ex: "Rapport d'évaluation : Agrégation Externe — Dissertation...")
             let concoursFromH1 = '';
-            const matchH1Concours = rawH1Text.match(/^Rapport\s+d['’]évaluation\s*[:—–-]\s*(.+)$/i);
+            const matchH1Concours = rawH1Text.match(/^Rapport\s+d['’]évaluation\s*[:—–-]\s*(.+?)(?=(?:\bSujet\b|\bNature\s+du\s+travail\b|[\n\r<]|$))/i);
             if (matchH1Concours) {
                 concoursFromH1 = matchH1Concours[1].trim();
             }
@@ -6541,34 +6588,42 @@
             let natureVal = '';
 
             const nodesToRemove = [];
-            let cur = h1.nextElementSibling;
+            let cur = titleEl.nextElementSibling;
 
-            // Parcourir les éléments jusqu'au séparateur hr ou au prochain h2/h3
+            // Parcourir les éléments jusqu'au séparateur hr ou au prochain h2/h3 de section
             while (cur && !['H2', 'H3'].includes(cur.tagName)) {
                 if (cur.tagName === 'HR') {
                     nodesToRemove.push(cur);
                     break;
                 }
 
-                const rawText = cur.textContent || '';
+                // Arrêter si on rencontre le verdict ou l'évaluation globale
+                if (/verdict|[ée]valuation\s+globale|analyse\s+personnalis/i.test(cur.textContent || '')) {
+                    break;
+                }
+
+                // Cloner pour remplacer les <br> par des retours à la ligne effectifs afin que textContent ne colle pas les lignes
+                const clone = cur.cloneNode(true);
+                clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+                const rawText = clone.textContent || '';
                 let matchedInThisNode = false;
 
-                // Recherche de Concours
-                const mC = rawText.match(/(?:Concours(?:\s+cibl[eé])?)\s*[:*]+\s*([^\n\r<]+)/i);
+                // Recherche de Concours (avec garde pour ne pas capturer Sujet ou Nature)
+                const mC = rawText.match(/(?:Concours(?:\s+cibl[eé])?)\s*[:*]+\s*(.+?)(?=(?:\bSujet\b|\bNature\s+du\s+travail\b|[\n\r<]|$))/i);
                 if (mC && !concoursVal) {
                     concoursVal = mC[1].replace(/^[*\s]+|[*\s]+$/g, '').trim();
                     matchedInThisNode = true;
                 }
 
-                // Recherche de Sujet
-                const mS = rawText.match(/(?:Sujet(?:\s*\/\s*texte)?)\s*[:*]+\s*([^\n\r<]+)/i);
+                // Recherche de Sujet (avec garde pour ne pas capturer Nature ou Concours)
+                const mS = rawText.match(/(?:Sujet(?:\s*\/\s*texte)?)\s*[:*]+\s*(.+?)(?=(?:\bConcours\b|\bNature\s+du\s+travail\b|[\n\r<]|$))/i);
                 if (mS && !sujetVal) {
                     sujetVal = mS[1].replace(/^[*\s]+|[*\s]+$/g, '').trim();
                     matchedInThisNode = true;
                 }
 
-                // Recherche de Nature du travail identifié
-                const mN = rawText.match(/(?:Nature\s+du\s+travail(?:\s+identifi[eé])?)\s*[:*]+\s*([^\n\r<]+)/i);
+                // Recherche de Nature du travail identifié (avec garde)
+                const mN = rawText.match(/(?:Nature\s+du\s+travail(?:\s+identifi[eé])?)\s*[:*]+\s*(.+?)(?=(?:\bConcours\b|\bSujet\b|[\n\r<]|$))/i);
                 if (mN && !natureVal) {
                     natureVal = mN[1].replace(/^[*\s]+|[*\s]+$/g, '').trim();
                     matchedInThisNode = true;
@@ -6582,16 +6637,39 @@
                 cur = cur.nextElementSibling;
             }
 
+            // Nettoyage et assainissement systématique des valeurs extraites
+            if (concoursVal) {
+                concoursVal = concoursVal.replace(/(?:Sujet(?:\s*\/\s*texte)?|Nature\s+du\s+travail)[\s\S]*$/i, '').trim();
+                concoursVal = concoursVal.replace(/^[*\s:—–-]+|[*\s:—–-]+$/g, '').trim();
+                concoursVal = concoursVal
+                    .replace(/Agrégation\s+Externe/gi, 'Agrégation externe')
+                    .replace(/Agrégation\s+Interne/gi, 'Agrégation interne')
+                    .replace(/Capes\s+Externe/gi, 'Capes externe');
+            }
+            if (sujetVal) {
+                sujetVal = sujetVal.replace(/(?:Nature\s+du\s+travail|Concours(?:\s+cibl[eé])?)[\s\S]*$/i, '').trim();
+                sujetVal = sujetVal.replace(/^[*\s:—–-]+|[*\s:—–-]+$/g, '').trim();
+            }
+            if (natureVal) {
+                natureVal = natureVal.replace(/(?:Concours(?:\s+cibl[eé])?|Sujet(?:\s*\/\s*texte)?)[\s\S]*$/i, '').trim();
+                natureVal = natureVal.replace(/^[*\s:—–-]+|[*\s:—–-]+$/g, '').trim();
+            }
+
             // Si le concours ou sujet n'a pas été trouvé dans le texte brut, utiliser l'état applicatif disponible
             if (!concoursVal && typeof state !== 'undefined' && state.concours) {
-                concoursVal = `${state.concours} — ${state.epreuve || (state.exerciseType === 'explication' ? 'Explication de texte' : 'Dissertation')}`;
+                let nomConcours = state.concours
+                    .replace(/Agrégation\s+Externe/gi, 'Agrégation externe')
+                    .replace(/Agrégation\s+Interne/gi, 'Agrégation interne')
+                    .replace(/Capes\s+Externe/gi, 'Capes externe');
+                const nomEpreuve = state.epreuve || (state.exerciseType === 'explication' ? 'Explication de texte' : 'Dissertation');
+                concoursVal = `${nomConcours} — ${nomEpreuve}`;
             }
             if (!sujetVal && typeof sujetActif !== 'undefined' && sujetActif) {
                 sujetVal = sujetActif;
             }
 
             // Nettoyage et formatage typographique soigné du sujet
-            let formattedSujet = sujetVal ? sujetVal.replace(/^[«"'\s]+|[»"'\s]+$/g, '').trim() : '';
+            let formattedSujet = sujetVal ? sujetVal.replace(/^[\s«"“”*]+|[\s»"“”*]+$/g, '').trim() : '';
             if (formattedSujet) {
                 formattedSujet = `« ${formattedSujet} »`;
             }
@@ -6601,7 +6679,7 @@
                 if (node.parentNode) node.parentNode.removeChild(node);
             });
 
-            // Construction du bloc d'en-tête soigné, solennel et centré
+            // Construction du bloc d'en-tête soigné : titre centré, métadonnées justifiées à gauche
             const headerDiv = doc.createElement('div');
             headerDiv.className = 'rapport-eval-header';
 
@@ -6620,9 +6698,9 @@
             headerHtml += `</div>`;
             headerDiv.innerHTML = headerHtml;
 
-            // Remplacer le H1 d'origine par ce conteneur ordonné
-            if (h1.parentNode) {
-                h1.parentNode.replaceChild(headerDiv, h1);
+            // Remplacer le titre d'origine par ce conteneur ordonné
+            if (titleEl.parentNode) {
+                titleEl.parentNode.replaceChild(headerDiv, titleEl);
             }
         }
 
