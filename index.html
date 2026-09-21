@@ -2517,11 +2517,136 @@
             margin: 0;
         }
 
-        /* Masquage des docks et barres d'outils flottantes lors de l'impression */
+        /* En-tête structuré du rapport d'évaluation */
+        .rapport-eval-header {
+            margin-bottom: 22px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .rapport-eval-header h2 {
+            margin: 0 0 12px 0 !important;
+            color: var(--primary-color);
+            font-size: 1.5rem !important;
+            font-weight: 700;
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+        }
+
+        .rapport-eval-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 14.5px;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .rapport-eval-meta-item {
+            display: block;
+        }
+
+        .rapport-eval-meta-label {
+            color: #64748b;
+            font-weight: normal;
+        }
+
+        .rapport-eval-meta-value {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        /* Règles d'impression : conservation du chapeau général et isolement du rapport */
         @media print {
+            /* Masquage de tous les éléments interactifs et formulaires hors rapport */
             .floating-profile-dock,
-            .floating-quicknav {
+            .floating-quicknav,
+            .global-selector,
+            .texte-container,
+            #training-section-container,
+            .btn,
+            .loading,
+            .correction-tabs-bar,
+            #pane-copie-annotee,
+            .help-column,
+            .footer-credit {
                 display: none !important;
+            }
+
+            /* Affichage soigné du chapeau général de l'outil */
+            h1 {
+                display: block !important;
+                text-align: center !important;
+                margin: 0 0 20px 0 !important;
+                padding-bottom: 12px !important;
+                border-bottom: 2px solid #cbd5e1 !important;
+                font-size: 20pt !important;
+                color: #1e293b !important;
+                break-after: avoid;
+                page-break-after: avoid;
+            }
+
+            h1 span {
+                display: block !important;
+                font-size: 10.5pt !important;
+                color: #475569 !important;
+                margin-top: 5px !important;
+                font-weight: normal !important;
+            }
+
+            /* Réinitialisation de la mise en page pour l'impression papier */
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 10mm 15mm !important;
+            }
+
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: transparent !important;
+            }
+
+            .workspace-layout {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .editor-column {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            #correction-box {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+
+            #pane-rapport-eval {
+                display: block !important;
+            }
+
+            /* Évite les coupures de page inopportunes dans les cartes d'évaluation */
+            .rapport-eval-header,
+            .double-curseur-verdict-box,
+            .regles-implicites-box,
+            .section-feedback-card,
+            .noeud-critique-block,
+            .global-eval-dashboard {
+                break-inside: avoid;
+                page-break-inside: avoid;
             }
         }
     </style>
@@ -6274,11 +6399,118 @@
             });
         }
 
+        function restructurerEnteteRapport(doc) {
+            const h1 = doc.querySelector('h1');
+            if (!h1) return;
+
+            // Retirer l'éventuelle icône 🏛️ du titre de rapport
+            let rawH1Text = h1.textContent.replace(/^[🏛️\s\-\:]+/, '').trim();
+
+            // Extraire le concours s'il était accolé dans le H1 (ex: "Rapport d'évaluation : Agrégation Externe — Dissertation...")
+            let concoursFromH1 = '';
+            const matchH1Concours = rawH1Text.match(/^Rapport\s+d['’]évaluation\s*[:—–-]\s*(.+)$/i);
+            if (matchH1Concours) {
+                concoursFromH1 = matchH1Concours[1].trim();
+            }
+
+            let concoursVal = concoursFromH1;
+            let sujetVal = '';
+            let natureVal = '';
+
+            const nodesToRemove = [];
+            let cur = h1.nextElementSibling;
+
+            // Parcourir les éléments jusqu'au séparateur hr ou au prochain h2/h3
+            while (cur && !['H2', 'H3'].includes(cur.tagName)) {
+                if (cur.tagName === 'HR') {
+                    nodesToRemove.push(cur);
+                    break;
+                }
+
+                const fullText = cur.textContent.trim();
+
+                // Recherche de Concours
+                const mConcours = fullText.match(/(?:Concours(?:\s+cibl[eé])?)\s*[:*]+\s*(.+)/i);
+                if (mConcours && !concoursVal) {
+                    concoursVal = mConcours[1].replace(/^[*\s]+|[*\s]+$/g, '').trim();
+                    nodesToRemove.push(cur);
+                }
+                // Recherche de Sujet
+                else if (/(?:Sujet(?:\s*\/\s*texte)?)\s*[:*]+/i.test(fullText)) {
+                    const mSujet = fullText.match(/(?:Sujet(?:\s*\/\s*texte)?)\s*[:*]+\s*(.+)/i);
+                    if (mSujet) {
+                        sujetVal = mSujet[1].replace(/^[*\s]+|[*\s]+$/g, '').trim();
+                    }
+                    nodesToRemove.push(cur);
+                }
+                // Recherche de Nature du travail identifié
+                else if (/(?:Nature\s+du\s+travail(?:\s+identifi[eé])?)\s*[:*]+/i.test(fullText)) {
+                    const mNature = fullText.match(/(?:Nature\s+du\s+travail(?:\s+identifi[eé])?)\s*[:*]+\s*(.+)/i);
+                    if (mNature) {
+                        natureVal = mNature[1].replace(/^[*\s]+|[*\s]+$/g, '').trim();
+                    }
+                    nodesToRemove.push(cur);
+                } else if (cur.tagName === 'P' && cur.children.length > 0) {
+                    // Vérifier si le paragraphe regroupe plusieurs mentions sur plusieurs lignes
+                    const pText = cur.innerHTML;
+                    let handled = false;
+                    const mC = pText.match(/(?:Concours(?:\s+cibl[eé])?)\s*[:*]+\s*([^<\n]+)/i);
+                    const mS = pText.match(/(?:Sujet(?:\s*\/\s*texte)?)\s*[:*]+\s*([^<\n]+)/i);
+                    const mN = pText.match(/(?:Nature\s+du\s+travail(?:\s+identifi[eé])?)\s*[:*]+\s*([^<\n]+)/i);
+                    if (mC && !concoursVal) { concoursVal = mC[1].replace(/<[^>]+>/g, '').replace(/^[*\s]+|[*\s]+$/g, '').trim(); handled = true; }
+                    if (mS && !sujetVal) { sujetVal = mS[1].replace(/<[^>]+>/g, '').replace(/^[*\s]+|[*\s]+$/g, '').trim(); handled = true; }
+                    if (mN && !natureVal) { natureVal = mN[1].replace(/<[^>]+>/g, '').replace(/^[*\s]+|[*\s]+$/g, '').trim(); handled = true; }
+                    if (handled) nodesToRemove.push(cur);
+                }
+
+                cur = cur.nextElementSibling;
+            }
+
+            // Si le concours ou sujet n'a pas été trouvé dans le texte brut, utiliser l'état applicatif disponible
+            if (!concoursVal && typeof state !== 'undefined' && state.concours) {
+                concoursVal = `${state.concours} — ${state.epreuve || (state.exerciseType === 'explication' ? 'Explication de texte' : 'Dissertation')}`;
+            }
+            if (!sujetVal && typeof sujetActif !== 'undefined' && sujetActif) {
+                sujetVal = sujetActif;
+            }
+
+            // Supprimer les nœuds d'origine
+            nodesToRemove.forEach(node => {
+                if (node.parentNode) node.parentNode.removeChild(node);
+            });
+
+            // Construction du bloc d'en-tête soigné et standardisé
+            const headerDiv = doc.createElement('div');
+            headerDiv.className = 'rapport-eval-header';
+
+            let headerHtml = `<h2>Rapport d'évaluation</h2><div class="rapport-eval-meta">`;
+            if (concoursVal) {
+                headerHtml += `<div class="rapport-eval-meta-item"><span class="rapport-eval-meta-label">Concours : </span><span class="rapport-eval-meta-value">${concoursVal}</span></div>`;
+            }
+            if (sujetVal) {
+                headerHtml += `<div class="rapport-eval-meta-item"><span class="rapport-eval-meta-label">Sujet : </span><span class="rapport-eval-meta-value">${sujetVal}</span></div>`;
+            }
+            if (natureVal) {
+                headerHtml += `<div class="rapport-eval-meta-item"><span class="rapport-eval-meta-label">Nature du travail identifié : </span><span class="rapport-eval-meta-value">${natureVal}</span></div>`;
+            }
+            headerHtml += `</div>`;
+            headerDiv.innerHTML = headerHtml;
+
+            // Remplacer le H1 d'origine par ce conteneur ordonné
+            if (h1.parentNode) {
+                h1.parentNode.replaceChild(headerDiv, h1);
+            }
+        }
+
         function transformerRenduCorrection(rawHtml, previousCorrectionObj, currentDraftBySection) {
             if (!rawHtml) return { html: '', sections: [], globalScore: null };
 
             const parser = new DOMParser();
             const doc = parser.parseFromString(rawHtml, 'text/html');
+
+            // Restructurer l'en-tête du rapport (titre sobre sans icône, concours, sujet, nature du travail)
+            restructurerEnteteRapport(doc);
+
             const headers = Array.from(doc.querySelectorAll('h3'));
             const sections = [];
 
