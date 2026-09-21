@@ -2569,7 +2569,7 @@
             font-weight: 700;
         }
 
-        /* Règles d'impression : conservation du chapeau général et isolement du rapport */
+        /* Règles d'impression : conservation du chapeau général et suppression des sauts de page */
         @media print {
             /* Masquage de tous les éléments interactifs, formulaires et bannières hors rapport */
             .floating-profile-dock,
@@ -2663,8 +2663,8 @@
                 margin: 10px auto 20px auto !important;
                 padding-bottom: 15px !important;
                 border-bottom: 1.5px solid #cbd5e1 !important;
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
+                break-inside: auto !important;
+                page-break-inside: auto !important;
                 width: 100% !important;
             }
 
@@ -2715,49 +2715,48 @@
                 page-break-after: avoid !important;
             }
 
-            /* Gestion fluide des cartes pour éliminer les sauts de pages prématurés et vides */
-            .section-feedback-card {
+            /* Écoulement continu de toutes les cartes et blocs pour supprimer les sauts de page prématurés */
+            .section-feedback-card,
+            .double-curseur-verdict-box,
+            .regles-implicites-box,
+            .global-eval-dashboard,
+            .noeud-critique-block,
+            blockquote,
+            .pistes-box,
+            #indice-general-conformite {
                 break-inside: auto !important;
                 page-break-inside: auto !important;
+                break-before: auto !important;
+                page-break-before: auto !important;
+                break-after: auto !important;
+                page-break-after: auto !important;
+                box-shadow: none !important;
+            }
+
+            .section-feedback-card {
                 padding: 12px 16px !important;
                 margin-bottom: 16px !important;
-                box-shadow: none !important;
             }
 
             .double-curseur-verdict-box,
             .regles-implicites-box {
-                break-inside: auto !important;
-                page-break-inside: auto !important;
                 padding: 12px 16px !important;
                 margin-bottom: 16px !important;
-                box-shadow: none !important;
             }
 
             .global-eval-dashboard {
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
                 padding: 10px 14px !important;
                 margin-bottom: 16px !important;
-                box-shadow: none !important;
             }
 
             .noeud-critique-block {
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
                 padding: 10px 14px !important;
                 margin-bottom: 12px !important;
-                box-shadow: none !important;
-            }
-
-            blockquote,
-            .pistes-box {
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
             }
 
             p, li {
-                orphans: 3;
-                widows: 3;
+                orphans: 2;
+                widows: 2;
             }
 
             /* Pied de page préservé à l'impression */
@@ -2769,8 +2768,8 @@
                 border-top: 1px solid #cbd5e1 !important;
                 font-size: 9pt !important;
                 color: #64748b !important;
-                break-inside: avoid !important;
-                page-break-inside: avoid !important;
+                break-inside: auto !important;
+                page-break-inside: auto !important;
             }
         }
     </style>
