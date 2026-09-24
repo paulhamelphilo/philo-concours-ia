@@ -472,9 +472,10 @@
 
         /* Conteneur de section complète (Carte d'évaluation globale) */
         .section-feedback-card {
-            background: #ffffff;
+            --card-tier-color: #0ea5e9;
+            background-color: #ffffff;
             border: 1px solid #e2e8f0;
-            border-left: 5px solid #0ea5e9;
+            border-left: 6px solid var(--card-tier-color);
             border-radius: 8px;
             padding: 20px 24px;
             margin-bottom: 24px;
@@ -482,22 +483,90 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             overflow-wrap: break-word;
             word-break: break-word;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
         .section-feedback-card.card-tier-1 {
+            --card-tier-color: #22c55e;
             border-left-color: #22c55e;
         }
         .section-feedback-card.card-tier-2 {
+            --card-tier-color: #0ea5e9;
             border-left-color: #0ea5e9;
         }
         .section-feedback-card.card-tier-3 {
+            --card-tier-color: #f59e0b;
             border-left-color: #f59e0b;
         }
         .section-feedback-card.card-tier-4 {
+            --card-tier-color: #f97316;
             border-left-color: #f97316;
         }
         .section-feedback-card.card-tier-5 {
+            --card-tier-color: #ef4444;
             border-left-color: #ef4444;
+        }
+
+        /* Marquage latéral gauche selon la section :
+           - Introduction et conclusion : barre pleine épaisse (6 px, par défaut)
+           - 1re partie / 1er mouvement : 1 filet fin (2 px)
+           - 2de partie / 2e mouvement : 2 filets fins (2 px espacés de 3 px)
+           - 3e partie / 3e mouvement : 3 filets fins (2 px espacés de 3 px)
+           - 4e mouvement (éventuel) : 4 filets fins (2 px espacés de 3 px) */
+        .section-feedback-card.card-part-1 {
+            border-left-width: 2px;
+        }
+
+        .section-feedback-card.card-part-2 {
+            border-left-width: 2px;
+            background-image: linear-gradient(
+                to right,
+                #ffffff 0px,
+                #ffffff 3px,
+                var(--card-tier-color) 3px,
+                var(--card-tier-color) 5px,
+                #ffffff 5px
+            );
+            padding-left: 29px;
+        }
+
+        .section-feedback-card.card-part-3 {
+            border-left-width: 2px;
+            background-image: linear-gradient(
+                to right,
+                #ffffff 0px,
+                #ffffff 3px,
+                var(--card-tier-color) 3px,
+                var(--card-tier-color) 5px,
+                #ffffff 5px,
+                #ffffff 8px,
+                var(--card-tier-color) 8px,
+                var(--card-tier-color) 10px,
+                #ffffff 10px
+            );
+            padding-left: 34px;
+        }
+
+        .section-feedback-card.card-part-4 {
+            border-left-width: 2px;
+            background-image: linear-gradient(
+                to right,
+                #ffffff 0px,
+                #ffffff 3px,
+                var(--card-tier-color) 3px,
+                var(--card-tier-color) 5px,
+                #ffffff 5px,
+                #ffffff 8px,
+                var(--card-tier-color) 8px,
+                var(--card-tier-color) 10px,
+                #ffffff 10px,
+                #ffffff 13px,
+                var(--card-tier-color) 13px,
+                var(--card-tier-color) 15px,
+                #ffffff 15px
+            );
+            padding-left: 39px;
         }
 
         /* En-tête intégré de la carte */
@@ -596,29 +665,28 @@
             white-space: nowrap;
         }
 
-        /* Corps de la carte de section */
-        .section-feedback-card h4 {
-            color: #1e3a8a;
-            font-size: 15.5px;
+        /* Intertitres unifiés (« Analyse critique » et « Pistes d'amélioration »)
+           dans la section générale comme à l'intérieur des nœuds critiques */
+        .section-feedback-card h4,
+        .section-feedback-card h5,
+        .noeud-critique-block h5,
+        .noeud-critique-block h4:not(:first-child) {
+            color: #334155;
+            font-size: 14.5px;
             font-weight: 700;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            padding-bottom: 0;
+            border-bottom: none;
             display: flex;
             align-items: center;
             gap: 6px;
-            border-bottom: 1px dashed #cbd5e1;
-            padding-bottom: 4px;
+            letter-spacing: 0.15px;
         }
 
-        .section-feedback-card h5 {
-            color: #334155;
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 12px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .section-card-header + h4,
+        .section-card-header + h5 {
+            margin-top: 4px;
         }
 
         .section-feedback-card p {
@@ -628,58 +696,63 @@
             font-size: 15px;
         }
 
-        /* Pistes d'amélioration thématisées */
-        .section-feedback-card blockquote {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-left: 4px solid #0ea5e9;
-            border-radius: 6px;
-            padding: 14px 18px;
-            margin: 10px 0 6px 0;
+        /* Pistes d'amélioration épurées (sans barre latérale ni boîte grise,
+           présentation fluide et unifiée dans la section générale et les nœuds critiques) */
+        .section-feedback-card blockquote,
+        .noeud-critique-block blockquote {
+            background: transparent;
+            border: none;
+            border-left: none;
+            border-radius: 0;
+            padding: 0;
+            margin: 4px 0 12px 0;
             color: #1e293b;
             font-style: normal;
-            line-height: 1.6;
+            line-height: 1.65;
             font-size: 15px;
+            box-shadow: none;
         }
 
-        .section-feedback-card blockquote:empty {
+        .section-feedback-card blockquote:empty,
+        .noeud-critique-block blockquote:empty {
             display: none !important;
         }
 
-        .section-feedback-card blockquote ul {
+        .section-feedback-card blockquote p,
+        .noeud-critique-block blockquote p {
+            margin: 0 0 10px 0;
+            line-height: 1.65;
+            font-size: 15px;
+            color: #1e293b;
+        }
+
+        .section-feedback-card blockquote p:last-child,
+        .noeud-critique-block blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-feedback-card blockquote ul,
+        .noeud-critique-block blockquote ul {
             list-style-type: "–  ";
             margin: 0;
             padding-left: 18px;
         }
 
-        .section-feedback-card blockquote ol {
+        .section-feedback-card blockquote ol,
+        .noeud-critique-block blockquote ol {
             margin: 0;
             padding-left: 20px;
         }
 
-        .section-feedback-card blockquote li {
+        .section-feedback-card blockquote li,
+        .noeud-critique-block blockquote li {
             margin-bottom: 6px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
-        .section-feedback-card blockquote li:last-child {
+        .section-feedback-card blockquote li:last-child,
+        .noeud-critique-block blockquote li:last-child {
             margin-bottom: 0;
-        }
-
-        .section-feedback-card.card-tier-1 blockquote {
-            border-left-color: #22c55e;
-        }
-        .section-feedback-card.card-tier-2 blockquote {
-            border-left-color: #0ea5e9;
-        }
-        .section-feedback-card.card-tier-3 blockquote {
-            border-left-color: #f59e0b;
-        }
-        .section-feedback-card.card-tier-4 blockquote {
-            border-left-color: #f97316;
-        }
-        .section-feedback-card.card-tier-5 blockquote {
-            border-left-color: #ef4444;
         }
 
         /* ==========================================================================
@@ -700,8 +773,8 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        /* Titre du nœud critique intégré directement dans la barre gauche */
-        .noeud-critique-block > h4 {
+        /* Titre du nœud critique en en-tête de la case (prééminence visuelle conservée) */
+        .noeud-critique-block > h4:first-child {
             color: #1e3a8a;
             font-size: 15.5px;
             font-weight: 700;
@@ -711,6 +784,11 @@
             display: flex;
             align-items: center;
             gap: 6px;
+        }
+
+        .noeud-critique-block > h4:first-child + h5,
+        .noeud-critique-block > h4:first-child + h4 {
+            margin-top: 6px;
         }
 
         /* Harmonisation de la bordure et du fond léger selon le palier de la section */
@@ -740,35 +818,11 @@
             border-color: #f9dcdc;
         }
 
-        .noeud-critique-block h5 {
-            color: #334155;
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 14px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
         .noeud-critique-block p {
             color: #1e293b;
             line-height: 1.65;
             margin: 0 0 12px 0;
             font-size: 15px;
-        }
-
-        /* Encadré des pistes d'amélioration à l'intérieur de la case du nœud critique */
-        .noeud-critique-block blockquote {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-left: 3.5px solid currentColor;
-            border-radius: 4px;
-            padding: 12px 16px;
-            margin: 10px 0 8px 0;
-            color: #1e293b;
-            font-size: 14px;
-            line-height: 1.6;
         }
 
 
@@ -1350,6 +1404,18 @@
                 box-sizing: border-box !important;
                 overflow-wrap: break-word !important;
                 word-break: break-word !important;
+            }
+
+            .section-feedback-card.card-part-2 {
+                padding-left: 18px !important;
+            }
+
+            .section-feedback-card.card-part-3 {
+                padding-left: 23px !important;
+            }
+
+            .section-feedback-card.card-part-4 {
+                padding-left: 28px !important;
             }
 
             .section-card-header {
@@ -2738,6 +2804,18 @@
                 margin-bottom: 16px !important;
             }
 
+            .section-feedback-card.card-part-2 {
+                padding-left: 22px !important;
+            }
+
+            .section-feedback-card.card-part-3 {
+                padding-left: 27px !important;
+            }
+
+            .section-feedback-card.card-part-4 {
+                padding-left: 32px !important;
+            }
+
             .double-curseur-verdict-box,
             .regles-implicites-box {
                 padding: 12px 16px !important;
@@ -2770,17 +2848,509 @@
                 color: #64748b !important;
                 break-inside: auto !important;
                 page-break-inside: auto !important;
+            #mentor-auth-overlay,
+            #mentor-admin-modal,
+            #mentor-log-detail-modal,
+            #mentor-session-bar {
+                display: none !important;
             }
+        }
+
+        /* ============ STYLES AUTHENTIFICATION ET MONITORING ============ */
+        #mentor-auth-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .mentor-auth-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 430px;
+            border-radius: 14px;
+            padding: 32px 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .mentor-auth-card h2 {
+            margin: 0 0 6px 0;
+            color: #1e293b;
+            font-size: 1.45rem;
+            text-align: center;
+        }
+        .mentor-auth-subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.92rem;
+            margin-bottom: 22px;
+        }
+        .mentor-auth-field {
+            margin-bottom: 16px;
+        }
+        .mentor-auth-field label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+        .mentor-auth-field input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.98rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .mentor-auth-field input:focus {
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.12);
+        }
+        .mentor-auth-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: #2c3e50;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 6px;
+        }
+        .mentor-auth-btn:hover {
+            background: #1a252f;
+        }
+        .mentor-auth-btn:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+        .mentor-auth-error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        /* Barre de session supérieure */
+        #mentor-session-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.88rem;
+            color: #334155;
+        }
+        .mentor-session-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .mentor-session-pill {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .mentor-session-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mentor-bar-btn {
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .mentor-bar-btn:hover {
+            background: #e2e8f0;
+        }
+        .mentor-bar-btn.admin-btn {
+            background: #2c3e50;
+            color: #ffffff;
+            border-color: #2c3e50;
+        }
+        .mentor-bar-btn.admin-btn:hover {
+            background: #1a252f;
+        }
+
+        /* Fenêtre modale d'administration et de monitoring */
+        #mentor-admin-modal,
+        #mentor-log-detail-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 99990;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 24px 16px;
+            overflow-y: auto;
+        }
+        #mentor-log-detail-modal {
+            z-index: 99995;
+        }
+        .mentor-admin-panel {
+            background: #ffffff;
+            width: 100%;
+            max-width: 1140px;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid #cbd5e1;
+            margin: auto 0;
+        }
+        .mentor-admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 14px;
+            margin-bottom: 18px;
+        }
+        .mentor-admin-header h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: #1e293b;
+        }
+        .mentor-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .mentor-kpi-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+        .mentor-kpi-label {
+            font-size: 0.82rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .mentor-kpi-value {
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 2px;
+        }
+        .mentor-admin-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+        .mentor-admin-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 1.04rem;
+            color: #1e293b;
+        }
+        .mentor-admin-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+        .mentor-admin-form-grid label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+        .mentor-admin-form-grid input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.88rem;
+        }
+        .mentor-table-wrap {
+            overflow-x: auto;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .mentor-admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .mentor-admin-table th,
+        .mentor-admin-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .mentor-admin-table th {
+            background: #f1f5f9;
+            color: #334155;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .mentor-admin-table tr:hover td {
+            background: #f8fafc;
+        }
+        .mentor-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 600;
+        }
+        .mentor-badge.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .mentor-badge.suspended {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .mentor-badge.admin {
+            background: #e0e7ff;
+            color: #1e40af;
         }
     </style>
 </head>
 
 <body>
 
+    <!-- Écran de connexion académique (verrouillage à l'ouverture) -->
+    <div id="mentor-auth-overlay">
+        <div class="mentor-auth-card">
+            <h2>🏛️ Philo Concours IA</h2>
+            <div class="mentor-auth-subtitle">Accès réservé aux membres invités</div>
+            <div id="mentor-auth-error" class="mentor-auth-error"></div>
+            <form id="mentor-auth-form" onsubmit="window.submitMentorLogin(event)">
+                <div class="mentor-auth-field">
+                    <label for="mentor-login-username">Identifiant</label>
+                    <input type="text" id="mentor-login-username" autocomplete="username" placeholder="Ex. : paul" required>
+                </div>
+                <div class="mentor-auth-field">
+                    <label for="mentor-login-password">Mot de passe</label>
+                    <div style="position: relative;">
+                        <input type="password" id="mentor-login-password" autocomplete="current-password" placeholder="Votre mot de passe" required style="padding-right: 40px;">
+                        <button type="button" onclick="const inp = document.getElementById('mentor-login-password'); inp.type = inp.type === 'password' ? 'text' : 'password';" title="Afficher ou masquer le mot de passe" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; color: #64748b;">👁️</button>
+                    </div>
+                </div>
+                <button type="submit" id="mentor-login-submit" class="mentor-auth-btn">Se connecter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Fenêtre modale d'administration et de monitoring (réservée à l'administrateur) -->
+    <div id="mentor-admin-modal">
+        <div class="mentor-admin-panel">
+            <div class="mentor-admin-header">
+                <h2>🛡️ Administration des comptes et suivi de l'usage</h2>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="mentor-bar-btn" onclick="window.loadMentorAdminDashboard()">🔄 Actualiser</button>
+                    <button type="button" class="mentor-bar-btn" onclick="window.exportMentorDataCSV()">📊 Exporter en CSV (Excel)</button>
+                    <button type="button" class="mentor-bar-btn" onclick="window.exportMentorDataJSON()">📦 Exporter en JSON</button>
+                    <button type="button" class="mentor-bar-btn admin-btn" onclick="window.closeMentorAdminModal()">Fermer ✕</button>
+                </div>
+            </div>
+
+            <!-- Indicateurs synthétiques -->
+            <div class="mentor-kpi-grid">
+                <div class="mentor-kpi-card">
+                    <div class="mentor-kpi-label">Comptes actifs</div>
+                    <div class="mentor-kpi-value" id="admin-kpi-users">-</div>
+                </div>
+                <div class="mentor-kpi-card">
+                    <div class="mentor-kpi-label">Copies évaluées</div>
+                    <div class="mentor-kpi-value" id="admin-kpi-copies">-</div>
+                </div>
+                <div class="mentor-kpi-card">
+                    <div class="mentor-kpi-label">Micro-analyses</div>
+                    <div class="mentor-kpi-value" id="admin-kpi-micro">-</div>
+                </div>
+                <div class="mentor-kpi-card">
+                    <div class="mentor-kpi-label">Volume total analysé</div>
+                    <div class="mentor-kpi-value" id="admin-kpi-words">-</div>
+                </div>
+            </div>
+
+            <!-- Interrupteur de confidentialité -->
+            <div class="mentor-admin-section" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h3 style="margin-bottom: 4px;">🔒 Confidentialité et archivage des textes soumis</h3>
+                    <div style="font-size: 0.85rem; color: #475569;" id="admin-privacy-status-text">
+                        État actuel : désactivé par défaut (seuls les compteurs, dates, concours, sujets et notes sont enregistrés ; les textes des copies ne sont pas conservés).
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; background: #ffffff; padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                        <input type="checkbox" id="admin-toggle-store-texts" onchange="window.toggleMentorStoreTexts(this.checked)">
+                        <span>Enregistrer le texte des copies et des rapports</span>
+                    </label>
+                    <button type="button" class="mentor-bar-btn" onclick="window.purgeMentorArchivedTexts()" title="Supprimer tous les textes de copies et rapports enregistrés tout en gardant les compteurs">🧹 Purger les textes archivés</button>
+                </div>
+            </div>
+
+            <!-- Formulaire de création / modification de compte -->
+            <div class="mentor-admin-section">
+                <h3 id="admin-user-form-title">➕ Créer ou modifier un compte invité</h3>
+                <form id="admin-user-form" onsubmit="window.saveMentorUserAccount(event)">
+                    <div class="mentor-admin-form-grid">
+                        <div>
+                            <label for="admin-input-username">Identifiant (login)</label>
+                            <input type="text" id="admin-input-username" placeholder="Ex. : marie" required>
+                        </div>
+                        <div>
+                            <label for="admin-input-password">Mot de passe <span style="font-weight:normal; color:#64748b; cursor:pointer; text-decoration:underline;" onclick="window.generateRandomGuestPassword()">(générer)</span></label>
+                            <input type="text" id="admin-input-password" placeholder="Ex. : Philo2026!">
+                        </div>
+                        <div>
+                            <label for="admin-input-note">Nom ou note personnelle</label>
+                            <input type="text" id="admin-input-note" placeholder="Ex. : Collègue agrégation">
+                        </div>
+                        <div>
+                            <label for="admin-input-quota-copies">Quota max de copies</label>
+                            <input type="number" id="admin-input-quota-copies" min="0" placeholder="Vide = illimité">
+                        </div>
+                        <div>
+                            <label for="admin-input-quota-micro">Quota micro-analyses</label>
+                            <input type="number" id="admin-input-quota-micro" min="0" placeholder="Vide = illimité">
+                        </div>
+                        <div>
+                            <label for="admin-input-expires">Date de fin (optionnelle)</label>
+                            <input type="date" id="admin-input-expires">
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="submit" class="mentor-bar-btn admin-btn" style="padding: 9px 14px; width: 100%;">Enregistrer le compte</button>
+                            <button type="button" class="mentor-bar-btn" style="padding: 9px 10px;" onclick="window.resetMentorUserForm()" title="Vider le formulaire">Réinitialiser</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Liste des comptes et suivi par compte -->
+            <div class="mentor-admin-section">
+                <h3>👥 Suivi compte par compte</h3>
+                <div class="mentor-table-wrap">
+                    <table class="mentor-admin-table">
+                        <thead>
+                            <tr>
+                                <th>Compte</th>
+                                <th>Mot de passe</th>
+                                <th>Statut</th>
+                                <th>Connexions</th>
+                                <th>Copies (quota)</th>
+                                <th>Micro-analyses</th>
+                                <th>Mots soumis</th>
+                                <th>Dernière activité</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-tbody">
+                            <tr><td colspan="9" style="text-align:center; padding: 18px;">Chargement des comptes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Journal détaillé des activités -->
+            <div class="mentor-admin-section" style="margin-bottom: 0;">
+                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">📋 Journal détaillé des utilisations</h3>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <label for="admin-filter-user" style="font-size: 0.84rem; font-weight: 600; margin: 0;">Filtrer par compte :</label>
+                        <select id="admin-filter-user" onchange="window.renderMentorAdminLogs()" style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
+                            <option value="">Tous les comptes</option>
+                        </select>
+                        <select id="admin-filter-action" onchange="window.renderMentorAdminLogs()" style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
+                            <option value="">Toutes les actions</option>
+                            <option value="correction">Copies évaluées uniquement</option>
+                            <option value="micro_annotation">Micro-analyses uniquement</option>
+                            <option value="login">Connexions uniquement</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mentor-table-wrap" style="max-height: 420px; overflow-y: auto;">
+                    <table class="mentor-admin-table">
+                        <thead>
+                            <tr>
+                                <th>Date et heure</th>
+                                <th>Compte</th>
+                                <th>Action</th>
+                                <th>Concours et épreuve</th>
+                                <th>Sujet ou texte traité</th>
+                                <th>Mots</th>
+                                <th>Notes (canon. / est.)</th>
+                                <th>Contenu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-logs-tbody">
+                            <tr><td colspan="8" style="text-align:center; padding: 18px;">Chargement de l'historique...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sous-fenêtre de lecture d'une copie et de son rapport -->
+    <div id="mentor-log-detail-modal">
+        <div class="mentor-admin-panel" style="max-width: 960px;">
+            <div class="mentor-admin-header">
+                <h2 id="mentor-log-detail-title">📄 Consultation de la copie et du rapport</h2>
+                <button type="button" class="mentor-bar-btn admin-btn" onclick="document.getElementById('mentor-log-detail-modal').style.display='none'">Fermer ✕</button>
+            </div>
+            <div id="mentor-log-detail-body" style="max-height: 75vh; overflow-y: auto; font-size: 0.92rem; line-height: 1.6;"></div>
+        </div>
+    </div>
+
     <!-- Barre latérale gauche : multi-profils et historique cranté -->
     <div id="floating-profile-dock" class="floating-profile-dock" title="Survolez pour afficher les profils et l'historique"></div>
 
     <div class="container">
+        <!-- Barre de session utilisateur et accès administration -->
+        <div id="mentor-session-bar">
+            <div class="mentor-session-info">
+                <span>👤 Connecté : <strong id="mentor-session-username">-</strong></span>
+                <span id="mentor-session-quota-pill" class="mentor-session-pill">Accès illimité</span>
+            </div>
+            <div class="mentor-session-actions">
+                <button type="button" id="mentor-btn-open-admin" class="mentor-bar-btn admin-btn" style="display: none;" onclick="window.openMentorAdminModal()">🛡️ Administration et suivi</button>
+                <button type="button" class="mentor-bar-btn" onclick="window.logoutMentorSession()">Se déconnecter</button>
+            </div>
+        </div>
         <h1>🏛️ Philo Concours IA <span style="font-size: 0.55em; font-weight: normal; color: var(--secondary-color); display: block; margin-top: 4px;">Capes externe &bull; Agrégation interne &bull; Agrégation externe</span></h1>
 
                 <div class="global-selector">
@@ -2992,6 +3562,556 @@
         }, 600000);
 
         const CLOUD_FUNCTION_URL = "https://correction-philo-concours-658321418385.europe-west1.run.app";
+
+        // ============ CONTRÔLEUR D'AUTHENTIFICATION ET DE SUIVI D'USAGE ============
+        (function initMentorAuthAndAdmin() {
+            const TOKEN_KEY = 'mentor_philo_auth_token_v1';
+            const USER_KEY = 'mentor_philo_auth_user_v1';
+            let currentAdminData = { settings: { storeEssayTexts: false }, users: [], logs: [] };
+
+            function escapeHtml(str) {
+                return String(str === null || str === undefined ? '' : str)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function formatDateFr(iso) {
+                if (!iso) return 'Jamais';
+                try {
+                    const d = new Date(iso);
+                    if (isNaN(d.getTime())) return iso;
+                    return d.toLocaleString('fr-FR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                } catch (_) {
+                    return iso;
+                }
+            }
+
+            window.getMentorAuthToken = function () {
+                return localStorage.getItem(TOKEN_KEY) || '';
+            };
+
+            window.getMentorCurrentUser = function () {
+                try {
+                    const raw = localStorage.getItem(USER_KEY);
+                    return raw ? JSON.parse(raw) : null;
+                } catch (_) {
+                    return null;
+                }
+            };
+
+            function updateSessionBarUI(user) {
+                const overlay = document.getElementById('mentor-auth-overlay');
+                const bar = document.getElementById('mentor-session-bar');
+                const nameEl = document.getElementById('mentor-session-username');
+                const quotaEl = document.getElementById('mentor-session-quota-pill');
+                const adminBtn = document.getElementById('mentor-btn-open-admin');
+
+                if (!user) {
+                    if (overlay) overlay.style.display = 'flex';
+                    if (bar) bar.style.display = 'none';
+                    return;
+                }
+
+                if (overlay) overlay.style.display = 'none';
+                if (bar) bar.style.display = 'flex';
+                if (nameEl) {
+                    nameEl.textContent = user.username + (user.role === 'admin' ? ' (administrateur)' : '');
+                }
+                if (quotaEl) {
+                    if (user.role === 'admin') {
+                        quotaEl.textContent = `Copies évaluées : ${user.copiesCount || 0} (illimité)`;
+                    } else {
+                        const cPart = (user.quotaCopies !== null && user.quotaCopies !== undefined)
+                            ? `Copies : ${user.copiesCount || 0} / ${user.quotaCopies}`
+                            : `Copies : ${user.copiesCount || 0} (illimité)`;
+                        const mPart = (user.quotaMicro !== null && user.quotaMicro !== undefined)
+                            ? ` • Micro-analyses : ${user.microCount || 0} / ${user.quotaMicro}`
+                            : '';
+                        quotaEl.textContent = cPart + mPart;
+                    }
+                }
+                if (adminBtn) {
+                    adminBtn.style.display = user.role === 'admin' ? 'inline-block' : 'none';
+                }
+            }
+
+            window.showMentorLoginOverlay = function (errorMsg) {
+                const overlay = document.getElementById('mentor-auth-overlay');
+                const errEl = document.getElementById('mentor-auth-error');
+                if (overlay) overlay.style.display = 'flex';
+                if (errEl) {
+                    if (errorMsg) {
+                        errEl.textContent = errorMsg;
+                        errEl.style.display = 'block';
+                    } else {
+                        errEl.style.display = 'none';
+                    }
+                }
+            };
+
+            window.submitMentorLogin = async function (event) {
+                if (event) event.preventDefault();
+                const username = (document.getElementById('mentor-login-username')?.value || '').trim();
+                const password = document.getElementById('mentor-login-password')?.value || '';
+                const btn = document.getElementById('mentor-login-submit');
+                const errEl = document.getElementById('mentor-auth-error');
+
+                if (errEl) errEl.style.display = 'none';
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = 'Vérification en cours...';
+                }
+
+                try {
+                    const res = await fetch(CLOUD_FUNCTION_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'auth_login',
+                            username,
+                            password
+                        })
+                    });
+                    const data = await res.json();
+                    if (!res.ok || !data.success) {
+                        throw new Error(data.error || 'Identifiant ou mot de passe incorrect.');
+                    }
+                    localStorage.setItem(TOKEN_KEY, data.token);
+                    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+                    updateSessionBarUI(data.user);
+                    document.getElementById('mentor-login-password').value = '';
+                } catch (err) {
+                    if (errEl) {
+                        errEl.textContent = err.message || 'Erreur de connexion au serveur.';
+                        errEl.style.display = 'block';
+                    }
+                } finally {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = 'Se connecter';
+                    }
+                }
+            };
+
+            window.logoutMentorSession = function () {
+                localStorage.removeItem(TOKEN_KEY);
+                localStorage.removeItem(USER_KEY);
+                updateSessionBarUI(null);
+            };
+
+            window.refreshMentorSessionUser = async function () {
+                const token = window.getMentorAuthToken();
+                if (!token) {
+                    updateSessionBarUI(null);
+                    return;
+                }
+                try {
+                    const res = await fetch(CLOUD_FUNCTION_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({ action: 'auth_me' })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success && data.user) {
+                        localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+                        updateSessionBarUI(data.user);
+                    } else if (res.status === 401 || res.status === 403) {
+                        window.logoutMentorSession();
+                        window.showMentorLoginOverlay(data.error || 'Votre session a expiré.');
+                    }
+                } catch (_) {
+                    // Conserver l'affichage local en cas de micro-coupure réseau
+                    updateSessionBarUI(window.getMentorCurrentUser());
+                }
+            };
+
+            // ============ FONCTIONS D'ADMINISTRATION ET DE MONITORING ============
+
+            async function callAdminApi(action, payload = {}) {
+                const token = window.getMentorAuthToken();
+                const res = await fetch(CLOUD_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ action, ...payload })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'Erreur lors de la requête administrateur.');
+                }
+                return data;
+            }
+
+            window.openMentorAdminModal = function () {
+                const modal = document.getElementById('mentor-admin-modal');
+                if (modal) modal.style.display = 'flex';
+                window.loadMentorAdminDashboard();
+            };
+
+            window.closeMentorAdminModal = function () {
+                const modal = document.getElementById('mentor-admin-modal');
+                if (modal) modal.style.display = 'none';
+            };
+
+            window.generateRandomGuestPassword = function () {
+                const prefixes = ['Philo', 'Platon', 'Kant', 'Hegel', 'Logos', 'Concept'];
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                const num = Math.floor(100 + Math.random() * 900);
+                const pwd = `${prefix}${num}!`;
+                const inp = document.getElementById('admin-input-password');
+                if (inp) inp.value = pwd;
+            };
+
+            window.resetMentorUserForm = function () {
+                const title = document.getElementById('admin-user-form-title');
+                if (title) title.textContent = '➕ Créer ou modifier un compte invité';
+                document.getElementById('admin-input-username').value = '';
+                document.getElementById('admin-input-password').value = '';
+                document.getElementById('admin-input-note').value = '';
+                document.getElementById('admin-input-quota-copies').value = '';
+                document.getElementById('admin-input-quota-micro').value = '';
+                document.getElementById('admin-input-expires').value = '';
+            };
+
+            window.prefillMentorUserForm = function (username) {
+                const user = (currentAdminData.users || []).find(u => u.username === username);
+                if (!user) return;
+                const title = document.getElementById('admin-user-form-title');
+                if (title) title.textContent = `✏️ Modification du compte : « ${user.username} »`;
+                document.getElementById('admin-input-username').value = user.username;
+                document.getElementById('admin-input-password').value = user.plainPassword || '';
+                document.getElementById('admin-input-note').value = user.note || '';
+                document.getElementById('admin-input-quota-copies').value = user.quotaCopies !== null && user.quotaCopies !== undefined ? user.quotaCopies : '';
+                document.getElementById('admin-input-quota-micro').value = user.quotaMicro !== null && user.quotaMicro !== undefined ? user.quotaMicro : '';
+                document.getElementById('admin-input-expires').value = user.expiresAt ? String(user.expiresAt).slice(0, 10) : '';
+                document.getElementById('admin-input-username').focus();
+            };
+
+            window.loadMentorAdminDashboard = async function () {
+                try {
+                    const data = await callAdminApi('admin_dashboard');
+                    currentAdminData = {
+                        settings: data.settings || { storeEssayTexts: false },
+                        users: data.users || [],
+                        logs: data.logs || []
+                    };
+                    renderAdminDashboardUI();
+                } catch (err) {
+                    alert('Erreur : ' + err.message);
+                }
+            };
+
+            function renderAdminDashboardUI() {
+                const users = currentAdminData.users || [];
+                const settings = currentAdminData.settings || {};
+
+                // 1. KPIs
+                const activeUsersCount = users.filter(u => u.active !== false).length;
+                const totalCopies = users.reduce((acc, u) => acc + (u.copiesCount || 0), 0);
+                const totalMicro = users.reduce((acc, u) => acc + (u.microCount || 0), 0);
+                const totalWords = users.reduce((acc, u) => acc + (u.totalWords || 0), 0);
+
+                document.getElementById('admin-kpi-users').textContent = `${activeUsersCount} / ${users.length}`;
+                document.getElementById('admin-kpi-copies').textContent = totalCopies.toLocaleString('fr-FR');
+                document.getElementById('admin-kpi-micro').textContent = totalMicro.toLocaleString('fr-FR');
+                document.getElementById('admin-kpi-words').textContent = totalWords.toLocaleString('fr-FR') + ' mots';
+
+                // 2. Interrupteur de confidentialité
+                const toggleEl = document.getElementById('admin-toggle-store-texts');
+                const statusTextEl = document.getElementById('admin-privacy-status-text');
+                if (toggleEl) toggleEl.checked = Boolean(settings.storeEssayTexts);
+                if (statusTextEl) {
+                    if (settings.storeEssayTexts) {
+                        statusTextEl.innerHTML = 'État actuel : <strong style="color:#166534;">activé</strong> (les copies soumises et les rapports générés sont enregistrés pour lecture dans le journal ci-dessous).';
+                    } else {
+                        statusTextEl.innerHTML = 'État actuel : <strong style="color:#475569;">désactivé par défaut</strong> (confidentialité maximale : seuls les compteurs, dates, concours, sujets et notes sont enregistrés).';
+                    }
+                }
+
+                // 3. Filtre utilisateur dans le journal
+                const filterUserSelect = document.getElementById('admin-filter-user');
+                const currentFilterVal = filterUserSelect ? filterUserSelect.value : '';
+                if (filterUserSelect) {
+                    filterUserSelect.innerHTML = '<option value="">Tous les comptes</option>' +
+                        users.map(u => `<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)}${u.note ? ' (' + escapeHtml(u.note) + ')' : ''}</option>`).join('');
+                    filterUserSelect.value = currentFilterVal;
+                }
+
+                // 4. Tableau des comptes
+                const usersTbody = document.getElementById('admin-users-tbody');
+                if (usersTbody) {
+                    if (users.length === 0) {
+                        usersTbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Aucun compte enregistré.</td></tr>';
+                    } else {
+                        usersTbody.innerHTML = users.map(u => {
+                            const isAdmin = u.role === 'admin';
+                            const badgeHtml = isAdmin
+                                ? '<span class="mentor-badge admin">Administrateur</span>'
+                                : (u.active !== false
+                                    ? '<span class="mentor-badge active">Actif</span>'
+                                    : '<span class="mentor-badge suspended">Suspendu</span>');
+                            const copiesStr = (u.quotaCopies !== null && u.quotaCopies !== undefined)
+                                ? `<strong>${u.copiesCount || 0}</strong> / ${u.quotaCopies}`
+                                : `<strong>${u.copiesCount || 0}</strong> <span style="color:#64748b;">(illimité)</span>`;
+                            const microStr = (u.quotaMicro !== null && u.quotaMicro !== undefined)
+                                ? `<strong>${u.microCount || 0}</strong> / ${u.quotaMicro}`
+                                : `<strong>${u.microCount || 0}</strong> <span style="color:#64748b;">(illimité)</span>`;
+                            const pwdDisplay = u.plainPassword
+                                ? `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${escapeHtml(u.plainPassword)}</code>`
+                                : '<span style="color:#94a3b8;">(défini dans env.yaml)</span>';
+
+                            return `<tr>
+                                <td>
+                                    <strong>${escapeHtml(u.username)}</strong>
+                                    ${u.note ? `<div style="font-size:0.78rem; color:#64748b;">${escapeHtml(u.note)}</div>` : ''}
+                                    ${u.expiresAt ? `<div style="font-size:0.75rem; color:#b45309;">Expire le : ${escapeHtml(String(u.expiresAt).slice(0, 10))}</div>` : ''}
+                                </td>
+                                <td>${pwdDisplay}</td>
+                                <td>${badgeHtml}</td>
+                                <td>${u.loginCount || 0}</td>
+                                <td>${copiesStr}</td>
+                                <td>${microStr}</td>
+                                <td>${(u.totalWords || 0).toLocaleString('fr-FR')}</td>
+                                <td style="font-size:0.8rem;">${escapeHtml(formatDateFr(u.lastActiveAt || u.lastLoginAt))}</td>
+                                <td>
+                                    <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                                        <button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="document.getElementById('admin-filter-user').value='${escapeHtml(u.username)}'; window.renderMentorAdminLogs();">🔍 Journal</button>
+                                        <button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.prefillMentorUserForm('${escapeHtml(u.username)}')">✏️ Modifier</button>
+                                        ${!isAdmin ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.toggleMentorUserActive('${escapeHtml(u.username)}', ${u.active === false})">${u.active === false ? '✅ Activer' : '⏸️ Suspendre'}</button>` : ''}
+                                        <button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.resetMentorUserCounters('${escapeHtml(u.username)}')" title="Remettre les compteurs de ce compte à zéro">🔄 0</button>
+                                        ${!isAdmin ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem; color:#b91c1c;" onclick="window.deleteMentorUser('${escapeHtml(u.username)}')">🗑️</button>` : ''}
+                                    </div>
+                                </td>
+                            </tr>`;
+                        }).join('');
+                    }
+                }
+
+                // 5. Journal d'activité
+                window.renderMentorAdminLogs();
+            }
+
+            window.renderMentorAdminLogs = function () {
+                const logsTbody = document.getElementById('admin-logs-tbody');
+                if (!logsTbody) return;
+                const userFilter = document.getElementById('admin-filter-user')?.value || '';
+                const actionFilter = document.getElementById('admin-filter-action')?.value || '';
+
+                const filtered = (currentAdminData.logs || []).filter(l => {
+                    if (userFilter && l.username !== userFilter) return false;
+                    if (actionFilter && l.action !== actionFilter) return false;
+                    return true;
+                });
+
+                if (filtered.length === 0) {
+                    logsTbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px; color:#64748b;">Aucune activité correspondant à ces critères.</td></tr>';
+                    return;
+                }
+
+                logsTbody.innerHTML = filtered.map(l => {
+                    let actionLabel = 'Connexion';
+                    if (l.action === 'correction') actionLabel = '📝 Copie évaluée';
+                    else if (l.action === 'micro_annotation') actionLabel = '🔬 Micro-analyse';
+                    else if (l.action === 'login') actionLabel = '🔑 Connexion';
+
+                    const gradesStr = (l.noteCanonique || l.noteEstimee)
+                        ? `Canon. : <strong>${escapeHtml(l.noteCanonique || '-')}</strong>/20<br>Est. : <strong>${escapeHtml(l.noteEstimee || '-')}</strong>/20`
+                        : '<span style="color:#94a3b8;">-</span>';
+
+                    const contentBtn = l.hasTexts
+                        ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.openMentorLogDetail('${escapeHtml(l.id)}')">📄 Lire copie et rapport</button>`
+                        : '<span style="color:#94a3b8; font-size:0.78rem;">Non archivé</span>';
+
+                    return `<tr>
+                        <td style="white-space:nowrap; font-size:0.8rem;">${escapeHtml(formatDateFr(l.timestamp))}</td>
+                        <td><strong>${escapeHtml(l.username)}</strong></td>
+                        <td>${actionLabel}</td>
+                        <td>${escapeHtml(l.concours ? l.concours + (l.epreuve ? ' • ' + l.epreuve : '') : '-')}</td>
+                        <td style="max-width:280px;">${escapeHtml(l.sujet || '-')}</td>
+                        <td>${l.wordCount ? l.wordCount.toLocaleString('fr-FR') : '-'}</td>
+                        <td style="font-size:0.8rem;">${gradesStr}</td>
+                        <td>${contentBtn}</td>
+                    </tr>`;
+                }).join('');
+            };
+
+            window.saveMentorUserAccount = async function (event) {
+                if (event) event.preventDefault();
+                const username = document.getElementById('admin-input-username').value.trim();
+                const password = document.getElementById('admin-input-password').value.trim();
+                const note = document.getElementById('admin-input-note').value.trim();
+                const quotaCopies = document.getElementById('admin-input-quota-copies').value.trim();
+                const quotaMicro = document.getElementById('admin-input-quota-micro').value.trim();
+                const expiresAt = document.getElementById('admin-input-expires').value.trim();
+
+                try {
+                    await callAdminApi('admin_save_user', {
+                        userData: {
+                            username,
+                            password,
+                            note,
+                            quotaCopies: quotaCopies === '' ? null : Number(quotaCopies),
+                            quotaMicro: quotaMicro === '' ? null : Number(quotaMicro),
+                            expiresAt: expiresAt || null
+                        }
+                    });
+                    window.resetMentorUserForm();
+                    await window.loadMentorAdminDashboard();
+                } catch (err) {
+                    alert('Erreur : ' + err.message);
+                }
+            };
+
+            window.toggleMentorUserActive = async function (username, newActiveState) {
+                try {
+                    await callAdminApi('admin_save_user', {
+                        userData: { username, active: newActiveState }
+                    });
+                    await window.loadMentorAdminDashboard();
+                } catch (err) {
+                    alert('Erreur : ' + err.message);
+                }
+            };
+
+            window.resetMentorUserCounters = async function (username) {
+                if (!confirm(`Voulez-vous remettre à zéro les compteurs de copies et de micro-analyses pour le compte « ${username} » ?`)) return;
+                try {
+                    await callAdminApi('admin_save_user', {
+                        userData: { username, resetCounters: true }
+                    });
+                    await window.loadMentorAdminDashboard();
+                } catch (err) {
+                    alert('Erreur : ' + err.message);
+                }
+            };
+
+            window.deleteMentorUser = async function (username) {
+                if (!confirm(`Voulez-vous supprimer définitivement le compte invité « ${username} » ?`)) return;
+                try {
+                    await callAdminApi('admin_delete_user', { username });
+                    await window.loadMentorAdminDashboard();
+                } catch (err) {
+                    alert('Erreur : ' + err.message);
+                }
+            };
+
+            window.toggleMentorStoreTexts = async function (checked) {
+                try {
+                    await callAdminApi('admin_update_settings', {
+                        settings: { storeEssayTexts: Boolean(checked) }
+                    });
+                    await window.loadMentorAdminDashboard();
+                } catch (err) {
+                    alert('Erreur : ' + err.message);
+                }
+            };
+
+            window.purgeMentorArchivedTexts = async function () {
+                if (!confirm("Voulez-vous effacer tous les textes de copies et de rapports enregistrés dans la base ? (Tous les compteurs, sujets, dates et notes seront conservés).")) return;
+                try {
+                    const res = await callAdminApi('admin_purge_texts');
+                    alert(`Purge effectuée : ${res.purgedCount || 0} entrée(s) nettoyée(s).`);
+                    await window.loadMentorAdminDashboard();
+                } catch (err) {
+                    alert('Erreur : ' + err.message);
+                }
+            };
+
+            window.openMentorLogDetail = async function (logId) {
+                try {
+                    const data = await callAdminApi('admin_get_log_detail', { logId });
+                    const log = data.log;
+                    const modal = document.getElementById('mentor-log-detail-modal');
+                    const title = document.getElementById('mentor-log-detail-title');
+                    const body = document.getElementById('mentor-log-detail-body');
+
+                    if (title) {
+                        title.textContent = `📄 ${log.username} — ${log.concours || ''} (${formatDateFr(log.timestamp)})`;
+                    }
+                    if (body) {
+                        body.innerHTML = `
+                            <div style="margin-bottom:16px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
+                                <strong>Sujet ou texte :</strong> ${escapeHtml(log.sujet || '-')}<br>
+                                <strong>Volume :</strong> ${log.wordCount || 0} mots • <strong>Note canonique :</strong> ${escapeHtml(log.noteCanonique || '-')}/20 • <strong>Note estimée :</strong> ${escapeHtml(log.noteEstimee || '-')}/20
+                            </div>
+                            <h3 style="margin-bottom:8px;">✍️ Texte soumis par le candidat</h3>
+                            <pre style="white-space:pre-wrap; font-family:inherit; background:#fffbeb; border:1px solid #fde68a; padding:14px; border-radius:8px; margin-bottom:20px;">${escapeHtml(log.copieText || 'Aucun texte enregistré.')}</pre>
+                            <h3 style="margin-bottom:8px;">🏛️ Rapport généré par le Mentor</h3>
+                            <div style="background:#ffffff; border:1px solid #cbd5e1; padding:16px; border-radius:8px;">${window.marked ? window.marked.parse(log.rapportText || '') : escapeHtml(log.rapportText || '')}</div>
+                        `;
+                    }
+                    if (modal) modal.style.display = 'flex';
+                } catch (err) {
+                    alert('Erreur : ' + err.message);
+                }
+            };
+
+            window.exportMentorDataJSON = async function () {
+                try {
+                    const data = await callAdminApi('admin_export_data');
+                    const blob = new Blob([JSON.stringify(data.exportData, null, 2)], { type: 'application/json;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `mentor_monitoring_export_${new Date().toISOString().slice(0, 10)}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    alert('Erreur export JSON : ' + err.message);
+                }
+            };
+
+            window.exportMentorDataCSV = function () {
+                const users = currentAdminData.users || [];
+                const headers = ['Identifiant', 'Note', 'Role', 'Statut', 'Connexions', 'Copies_evaluees', 'Quota_copies', 'Micro_analyses', 'Quota_micro', 'Mots_soumis', 'Derniere_activite'];
+                const rows = users.map(u => [
+                    u.username,
+                    (u.note || '').replace(/;/g, ','),
+                    u.role,
+                    u.active !== false ? 'Actif' : 'Suspendu',
+                    u.loginCount || 0,
+                    u.copiesCount || 0,
+                    u.quotaCopies !== null && u.quotaCopies !== undefined ? u.quotaCopies : 'Illimite',
+                    u.microCount || 0,
+                    u.quotaMicro !== null && u.quotaMicro !== undefined ? u.quotaMicro : 'Illimite',
+                    u.totalWords || 0,
+                    u.lastActiveAt || u.lastLoginAt || ''
+                ]);
+                const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\r\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `mentor_suivi_comptes_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+
+            // Initialisation au chargement du DOM
+            document.addEventListener('DOMContentLoaded', () => {
+                const savedUser = window.getMentorCurrentUser();
+                const savedToken = window.getMentorAuthToken();
+                if (savedUser && savedToken) {
+                    updateSessionBarUI(savedUser);
+                    window.refreshMentorSessionUser();
+                } else {
+                    updateSessionBarUI(null);
+                }
+            });
+        })();
 
         // Textes d'explication intégrés
         const CONCOURS_ANNALES = window.CONCOURS_ANNALES || {};
@@ -6365,6 +7485,38 @@
             return { bg: 'score-tier-5', bar: 'bar-tier-5', card: 'card-tier-5', pill: 'pill-tier-5', tier: 5 };                   // Rouge (< 50)
         }
 
+        function getSectionPartClass(sectionName) {
+            if (!sectionName) return 'card-part-intro';
+            const norm = sectionName
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[\[\]]/g, '')
+                .trim();
+
+            if (/\b(?:introduction|intro)\b/.test(norm)) return 'card-part-intro';
+            if (/\b(?:conclusion|bilan)\b/.test(norm)) return 'card-part-concl';
+
+            // 4e partie / 4e mouvement (IV)
+            if (/\b(?:quatrieme|4\s*e|4\s*eme)\s+(?:partie|mouvement|moment|temps)\b|\b(?:partie|mouvement|moment|temps)\s+(?:iv|4)\b|^(?:iv|4)\s*[.:\-–—]/i.test(norm)) {
+                return 'card-part-4';
+            }
+            // 3e partie / 3e mouvement (III)
+            if (/\b(?:troisieme|3\s*e|3\s*eme)\s+(?:partie|mouvement|moment|temps)\b|\b(?:partie|mouvement|moment|temps)\s+(?:iii|3)\b|^(?:iii|3)\s*[.:\-–—]/i.test(norm)) {
+                return 'card-part-3';
+            }
+            // 2de partie / 2e mouvement (II)
+            if (/\b(?:deuxieme|seconde?|2\s*d\s*e?|2\s*e|2\s*eme)\s+(?:partie|mouvement|moment|temps)\b|\b(?:partie|mouvement|moment|temps)\s+(?:ii|2)\b|^(?:ii|2)\s*[.:\-–—]/i.test(norm)) {
+                return 'card-part-2';
+            }
+            // 1re partie / 1er mouvement (I)
+            if (/\b(?:premiere?|1\s*r\s*e|1\s*e\s*r\s*e?|1\s*e)\s+(?:partie|mouvement|moment|temps)\b|\b(?:partie|mouvement|moment|temps)\s+(?:i|1)\b|^(?:i|1)\s*[.:\-–—]/i.test(norm)) {
+                return 'card-part-1';
+            }
+
+            return 'card-part-intro';
+        }
+
         function extraireTexteParSection(rawText) {
             const sections = {};
             if (!rawText || typeof rawText !== 'string') return sections;
@@ -6784,10 +7936,11 @@
                     });
 
                     const scoreColors = getScoreColorClass(finalScore);
+                    const partClass = getSectionPartClass(sectionName);
 
                     // Créer la carte de section complète englobante
                     const cardDiv = doc.createElement('div');
-                    cardDiv.className = `section-feedback-card ${scoreColors.card}`;
+                    cardDiv.className = `section-feedback-card ${scoreColors.card} ${partClass}`;
                     cardDiv.id = sectionAnchorId;
 
                     // En-tête intégré moderne de la carte avec indicateur d'évolution à gauche de la note
@@ -6853,6 +8006,15 @@
                     if (header.parentNode) {
                         header.parentNode.replaceChild(cardDiv, header);
                     }
+                }
+            });
+
+            // S'assurer que toute carte de section déjà présente (ex. issue du cache) possède sa classe de marquage de partie
+            doc.querySelectorAll('.section-feedback-card').forEach(card => {
+                if (!/card-part-(?:1|2|3|4|intro|concl)/.test(card.className)) {
+                    const titleEl = card.querySelector('.section-card-title, h3');
+                    const pClass = getSectionPartClass(titleEl ? titleEl.textContent : '');
+                    card.classList.add(pClass);
                 }
             });
 
@@ -7602,13 +8764,27 @@
 
                 const response = await fetch(CLOUD_FUNCTION_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + (window.getMentorAuthToken ? window.getMentorAuthToken() : '')
+                    },
                     body: JSON.stringify(body)
                 });
 
-                if (!response.ok) throw new Error('Le serveur a retourné une erreur ' + response.status);
+                if (!response.ok) {
+                    let errMsg = 'Le serveur a retourné une erreur ' + response.status;
+                    try {
+                        const errJson = await response.json();
+                        if (errJson && errJson.error) errMsg = errJson.error;
+                        if (response.status === 401 && window.showMentorLoginOverlay) {
+                            window.showMentorLoginOverlay(errMsg);
+                        }
+                    } catch (_) {}
+                    throw new Error(errMsg);
+                }
 
                 const data = await response.json();
+                if (window.refreshMentorSessionUser) window.refreshMentorSessionUser();
                 if (data && data.success && data.markdown) {
                     // Nettoyage et normalisation de l'extrait exact pour garantir qu'il correspond mot à mot à la proposition sélectionnée
                     let cleanMicroMd = data.markdown.trim();
@@ -10180,12 +11356,23 @@
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Accept-Encoding": "identity"
+                        "Accept-Encoding": "identity",
+                        "Authorization": "Bearer " + (window.getMentorAuthToken ? window.getMentorAuthToken() : "")
                     },
                     body: JSON.stringify(body)
                 });
 
-                if (!response.ok) throw new Error("Le serveur a rencontré un problème.");
+                if (!response.ok) {
+                    let errMsg = "Le serveur a rencontré un problème.";
+                    try {
+                        const errJson = await response.json();
+                        if (errJson && errJson.error) errMsg = errJson.error;
+                        if (response.status === 401 && window.showMentorLoginOverlay) {
+                            window.showMentorLoginOverlay(errMsg);
+                        }
+                    } catch (_) {}
+                    throw new Error(errMsg);
+                }
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder("utf-8");
@@ -10269,6 +11456,7 @@
 
                 // Reconstitution finale complète de la copie annotée
                 rafraichirCopieAnnotee(texteCumule, trainingText);
+                if (window.refreshMentorSessionUser) window.refreshMentorSessionUser();
 
                 const newCorrectionObj = {
                     sujet: sujetActif,
