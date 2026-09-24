@@ -11001,7 +11001,8 @@
                         savedCorrectionObj.atelierHtml = reTransformed.atelierHtml;
                         savedCorrectionObj.atelierCasCount = reTransformed.casCount;
                     } else {
-                        savedCorrection = savedCorrectionObj.html;
+                        const reTransformed = transformerRenduCorrection(savedCorrectionObj.html, savedCorrectionObj);
+                        savedCorrection = reTransformed.html || savedCorrectionObj.html;
                     }
                 }
             }

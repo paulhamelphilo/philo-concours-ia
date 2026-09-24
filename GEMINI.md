@@ -1,4 +1,4 @@
-﻿# Règles de typographie et de style français
+# Règles de typographie et de style français
 
 Toutes les réponses, synthèses, rapports et générations de texte en français doivent respecter scrupuleusement les règles de l'Imprimerie nationale et de la typographie française :
 
@@ -47,3 +47,25 @@ Ces règles s'appliquent sans exception à **toute modification ou création de 
 4. **Ordinaux et durées** :
    - Écrire 1ʳᵉ, 2ᵈᵉ, 3ᵉ, etc. (et non 1ère, 2ème).
    - Espace insécable avant le symbole d'heure h (ex. : 7 h, 6 h).
+
+---
+
+## Règle impérative d'étalonnage et de formulation des critères d'évaluation
+
+Toute règle d'évaluation, de plafonnement ou de valorisation issue de l'étalonnage empirique (dans `Grilles_Evaluation/GRILLE_DISSERTATION.md`, `Grilles_Evaluation/GRILLE_EXPLICATION_DE_TEXTE.md`, `GCloud/index.js`, `index.html`, `Github/index.html` ou les scripts d'évaluation) doit respecter sans exception les quatre principes suivants :
+
+1. **Universalité méthodologique et conceptuelle stricte** :
+   - Les règles doivent toujours être formulées comme des **lois méthodologiques et philosophiques générales** (nature de l'opération conceptuelle, structure de l'aporie, statut de la médiation doctrinale, rigueur de l'exégèse immanente, cohérence des engagements théoriques).
+
+2. **Interdiction formelle de toute référence nominative au corpus d'étalonnage (zéro sur-ajustement / *overfitting*)** :
+   - Ne **jamais** citer dans une règle d'évaluation ou un prompt système l'identifiant d'une copie, le nom d'un candidat, l'intitulé d'un sujet particulier ou l'auteur d'un texte du corpus d'étalonnage comme déclencheur de barème (bannir par exemple toute mention du type « Règle Condillac », « Sujet sur le bonheur », « Texte de Spinoza », etc.).
+
+3. **Différenciation explicite par concours et par épreuve** :
+   - Chaque règle doit préciser à quelle épreuve et quel format horaire elle s'applique :
+     - **Capes externe** : 1ʳᵉ épreuve écrite disciplinaire de dissertation (6 h) ; 2ᵈᵉ épreuve écrite disciplinaire appliquée / explication de texte (6 h).
+     - **Agrégation interne** : 1ʳᵉ épreuve de dissertation philosophique (7 h) ; 2ᵈᵉ épreuve d'explication de texte philosophique (6 h 30).
+     - **Agrégation externe** : 1ʳᵉ épreuve de composition de philosophie générale sans programme (7 h) ; 2ᵈᵉ épreuve de composition de philosophie sur programme (7 h) ; 3ᵉ épreuve d'histoire de la philosophie sur œuvre au programme (6 h).
+
+4. **Synchronisation systématique** :
+   - Toute évolution de l'étalonnage doit être répercutée simultanément dans les grilles de référence (`GRILLE_DISSERTATION.md` et `GRILLE_EXPLICATION_DE_TEXTE.md`), dans le moteur d'évaluation backend (`GCloud/index.js`) et dans l'interface (`index.html` et `Github/index.html`).
+
