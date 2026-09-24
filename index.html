@@ -2848,6 +2848,7 @@
                 color: #64748b !important;
                 break-inside: auto !important;
                 page-break-inside: auto !important;
+            }
             #mentor-auth-overlay,
             #mentor-admin-modal,
             #mentor-log-detail-modal,
@@ -2861,35 +2862,34 @@
             position: fixed;
             inset: 0;
             z-index: 99999;
-            background: rgba(15, 23, 42, 0.82);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: var(--bg-color, #f8f9fa);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 24px;
+            overflow-y: auto;
         }
         .mentor-auth-card {
             background: #ffffff;
             width: 100%;
-            max-width: 430px;
-            border-radius: 14px;
-            padding: 32px 28px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-            border: 1px solid #e2e8f0;
+            max-width: 640px;
+            border-radius: 12px;
+            padding: 38px 40px 34px 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: left;
         }
-        .mentor-auth-card h2 {
-            margin: 0 0 6px 0;
-            color: #1e293b;
-            font-size: 1.45rem;
+        .mentor-auth-card h1 {
             text-align: center;
+            color: var(--primary-color, #2c3e50);
+            margin: 0 0 28px 0;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 18px;
+            font-size: 2rem;
+            line-height: 1.35;
         }
-        .mentor-auth-subtitle {
-            text-align: center;
-            color: #64748b;
-            font-size: 0.92rem;
-            margin-bottom: 22px;
+        .mentor-auth-form-inner {
+            max-width: 380px;
+            margin: 0 auto;
         }
         .mentor-auth-field {
             margin-bottom: 16px;
@@ -2897,7 +2897,7 @@
         .mentor-auth-field label {
             display: block;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             color: #334155;
             margin-bottom: 6px;
         }
@@ -3150,31 +3150,32 @@
 
 <body>
 
-    <!-- Écran de connexion académique (verrouillage à l'ouverture) -->
+    <!-- Écran d'accueil et de connexion (seul élément visible tant que non connecté) -->
     <div id="mentor-auth-overlay">
         <div class="mentor-auth-card">
-            <h2>🏛️ Philo Concours IA</h2>
-            <div class="mentor-auth-subtitle">Accès réservé aux membres invités</div>
-            <div id="mentor-auth-error" class="mentor-auth-error"></div>
-            <form id="mentor-auth-form" onsubmit="window.submitMentorLogin(event)">
-                <div class="mentor-auth-field">
-                    <label for="mentor-login-username">Identifiant</label>
-                    <input type="text" id="mentor-login-username" autocomplete="username" placeholder="Ex. : paul" required>
-                </div>
-                <div class="mentor-auth-field">
-                    <label for="mentor-login-password">Mot de passe</label>
-                    <div style="position: relative;">
-                        <input type="password" id="mentor-login-password" autocomplete="current-password" placeholder="Votre mot de passe" required style="padding-right: 40px;">
-                        <button type="button" onclick="const inp = document.getElementById('mentor-login-password'); inp.type = inp.type === 'password' ? 'text' : 'password';" title="Afficher ou masquer le mot de passe" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; color: #64748b;">👁️</button>
+            <h1>🏛️ Philo Concours IA <span style="font-size: 0.55em; font-weight: normal; color: #64748b; display: block; margin-top: 6px;">Capes externe &bull; Agrégation interne &bull; Agrégation externe</span></h1>
+            <div class="mentor-auth-form-inner">
+                <div id="mentor-auth-error" class="mentor-auth-error"></div>
+                <form id="mentor-auth-form" onsubmit="window.submitMentorLogin(event)">
+                    <div class="mentor-auth-field">
+                        <label for="mentor-login-username">Identifiant</label>
+                        <input type="text" id="mentor-login-username" autocomplete="username" placeholder="Votre identifiant" required>
                     </div>
-                </div>
-                <button type="submit" id="mentor-login-submit" class="mentor-auth-btn">Se connecter</button>
-            </form>
+                    <div class="mentor-auth-field">
+                        <label for="mentor-login-password">Mot de passe</label>
+                        <div style="position: relative;">
+                            <input type="password" id="mentor-login-password" autocomplete="current-password" placeholder="Votre mot de passe" required style="padding-right: 40px;">
+                            <button type="button" onclick="const inp = document.getElementById('mentor-login-password'); inp.type = inp.type === 'password' ? 'text' : 'password';" title="Afficher ou masquer le mot de passe" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; color: #64748b;">👁️</button>
+                        </div>
+                    </div>
+                    <button type="submit" id="mentor-login-submit" class="mentor-auth-btn">Se connecter</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Fenêtre modale d'administration et de monitoring (réservée à l'administrateur) -->
-    <div id="mentor-admin-modal">
+    <div id="mentor-admin-modal" style="display: none;">
         <div class="mentor-admin-panel">
             <div class="mentor-admin-header">
                 <h2>🛡️ Administration des comptes et suivi de l'usage</h2>
@@ -3326,7 +3327,7 @@
     </div>
 
     <!-- Sous-fenêtre de lecture d'une copie et de son rapport -->
-    <div id="mentor-log-detail-modal">
+    <div id="mentor-log-detail-modal" style="display: none;">
         <div class="mentor-admin-panel" style="max-width: 960px;">
             <div class="mentor-admin-header">
                 <h2 id="mentor-log-detail-title">📄 Consultation de la copie et du rapport</h2>
@@ -3337,11 +3338,11 @@
     </div>
 
     <!-- Barre latérale gauche : multi-profils et historique cranté -->
-    <div id="floating-profile-dock" class="floating-profile-dock" title="Survolez pour afficher les profils et l'historique"></div>
+    <div id="floating-profile-dock" class="floating-profile-dock" style="display: none;" title="Survolez pour afficher les profils et l'historique"></div>
 
-    <div class="container">
+    <div class="container" id="mentor-main-container" style="display: none;">
         <!-- Barre de session utilisateur et accès administration -->
-        <div id="mentor-session-bar">
+        <div id="mentor-session-bar" style="display: none;">
             <div class="mentor-session-info">
                 <span>👤 Connecté : <strong id="mentor-session-username">-</strong></span>
                 <span id="mentor-session-quota-pill" class="mentor-session-pill">Accès illimité</span>
@@ -3609,6 +3610,10 @@
 
             function updateSessionBarUI(user) {
                 const overlay = document.getElementById('mentor-auth-overlay');
+                const mainContainer = document.getElementById('mentor-main-container');
+                const dock = document.getElementById('floating-profile-dock');
+                const adminModal = document.getElementById('mentor-admin-modal');
+                const logModal = document.getElementById('mentor-log-detail-modal');
                 const bar = document.getElementById('mentor-session-bar');
                 const nameEl = document.getElementById('mentor-session-username');
                 const quotaEl = document.getElementById('mentor-session-quota-pill');
@@ -3616,11 +3621,17 @@
 
                 if (!user) {
                     if (overlay) overlay.style.display = 'flex';
+                    if (mainContainer) mainContainer.style.display = 'none';
+                    if (dock) dock.style.display = 'none';
+                    if (adminModal) adminModal.style.display = 'none';
+                    if (logModal) logModal.style.display = 'none';
                     if (bar) bar.style.display = 'none';
                     return;
                 }
 
                 if (overlay) overlay.style.display = 'none';
+                if (mainContainer) mainContainer.style.display = 'block';
+                if (dock) dock.style.display = '';
                 if (bar) bar.style.display = 'flex';
                 if (nameEl) {
                     nameEl.textContent = user.username + (user.role === 'admin' ? ' (administrateur)' : '');
@@ -6530,14 +6541,16 @@
                 if (!isExplic) {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #0d9488;">
-                        <h3 style="color: #0d9488;">Exigences spécifiques de l'Agrégation interne (dissertation — 7 h)</h3>
-                        <p><strong>Posture souveraine d'enseignant-philosophe :</strong> maîtrise philosophique adulte et affirmée, affrontant directement les contradictions du sujet sans faux-fuyant scolaire. L'aporie doit être véritablement féconde et conduire à une sursomption dialectique substantielle. Le recyclage de cours réchauffés ou de fiches thématiques est immédiatement sanctionné.</p>
+                        <h3 style="color: #0d9488;">Exigences spécifiques de l'agrégation interne (dissertation — 7 h)</h3>
+                        <p><strong>Posture souveraine d'enseignant-philosophe :</strong> maîtrise philosophique adulte et affirmée, affrontant directement les contradictions du sujet sans faux-fuyant scolaire. L'aporie doit être véritablement féconde et conduire à une sursomption dialectique substantielle.</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> dissoudre en troisième partie et conclusion la borne interrogative du sujet (« où commence... ? ») dans un flux biologique ou vital sans commencement ni lieu originaire plafonne la copie au palier 3 (12/20) ; procéder par une cascade de questions ouvertes en introduction puis juxtaposer plusieurs options alternatives en conclusion (variation, juste-milieu ou acte de foi) plafonne au palier 4 (14/20).</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #0d9488;">
-                        <h3 style="color: #0d9488;">Exigences spécifiques de l'Agrégation interne (explication de texte — 6 h 30)</h3>
-                        <p><strong>Profondeur herméneutique et immanence :</strong> faire entendre la voix singulière de l'auteur et la nécessité interne de son cheminement argumentatif. Refus absolu de tout placage de doctrines extérieures ou de généralités historiques : chaque formule du texte doit être soumise à une micro-analyse philosophique exigeante.</p>
+                        <h3 style="color: #0d9488;">Exigences spécifiques de l'agrégation interne (explication de texte — 6 h 30)</h3>
+                        <p><strong>Profondeur herméneutique et immanence :</strong> faire entendre la voix singulière de l'auteur et la nécessité interne de son cheminement argumentatif. Refus absolu de tout placage de doctrines extérieures ou de « faux-amis techniques » : chaque formule du texte doit être soumise à une micro-analyse philosophique exigeante.</p>
+                        <p style="margin-top: 8px;"><strong>Discrimination au sein du palier 5 :</strong> une explication linéaire intégrale aux transitions descriptives se situe à l'entrée du palier 5 (15/20), tandis qu'une explication encadrée par une problématisation épistémologique de premier plan et incarnée dans l'histoire précise des sciences atteint le sommet du barème (18/20).</p>
                     </div>`;
                 }
             } else if (c === 'Agrégation Externe') {
@@ -6545,19 +6558,22 @@
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
                         <h3 style="color: #7c3aed;">Exigences spécifiques : dissertation hors-programme (7 h)</h3>
-                        <p><strong>Amplitude ontologique et radicalité spéculative :</strong> épreuve mesurant l'envergure de la culture philosophique et la capacité à penser de manière autonome au plus haut niveau. Le questionnement doit être pris à sa racine première. La troisième partie doit obligatoirement opérer un déplacement conceptuel majeur (sursomption ontologique) et non un simple compromis.</p>
+                        <p><strong>Amplitude ontologique et radicalité spéculative :</strong> épreuve mesurant l'envergure de la culture philosophique et la capacité à penser de manière autonome au plus haut niveau. La troisième partie doit obligatoirement opérer un déplacement conceptuel majeur (sursomption ontologique) et non un simple compromis.</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> résoudre la tension entre l'ordre normatif idéal et la contrainte des faits par une fonction morale de consolation ou d'espérance (11/20), ou rapatrier en 8 pages un idéal politique irréalisable dans un simple sentiment subjectif envers son semblable (12/20), plafonne la copie au palier 3.</p>
                     </div>`;
                 } else if (ep === 'Dissertation sur programme') {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
                         <h3 style="color: #7c3aed;">Exigences spécifiques : dissertation sur programme (7 h)</h3>
-                        <p><strong>Précision chirurgicale et maîtrise du corpus de la session :</strong> exactitude terminologique absolue quant aux notions et auteurs au programme de l'année. Les distinctions conceptuelles fines, les débats doctrinaux contemporains et les textes clés doivent être mobilisés avec virtuosité comme des instruments de résolution du problème posé.</p>
+                        <p><strong>Précision chirurgicale et maîtrise du corpus de la session :</strong> exactitude terminologique absolue quant aux notions et auteurs au programme de l'année. Les distinctions conceptuelles fines, les débats doctrinaux contemporains et les textes clés doivent être mobilisés comme des instruments de résolution du problème posé.</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> conclure que le lien cherché relève d'un mystère ou d'une certitude poétique indicible plafonne au palier 3 (11,5/20) ; s'en tenir à l'opposition classique entre usage constitutif et usage régulateur plafonne au palier 4 (13/20) ; privilégier le seul génitif marchand vers un royaume des fins moral sans ancrage dans le droit positif ni dans l'interaction physique situe la copie à l'entrée du palier 5 (15/20).</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
                         <h3 style="color: #7c3aed;">Exigences spécifiques : histoire de la philosophie (commentaire de texte — 6 h)</h3>
-                        <p><strong>Érudition philologique et rigueur historique :</strong> maîtrise rigoureuse de la langue philosophique et du système de l'auteur. Le texte doit être restitué dans son exact contexte polémique et doctrinal : contre quelle tradition l'auteur écrit-il ? Quel adversaire implicite combat-il ? Traitement exhaustif de l'extrait jusqu'au dernier mot.</p>
+                        <p><strong>Érudition philologique et rigueur historique :</strong> maîtrise rigoureuse de la langue philosophique et du système de l'auteur. Le texte doit être restitué dans son exact contexte polémique et doctrinal jusqu'au dernier mot.</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> laisser dans l'ombre la cible polémique contemporaine précise au profit d'une opposition générale empirisme/rationalisme ou d'un exemple anachronique (12,5/20), ou formuler une question purement fonctionnelle en laissant trois pages vierges (13/20), plafonne la copie au palier 4. La maîtrise immanente des concepts techniques originaux et des cibles savantes jusqu'à la dernière ligne ouvre l'accès aux sommets du palier 5 (16 à 17/20).</p>
                     </div>`;
                 }
             }
