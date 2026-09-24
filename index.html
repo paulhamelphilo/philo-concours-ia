@@ -2862,7 +2862,7 @@
 
             <!-- Explication de texte - Sélecteur standard (Introduction / Développement / Copie complète) -->
             <div id="selector-explication" style="display:none;">
-                <div id="explication-custom" style="display:block;">
+                <div id="explication-custom" style="display:none;">
                     <label><strong>Texte à expliquer</strong></label>
                     <textarea id="textarea-custom-text" rows="6" placeholder="Collez le texte à expliquer ici..."
                         oninput="updateCustomExplication()"
@@ -2879,7 +2879,7 @@
                         <button type="button" class="btn btn-secondary btn-sm" onclick="toggleExplicationMode(false)">📋 Choisir parmi les textes officiels</button>
                     </div>
                 </div>
-                <div id="explication-predefined" style="display:none;">
+                <div id="explication-predefined" style="display:block;">
                     <label style="display:block; margin-bottom: 6px;"><strong>Texte officiel du concours (annales)</strong></label>
                     <select id="select-explic-text" onchange="selectExplicText(this.value)"
                         style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
@@ -5355,7 +5355,7 @@
             currentExplicTextIndex: null,
             currentExplicText: null,
             isCustomDissertation: true,
-            isCustomExplication: true,
+            isCustomExplication: false,
             activeThesis: null,
             activeFragment: null,
             thesisOrientation: null
@@ -5513,7 +5513,7 @@
             return `
                 <h2>Méthodologie officielle : ${typeEpreuveLabel}</h2>
                 <div style="margin-bottom: 12px; font-size: 0.88rem; color: #64748b; font-weight: 600;">
-                    ${c} &bull; Épreuve : ${ep} &bull; Durée : ${duree} &bull; Mode : ${mode.toUpperCase()}
+                    ${c} &bull; Épreuve : ${ep} &bull; Durée : ${duree}
                 </div>
                 ${specificitesHtml}
                 ${architectureHtml}
@@ -8589,8 +8589,16 @@
                 }
             } else if (state.exerciseType === 'explication') {
                 if (state.mode !== 'argumentation') {
-                    // Restore Explication standard (default to custom true)
-                    state.isCustomExplication = (la.isCustomExplication !== undefined) ? !!la.isCustomExplication : true;
+                    const ctxKey = getContextKey(state.concours, state.epreuve);
+                    const savedCtx = (prof && prof.lastActiveByContext) ? prof.lastActiveByContext[ctxKey] : null;
+
+                    if (savedCtx && typeof savedCtx.isCustomExplication === 'boolean') {
+                        state.isCustomExplication = savedCtx.isCustomExplication;
+                    } else if (la.isCustomExplication !== undefined) {
+                        state.isCustomExplication = !!la.isCustomExplication;
+                    } else {
+                        state.isCustomExplication = false;
+                    }
                     const preExp = document.getElementById('explication-predefined');
                     const custExp = document.getElementById('explication-custom');
                     if (state.isCustomExplication) {
@@ -8600,17 +8608,20 @@
                         const inputCustomRef = document.getElementById("input-custom-ref");
                         const textareaCustomText = document.getElementById("textarea-custom-text");
                         if (inputCustomRef) {
-                            inputCustomRef.value = la.customRef || (la.customAuthor ? `${la.customAuthor}${la.customWork ? ', ' + la.customWork : ''}` : (la.customWork || ''));
+                            inputCustomRef.value = (savedCtx && savedCtx.customRef) ? savedCtx.customRef : (la.customRef || (la.customAuthor ? `${la.customAuthor}${la.customWork ? ', ' + la.customWork : ''}` : (la.customWork || '')));
                         }
-                        if (textareaCustomText) textareaCustomText.value = la.customText || '';
+                        if (textareaCustomText) textareaCustomText.value = (savedCtx && savedCtx.customText) ? savedCtx.customText : (la.customText || '');
                         updateCustomExplication();
                     } else {
                         if (preExp) preExp.style.display = 'block';
                         if (custExp) custExp.style.display = 'none';
 
                         const selectExplic = document.getElementById("select-explic-text");
-                        if (selectExplic) {
-                            selectExplic.value = (la.explicIdx !== '' && la.explicIdx !== null && la.explicIdx !== undefined) ? la.explicIdx : '';
+                        const targetExplic = (savedCtx && savedCtx.explicIdx) ? savedCtx.explicIdx : ((la.explicIdx !== '' && la.explicIdx !== null && la.explicIdx !== undefined) ? la.explicIdx : (selectExplic ? selectExplic.value : ''));
+                        if (selectExplic && targetExplic) {
+                            selectExplic.value = targetExplic;
+                            selectExplicText(targetExplic);
+                        } else if (selectExplic && selectExplic.value) {
                             selectExplicText(selectExplic.value);
                         }
                     }
@@ -9124,6 +9135,8 @@
                     targetVal = prevVal;
                 } else if (bestEvaluatedVal) {
                     targetVal = bestEvaluatedVal;
+                } else if (allVals.length > 0) {
+                    targetVal = allVals[0];
                 }
 
                 if (targetVal) {
@@ -9135,6 +9148,8 @@
             if (savedCtx) {
                 if (typeof savedCtx.isCustomExplication === 'boolean') {
                     state.isCustomExplication = savedCtx.isCustomExplication;
+                } else if (targetVal) {
+                    state.isCustomExplication = false;
                 }
                 const inputCustomRef = document.getElementById('input-custom-ref');
                 if (inputCustomRef && savedCtx.customRef) {
@@ -9144,6 +9159,8 @@
                 if (textareaCustomText && savedCtx.customText) {
                     textareaCustomText.value = savedCtx.customText;
                 }
+            } else if (targetVal && state.isCustomExplication) {
+                state.isCustomExplication = false;
             }
 
             const preExp = document.getElementById('explication-predefined');
@@ -9881,6 +9898,9 @@
                             }
                         } else {
                             textHtml = state.currentExplicText.html || "";
+                            if (state.currentExplicText.notes && !textHtml.includes('border-top: 1px dashed')) {
+                                textHtml += `<div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 0.9em; color: #64748b; line-height: 1.6;">${state.currentExplicText.notes}</div>`;
+                            }
                         }
                     }
                 } else {
@@ -10099,6 +10119,9 @@
                     }
                 } else {
                     selectedTextHtml = state.currentExplicText.html || "";
+                    if (state.currentExplicText.notes && !selectedTextHtml.includes('border-top: 1px dashed')) {
+                        selectedTextHtml += `<div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 0.9em; color: #64748b; line-height: 1.6;">${state.currentExplicText.notes}</div>`;
+                    }
                 }
                 selectedTextTitle = state.currentExplicText.label || state.currentExplicText.title;
                 sujet = selectedTextTitle || "Explication de texte";
