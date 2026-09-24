@@ -76,6 +76,7 @@
         }
 
         .container {
+            position: relative;
             max-width: 1000px;
             width: 100%;
             margin: 0 auto;
@@ -2911,39 +2912,153 @@
             display: none;
         }
 
-        /* Barre de session supérieure */
+        /* Bouton de compte discret en haut à droite et menu déroulant */
         #mentor-session-bar {
             display: none;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            padding: 8px 14px;
-            border-radius: 8px;
-            margin-bottom: 16px;
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            z-index: 60;
+        }
+        #mentor-account-trigger {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1.5px solid #cbd5e1;
+            background: #f8fafc;
+            color: #334155;
             font-size: 0.88rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.18s ease;
+            user-select: none;
+            padding: 0;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        }
+        #mentor-account-trigger:hover,
+        #mentor-account-trigger.open {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: #0f172a;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+        }
+        #mentor-account-trigger.is-admin {
+            background: #1e293b;
+            color: #ffffff;
+            border-color: #1e293b;
+        }
+        #mentor-account-trigger.is-admin:hover,
+        #mentor-account-trigger.is-admin.open {
+            background: #0f172a;
+            border-color: #0f172a;
+        }
+        #mentor-account-trigger.is-admin::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #38bdf8;
+            border: 1.5px solid #ffffff;
+        }
+        #mentor-account-popover {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 225px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+            z-index: 100;
+            text-align: left;
+            font-size: 0.86rem;
             color: #334155;
         }
-        .mentor-session-info {
+        #mentor-account-popover.open {
+            display: block;
+            animation: fadeInPane 0.15s ease;
+        }
+        .mentor-popover-header {
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .mentor-popover-user-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .mentor-popover-role-badge {
+            display: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #e0e7ff;
+            color: #1e40af;
+            padding: 1px 7px;
+            border-radius: 999px;
         }
         .mentor-session-pill {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-weight: 600;
-            color: #1e293b;
+            display: inline-block;
+            font-size: 0.78rem;
+            color: #64748b;
+            font-weight: 500;
         }
-        .mentor-session-actions {
+        .mentor-popover-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .mentor-popover-btn {
+            width: 100%;
+            text-align: left;
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #334155;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        .mentor-popover-btn:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .mentor-popover-btn.logout-btn {
+            color: #b91c1c;
+        }
+        .mentor-popover-btn.logout-btn:hover {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        @media (max-width: 600px) {
+            #mentor-session-bar {
+                top: 14px;
+                right: 14px;
+            }
+            #mentor-account-trigger {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
         }
         .mentor-bar-btn {
             padding: 5px 12px;
@@ -3297,15 +3412,23 @@
     <div id="floating-profile-dock" class="floating-profile-dock" style="display: none;" title="Survolez pour afficher les profils et l'historique"></div>
 
     <div class="container" id="mentor-main-container" style="display: none;">
-        <!-- Barre de session utilisateur et accès administration -->
+        <!-- Bouton de session utilisateur discret en haut à droite et menu déroulant -->
         <div id="mentor-session-bar" style="display: none;">
-            <div class="mentor-session-info">
-                <span>👤 Connecté : <strong id="mentor-session-username">-</strong></span>
-                <span id="mentor-session-quota-pill" class="mentor-session-pill">Accès illimité</span>
-            </div>
-            <div class="mentor-session-actions">
-                <button type="button" id="mentor-btn-open-admin" class="mentor-bar-btn admin-btn" style="display: none;" onclick="window.openMentorAdminModal()">🛡️ Administration et suivi</button>
-                <button type="button" class="mentor-bar-btn" onclick="window.logoutMentorSession()">Se déconnecter</button>
+            <button type="button" id="mentor-account-trigger" onclick="window.toggleMentorAccountMenu(event)" title="Compte et session" aria-label="Compte et session">
+                <span id="mentor-account-initial">U</span>
+            </button>
+            <div id="mentor-account-popover">
+                <div class="mentor-popover-header">
+                    <div class="mentor-popover-user-row">
+                        <span id="mentor-session-username">-</span>
+                        <span id="mentor-session-role-badge" class="mentor-popover-role-badge">Administrateur</span>
+                    </div>
+                    <span id="mentor-session-quota-pill" class="mentor-session-pill">Accès illimité</span>
+                </div>
+                <div class="mentor-popover-actions">
+                    <button type="button" id="mentor-btn-open-admin" class="mentor-popover-btn" style="display: none;" onclick="window.closeMentorAccountMenu(); window.openMentorAdminModal();">🛡️ Administration et suivi</button>
+                    <button type="button" class="mentor-popover-btn logout-btn" onclick="window.closeMentorAccountMenu(); window.logoutMentorSession();">🚪 Se déconnecter</button>
+                </div>
             </div>
         </div>
         <h1>🏛️ Philo Concours IA <span style="font-size: 0.55em; font-weight: normal; color: var(--secondary-color); display: block; margin-top: 4px;">Capes externe &bull; Agrégation interne &bull; Agrégation externe</span></h1>
@@ -3466,7 +3589,7 @@
     </div>
 
     <script>
-        const APP_BUILD_VERSION = "2026.09.18.typo_fr_v1";
+        const APP_BUILD_VERSION = "2026.09.24.account_avatar_v1";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -3564,6 +3687,35 @@
                 }
             };
 
+            window.closeMentorAccountMenu = function () {
+                const popover = document.getElementById('mentor-account-popover');
+                const trigger = document.getElementById('mentor-account-trigger');
+                if (popover) popover.classList.remove('open');
+                if (trigger) trigger.classList.remove('open');
+            };
+
+            window.toggleMentorAccountMenu = function (event) {
+                if (event) event.stopPropagation();
+                const popover = document.getElementById('mentor-account-popover');
+                const trigger = document.getElementById('mentor-account-trigger');
+                if (!popover || !trigger) return;
+                const isOpen = popover.classList.toggle('open');
+                trigger.classList.toggle('open', isOpen);
+            };
+
+            document.addEventListener('click', function (e) {
+                const bar = document.getElementById('mentor-session-bar');
+                if (bar && !bar.contains(e.target)) {
+                    window.closeMentorAccountMenu();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    window.closeMentorAccountMenu();
+                }
+            });
+
             function updateSessionBarUI(user) {
                 const overlay = document.getElementById('mentor-auth-overlay');
                 const mainContainer = document.getElementById('mentor-main-container');
@@ -3571,11 +3723,15 @@
                 const adminModal = document.getElementById('mentor-admin-modal');
                 const logModal = document.getElementById('mentor-log-detail-modal');
                 const bar = document.getElementById('mentor-session-bar');
+                const triggerEl = document.getElementById('mentor-account-trigger');
+                const initialEl = document.getElementById('mentor-account-initial');
                 const nameEl = document.getElementById('mentor-session-username');
+                const roleBadgeEl = document.getElementById('mentor-session-role-badge');
                 const quotaEl = document.getElementById('mentor-session-quota-pill');
                 const adminBtn = document.getElementById('mentor-btn-open-admin');
 
                 if (!user) {
+                    window.closeMentorAccountMenu();
                     if (overlay) overlay.style.display = 'flex';
                     if (mainContainer) mainContainer.style.display = 'none';
                     if (dock) dock.style.display = 'none';
@@ -3588,9 +3744,19 @@
                 if (overlay) overlay.style.display = 'none';
                 if (mainContainer) mainContainer.style.display = 'block';
                 if (dock) dock.style.display = '';
-                if (bar) bar.style.display = 'flex';
+                if (bar) bar.style.display = 'block';
+                const uname = String(user.username || 'U').trim();
+                const initial = (uname.charAt(0) || 'U').toUpperCase();
+                if (initialEl) initialEl.textContent = initial;
+                if (triggerEl) {
+                    triggerEl.classList.toggle('is-admin', user.role === 'admin');
+                    triggerEl.title = `Compte : ${uname}`;
+                }
                 if (nameEl) {
-                    nameEl.textContent = user.username + (user.role === 'admin' ? ' (administrateur)' : '');
+                    nameEl.textContent = uname;
+                }
+                if (roleBadgeEl) {
+                    roleBadgeEl.style.display = user.role === 'admin' ? 'inline-block' : 'none';
                 }
                 if (quotaEl) {
                     if (user.role === 'admin') {
@@ -3602,7 +3768,7 @@
                     }
                 }
                 if (adminBtn) {
-                    adminBtn.style.display = user.role === 'admin' ? 'inline-block' : 'none';
+                    adminBtn.style.display = user.role === 'admin' ? 'flex' : 'none';
                 }
             }
 
