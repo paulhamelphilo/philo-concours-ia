@@ -2336,41 +2336,7 @@
             font-style: italic;
         }
 
-        /* Unités de sens interactives non annotées (micro-analyse à la demande) */
-        .unite-sens-unannotated {
-            cursor: pointer;
-            border-radius: 3px;
-            padding: 1px 2px;
-            transition: background-color 0.15s ease, box-shadow 0.15s ease;
-            position: relative;
-        }
 
-        .unite-sens-unannotated:hover {
-            background-color: rgba(59, 130, 246, 0.09);
-            box-shadow: 0 0 0 1.5px rgba(59, 130, 246, 0.35);
-        }
-
-        .unite-sens-unannotated.loading-micro {
-            background-color: #fef3c7 !important;
-            box-shadow: 0 0 0 2px #f59e0b !important;
-            animation: pulseMicro 1s infinite alternate;
-            cursor: wait;
-        }
-
-        @keyframes pulseMicro {
-            from { background-color: #fef3c7; }
-            to { background-color: #fde68a; }
-        }
-
-        @keyframes pulseHighlightNew {
-            0% { outline: 3px solid #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
-            50% { outline: 3px solid #2563eb; box-shadow: 0 0 18px rgba(37, 99, 235, 0.7); }
-            100% { outline: none; box-shadow: none; }
-        }
-
-        .pulse-highlight-new {
-            animation: pulseHighlightNew 2s ease-out;
-        }
 
         /* Surlignage passage atelier de réécriture */
         .copie-highlight.highlight-atelier {
@@ -3198,10 +3164,6 @@
                     <div class="mentor-kpi-value" id="admin-kpi-copies">-</div>
                 </div>
                 <div class="mentor-kpi-card">
-                    <div class="mentor-kpi-label">Micro-analyses</div>
-                    <div class="mentor-kpi-value" id="admin-kpi-micro">-</div>
-                </div>
-                <div class="mentor-kpi-card">
                     <div class="mentor-kpi-label">Volume total analysé</div>
                     <div class="mentor-kpi-value" id="admin-kpi-words">-</div>
                 </div>
@@ -3246,10 +3208,6 @@
                             <input type="number" id="admin-input-quota-copies" min="0" placeholder="Vide = illimité">
                         </div>
                         <div>
-                            <label for="admin-input-quota-micro">Quota micro-analyses</label>
-                            <input type="number" id="admin-input-quota-micro" min="0" placeholder="Vide = illimité">
-                        </div>
-                        <div>
                             <label for="admin-input-expires">Date de fin (optionnelle)</label>
                             <input type="date" id="admin-input-expires">
                         </div>
@@ -3273,14 +3231,13 @@
                                 <th>Statut</th>
                                 <th>Connexions</th>
                                 <th>Copies (quota)</th>
-                                <th>Micro-analyses</th>
                                 <th>Mots soumis</th>
                                 <th>Dernière activité</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="admin-users-tbody">
-                            <tr><td colspan="9" style="text-align:center; padding: 18px;">Chargement des comptes...</td></tr>
+                            <tr><td colspan="8" style="text-align:center; padding: 18px;">Chargement des comptes...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -3298,7 +3255,6 @@
                         <select id="admin-filter-action" onchange="window.renderMentorAdminLogs()" style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
                             <option value="">Toutes les actions</option>
                             <option value="correction">Copies évaluées uniquement</option>
-                            <option value="micro_annotation">Micro-analyses uniquement</option>
                             <option value="login">Connexions uniquement</option>
                         </select>
                     </div>
@@ -3640,13 +3596,9 @@
                     if (user.role === 'admin') {
                         quotaEl.textContent = `Copies évaluées : ${user.copiesCount || 0} (illimité)`;
                     } else {
-                        const cPart = (user.quotaCopies !== null && user.quotaCopies !== undefined)
+                        quotaEl.textContent = (user.quotaCopies !== null && user.quotaCopies !== undefined)
                             ? `Copies : ${user.copiesCount || 0} / ${user.quotaCopies}`
                             : `Copies : ${user.copiesCount || 0} (illimité)`;
-                        const mPart = (user.quotaMicro !== null && user.quotaMicro !== undefined)
-                            ? ` • Micro-analyses : ${user.microCount || 0} / ${user.quotaMicro}`
-                            : '';
-                        quotaEl.textContent = cPart + mPart;
                     }
                 }
                 if (adminBtn) {
@@ -3793,7 +3745,6 @@
                 document.getElementById('admin-input-password').value = '';
                 document.getElementById('admin-input-note').value = '';
                 document.getElementById('admin-input-quota-copies').value = '';
-                document.getElementById('admin-input-quota-micro').value = '';
                 document.getElementById('admin-input-expires').value = '';
             };
 
@@ -3806,7 +3757,6 @@
                 document.getElementById('admin-input-password').value = user.plainPassword || '';
                 document.getElementById('admin-input-note').value = user.note || '';
                 document.getElementById('admin-input-quota-copies').value = user.quotaCopies !== null && user.quotaCopies !== undefined ? user.quotaCopies : '';
-                document.getElementById('admin-input-quota-micro').value = user.quotaMicro !== null && user.quotaMicro !== undefined ? user.quotaMicro : '';
                 document.getElementById('admin-input-expires').value = user.expiresAt ? String(user.expiresAt).slice(0, 10) : '';
                 document.getElementById('admin-input-username').focus();
             };
@@ -3832,12 +3782,10 @@
                 // 1. KPIs
                 const activeUsersCount = users.filter(u => u.active !== false).length;
                 const totalCopies = users.reduce((acc, u) => acc + (u.copiesCount || 0), 0);
-                const totalMicro = users.reduce((acc, u) => acc + (u.microCount || 0), 0);
                 const totalWords = users.reduce((acc, u) => acc + (u.totalWords || 0), 0);
 
                 document.getElementById('admin-kpi-users').textContent = `${activeUsersCount} / ${users.length}`;
                 document.getElementById('admin-kpi-copies').textContent = totalCopies.toLocaleString('fr-FR');
-                document.getElementById('admin-kpi-micro').textContent = totalMicro.toLocaleString('fr-FR');
                 document.getElementById('admin-kpi-words').textContent = totalWords.toLocaleString('fr-FR') + ' mots';
 
                 // 2. Interrupteur de confidentialité
@@ -3865,7 +3813,7 @@
                 const usersTbody = document.getElementById('admin-users-tbody');
                 if (usersTbody) {
                     if (users.length === 0) {
-                        usersTbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Aucun compte enregistré.</td></tr>';
+                        usersTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Aucun compte enregistré.</td></tr>';
                     } else {
                         usersTbody.innerHTML = users.map(u => {
                             const isAdmin = u.role === 'admin';
@@ -3877,9 +3825,6 @@
                             const copiesStr = (u.quotaCopies !== null && u.quotaCopies !== undefined)
                                 ? `<strong>${u.copiesCount || 0}</strong> / ${u.quotaCopies}`
                                 : `<strong>${u.copiesCount || 0}</strong> <span style="color:#64748b;">(illimité)</span>`;
-                            const microStr = (u.quotaMicro !== null && u.quotaMicro !== undefined)
-                                ? `<strong>${u.microCount || 0}</strong> / ${u.quotaMicro}`
-                                : `<strong>${u.microCount || 0}</strong> <span style="color:#64748b;">(illimité)</span>`;
                             const pwdDisplay = u.plainPassword
                                 ? `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${escapeHtml(u.plainPassword)}</code>`
                                 : '<span style="color:#94a3b8;">(défini dans env.yaml)</span>';
@@ -3894,7 +3839,6 @@
                                 <td>${badgeHtml}</td>
                                 <td>${u.loginCount || 0}</td>
                                 <td>${copiesStr}</td>
-                                <td>${microStr}</td>
                                 <td>${(u.totalWords || 0).toLocaleString('fr-FR')}</td>
                                 <td style="font-size:0.8rem;">${escapeHtml(formatDateFr(u.lastActiveAt || u.lastLoginAt))}</td>
                                 <td>
@@ -3935,7 +3879,6 @@
                 logsTbody.innerHTML = filtered.map(l => {
                     let actionLabel = 'Connexion';
                     if (l.action === 'correction') actionLabel = '📝 Copie évaluée';
-                    else if (l.action === 'micro_annotation') actionLabel = '🔬 Micro-analyse';
                     else if (l.action === 'login') actionLabel = '🔑 Connexion';
 
                     const gradesStr = (l.noteCanonique || l.noteEstimee)
@@ -3965,7 +3908,6 @@
                 const password = document.getElementById('admin-input-password').value.trim();
                 const note = document.getElementById('admin-input-note').value.trim();
                 const quotaCopies = document.getElementById('admin-input-quota-copies').value.trim();
-                const quotaMicro = document.getElementById('admin-input-quota-micro').value.trim();
                 const expiresAt = document.getElementById('admin-input-expires').value.trim();
 
                 try {
@@ -3975,7 +3917,6 @@
                             password,
                             note,
                             quotaCopies: quotaCopies === '' ? null : Number(quotaCopies),
-                            quotaMicro: quotaMicro === '' ? null : Number(quotaMicro),
                             expiresAt: expiresAt || null
                         }
                     });
@@ -3998,7 +3939,7 @@
             };
 
             window.resetMentorUserCounters = async function (username) {
-                if (!confirm(`Voulez-vous remettre à zéro les compteurs de copies et de micro-analyses pour le compte « ${username} » ?`)) return;
+                if (!confirm(`Voulez-vous remettre à zéro le compteur de copies évaluées pour le compte « ${username} » ?`)) return;
                 try {
                     await callAdminApi('admin_save_user', {
                         userData: { username, resetCounters: true }
@@ -4087,7 +4028,7 @@
 
             window.exportMentorDataCSV = function () {
                 const users = currentAdminData.users || [];
-                const headers = ['Identifiant', 'Note', 'Role', 'Statut', 'Connexions', 'Copies_evaluees', 'Quota_copies', 'Micro_analyses', 'Quota_micro', 'Mots_soumis', 'Derniere_activite'];
+                const headers = ['Identifiant', 'Note', 'Role', 'Statut', 'Connexions', 'Copies_evaluees', 'Quota_copies', 'Mots_soumis', 'Derniere_activite'];
                 const rows = users.map(u => [
                     u.username,
                     (u.note || '').replace(/;/g, ','),
@@ -4096,8 +4037,6 @@
                     u.loginCount || 0,
                     u.copiesCount || 0,
                     u.quotaCopies !== null && u.quotaCopies !== undefined ? u.quotaCopies : 'Illimite',
-                    u.microCount || 0,
-                    u.quotaMicro !== null && u.quotaMicro !== undefined ? u.quotaMicro : 'Illimite',
                     u.totalWords || 0,
                     u.lastActiveAt || u.lastLoginAt || ''
                 ]);
@@ -8671,235 +8610,6 @@
             toggleInlineNote(id);
         }
 
-        function segmenterEnUnitesDeSens(text) {
-            if (!text || typeof text !== 'string') return [];
-            // Regex d'abréviations académiques et initiales d'auteurs (ex. : M. Foucault, cf., op. cit.)
-            const abbrevRegex = /\b(?:M|Mme|Mlle|cf|éd|ed|op\.?\s*cit|ibid|sq|al|ex|chap|vol|art|p|pp|t|ca|i\.?e|e\.?g|etc|[A-ZÀ-ÖØ-ß])\.$/i;
-            const units = [];
-            let start = 0;
-            let inGuillemets = false;
-            let inParenthesis = 0;
-            let inBrackets = 0;
-
-            for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                if (char === '«') inGuillemets = true;
-                else if (char === '»') inGuillemets = false;
-                else if (char === '(') inParenthesis++;
-                else if (char === ')') inParenthesis = Math.max(0, inParenthesis - 1);
-                else if (char === '[') inBrackets++;
-                else if (char === ']') inBrackets = Math.max(0, inBrackets - 1);
-
-                // Ne découper que hors guillemets, parenthèses ou crochets
-                if (!inGuillemets && inParenthesis === 0 && inBrackets === 0 && (char === '.' || char === '?' || char === '!' || char === '…')) {
-                    let endPos = i + 1;
-                    while (endPos < text.length && (text[endPos] === '»' || text[endPos] === ')' || text[endPos] === ']' || text[endPos] === '"' || text[endPos] === '’' || text[endPos] === '\'')) {
-                        endPos++;
-                    }
-
-                    if (endPos === text.length || /\s/.test(text[endPos])) {
-                        const candidate = text.substring(start, endPos).trim();
-                        const wordMatch = candidate.match(/\b[A-Za-zÀ-ÖØ-öø-ÿ\.-]+\.$/);
-                        if (wordMatch && abbrevRegex.test(wordMatch[0]) && endPos < text.length) {
-                            continue;
-                        }
-                        // Chiffres de liste ou ordinaux (ex. : 1., 2.)
-                        if (/\b\d+\.$/.test(candidate) && endPos < text.length) {
-                            continue;
-                        }
-
-                        // Vérifier si la suite immédiate commence par une minuscule (continuation de la même phrase)
-                        const afterSlice = text.substring(endPos).trim();
-                        if (afterSlice.length > 0 && /^[a-zà-öø-ÿ]/.test(afterSlice) && !afterSlice.startsWith('et ') && !afterSlice.startsWith('mais ')) {
-                            continue;
-                        }
-
-                        // Unité de sens philosophique : agréger les propositions trop courtes (< 75 caractères) avec la phrase suivante
-                        // pour délimiter une véritable unité d'analyse ou de raisonnement philosophique
-                        if (candidate.length < 75 && endPos < text.length) {
-                            continue;
-                        }
-
-                        if (candidate.length > 0) {
-                            units.push({ start, end: endPos, text: candidate });
-                            while (endPos < text.length && /\s/.test(text[endPos])) {
-                                endPos++;
-                            }
-                            start = endPos;
-                            i = endPos - 1;
-                        }
-                    }
-                }
-            }
-            if (start < text.length) {
-                const rest = text.substring(start).trim();
-                if (rest.length > 0) {
-                    if (rest.length < 40 && units.length > 0) {
-                        const last = units[units.length - 1];
-                        last.end = text.length;
-                        last.text = text.substring(last.start, text.length).trim();
-                    } else {
-                        units.push({ start, end: text.length, text: rest });
-                    }
-                }
-            }
-            return units;
-        }
-
-        async function declencherMicroAnnotation(spanEl) {
-            if (!spanEl || spanEl.classList.contains('loading-micro')) return;
-            const encPhrase = spanEl.getAttribute('data-phrase');
-            const phrase = encPhrase ? decodeURIComponent(encPhrase) : spanEl.textContent.trim();
-            if (!phrase || phrase.length < 4) return;
-
-            const parentP = spanEl.closest('p');
-            const contexte = parentP ? parentP.textContent.trim() : '';
-
-            spanEl.classList.add('loading-micro');
-            spanEl.setAttribute('title', '⏳ Analyse chirurgicale en cours par le jury...');
-
-            const sujetActif = obtenirSujetActif();
-            const targetConcours = state.concours || 'Capes Externe';
-            const targetEpreuve = state.epreuve || (state.exerciseType === 'explication' ? 'Explication de texte' : 'Dissertation');
-
-            try {
-                const body = {
-                    action: 'micro_annotation',
-                    phrase: phrase,
-                    contexte: contexte,
-                    sujet: sujetActif,
-                    concours: targetConcours,
-                    epreuve: targetEpreuve,
-                    type: state.exerciseType
-                };
-
-                if (state.exerciseType === 'explication' && state.currentExplicText) {
-                    body.selectedTextTitle = state.currentExplicText.label || state.currentExplicText.title;
-                    body.selectedTextHtml = state.currentExplicText.html || '';
-                }
-
-                const response = await fetch(CLOUD_FUNCTION_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + (window.getMentorAuthToken ? window.getMentorAuthToken() : '')
-                    },
-                    body: JSON.stringify(body)
-                });
-
-                if (!response.ok) {
-                    let errMsg = 'Le serveur a retourné une erreur ' + response.status;
-                    try {
-                        const errJson = await response.json();
-                        if (errJson && errJson.error) errMsg = errJson.error;
-                        if (response.status === 401 && window.showMentorLoginOverlay) {
-                            window.showMentorLoginOverlay(errMsg);
-                        }
-                    } catch (_) {}
-                    throw new Error(errMsg);
-                }
-
-                const data = await response.json();
-                if (window.refreshMentorSessionUser) window.refreshMentorSessionUser();
-                if (data && data.success && data.markdown) {
-                    // Nettoyage et normalisation de l'extrait exact pour garantir qu'il correspond mot à mot à la proposition sélectionnée
-                    let cleanMicroMd = data.markdown.trim();
-                    cleanMicroMd = cleanMicroMd.replace(/^```(?:markdown)?\r?\n/i, '').replace(/\r?\n```$/i, '').trim();
-
-                    const extraitRegex = /(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*(?:\*\*)?Extrait(?:\s+exact)?(?:\s*:\s*\*\*|\*\*\s*:[ \t]*|[ \t]*:[ \t]*)[\s\S]*?(?=(?:^|\n)[ \t]*(?:[-*•]|\d+\.)?[ \t]*(?:\*\*)?(?:Typologie|Observation|Diagnostic|Conseil|Piste|Recommandation|R[èe]gle|Code|Usage|[ÉEe]clairage|Extrait\s+du\s+jury|Rapport|Citation)|\n##|\n---|$)/i;
-                    if (extraitRegex.test(cleanMicroMd)) {
-                        cleanMicroMd = cleanMicroMd.replace(extraitRegex, `\n- **Extrait exact** : « ${phrase.trim()} »\n`);
-                    } else {
-                        cleanMicroMd = `- **Extrait exact** : « ${phrase.trim()} »\n` + cleanMicroMd;
-                    }
-
-                    // Vérification que l'analyse est complète et comporte un diagnostic ou un conseil
-                    const candidateAnns = extraireAnnotationsChirurgicales(cleanMicroMd);
-                    if (candidateAnns.length === 0) {
-                        throw new Error("L'analyse retournée par le jury est incomplète. Veuillez relancer la remarque sur cette unité de sens.");
-                    }
-
-                    // Récupération robuste via getSubjectStoredDraftAndCorrection pour gérer les crans actifs
-                    const stored = getSubjectStoredDraftAndCorrection(state.exerciseType, state.mode, sujetActif);
-                    let currentRawMd = (stored.correction && stored.correction.rawMarkdown) ? stored.correction.rawMarkdown : '';
-                    let draftText = stored.draft || '';
-                    if (!draftText) {
-                        const txtArea = document.getElementById('training-textarea');
-                        if (txtArea) draftText = txtArea.value;
-                    }
-
-                    const updatedMd = currentRawMd.trim() + '\n\n' + cleanMicroMd + '\n';
-
-                    // Persister dans le bon emplacement (correction du cran actif ou entrée directe)
-                    const prof = getActiveProfile();
-                    const subKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
-                    const storedEntry = prof.subjectsData[subKey];
-                    if (storedEntry) {
-                        const crans = Array.isArray(storedEntry.crans) ? storedEntry.crans : [];
-                        const activeCranId = storedEntry.activeCranId;
-                        const activeCran = (typeof activeCranId === 'number') ? crans.find(c => c.id === activeCranId) : null;
-                        if (activeCran && activeCran.correction) {
-                            activeCran.correction.rawMarkdown = updatedMd;
-                        } else if (storedEntry.correction) {
-                            storedEntry.correction.rawMarkdown = updatedMd;
-                        }
-                    }
-                    persistStorageData();
-
-                    rafraichirCopieAnnotee(updatedMd, draftText);
-
-                    setTimeout(() => {
-                        // Trouver et afficher la carte d'annotation correspondant précisément à la proposition analysée
-                        const phraseClean = phrase.trim();
-                        let targetCard = null;
-                        let targetMark = null;
-
-                        // 1. Recherche par attribut data-extrait
-                        document.querySelectorAll('.inline-annotation-card').forEach(card => {
-                            const ext = card.getAttribute('data-extrait') || '';
-                            if (ext && (ext === phraseClean || ext.includes(phraseClean.substring(0, 35)) || phraseClean.includes(ext.substring(0, 35)))) {
-                                targetCard = card;
-                            }
-                        });
-
-                        // 2. Recherche de la marque surlignée correspondante
-                        if (targetCard) {
-                            const annId = targetCard.getAttribute('data-annotation-id');
-                            if (annId) {
-                                targetMark = document.getElementById('mark-ann-' + annId);
-                            }
-                        } else {
-                            // Repli sur la dernière carte de remarque créée
-                            const allCards = document.querySelectorAll('.inline-annotation-card:not(.type-atelier)');
-                            if (allCards.length > 0) {
-                                targetCard = allCards[allCards.length - 1];
-                                const annId = targetCard.getAttribute('data-annotation-id');
-                                if (annId) {
-                                    targetMark = document.getElementById('mark-ann-' + annId);
-                                }
-                            }
-                        }
-
-                        if (targetCard) {
-                            targetCard.style.display = 'block';
-                            targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }
-                        if (targetMark) {
-                            targetMark.classList.add('pulse-highlight-new');
-                            setTimeout(() => targetMark.classList.remove('pulse-highlight-new'), 2500);
-                        }
-                    }, 150);
-                } else {
-                    throw new Error(data.error || 'Réponse invalide du serveur');
-                }
-            } catch (err) {
-                console.error('Erreur micro-annotation:', err);
-                spanEl.classList.remove('loading-micro');
-                spanEl.setAttribute('title', 'Erreur lors de l\'analyse. Cliquez pour réessayer.');
-                alert('La micro-analyse n\'a pas pu aboutir : ' + (err.message || 'veuillez réessayer.'));
-            }
-        }
-
         // Extrait les cas cliniques et réécritures d'excellence de l'Atelier
         function extraireCasAtelier(rawMarkdown) {
             if (!rawMarkdown || typeof rawMarkdown !== 'string') return [];
@@ -9127,23 +8837,8 @@
                         }
                         const cleanPart = part.trim();
                         if (cleanPart) {
-                            const units = segmenterEnUnitesDeSens(cleanPart);
-                            if (units.length > 0) {
-                                units.forEach(u => {
-                                    const cleanText = formatProse(u.text);
-                                    if (cleanText) {
-                                        if (u.text.trim().length >= 4) {
-                                            const encPhrase = encodeURIComponent(u.text.trim());
-                                            curP.push(`<span class="unite-sens-unannotated" data-phrase="${encPhrase}" onclick="declencherMicroAnnotation(this)" title="🔍 Cliquer pour obtenir l'analyse de concours de cette proposition">${cleanText}</span> `);
-                                        } else {
-                                            curP.push(cleanText + ' ');
-                                        }
-                                    }
-                                });
-                            } else {
-                                const cleanEscaped = formatProse(cleanPart);
-                                if (cleanEscaped) curP.push(cleanEscaped + ' ');
-                            }
+                            const cleanEscaped = formatProse(cleanPart);
+                            if (cleanEscaped) curP.push(cleanEscaped + ' ');
                         }
                     });
                 } else if (item.type === 'highlight') {
@@ -9244,9 +8939,8 @@
             // Construction de la barre d'outils et des filtres
             const toolbarHtml = `
                 <div class="copie-annotee-toolbar">
-                    <div class="copie-toolbar-left" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+                    <div class="copie-toolbar-left">
                         <span class="copie-toolbar-counter">📝 Copie annotée : ${annotations.length} remarques de jury ${atelierCases.length > 0 ? 'et ' + atelierCases.length + ' réécritures d\'excellence ' : ''}au fil du texte</span>
-                        <span style="font-size: 12px; color: #64748b;">💡 Cliquez sur n'importe quelle proposition non annotée pour déclencher son analyse chirurgicale à la demande.</span>
                     </div>
                     <div class="copie-toolbar-actions">
                         <button type="button" class="btn-toolbar" onclick="toggleAllNotes(true)">▾ Tout déplier</button>
