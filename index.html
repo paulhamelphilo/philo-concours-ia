@@ -95,6 +95,7 @@
         h1 {
             text-align: center;
             color: var(--primary-color);
+            margin-top: 0;
             margin-bottom: 30px;
             border-bottom: 2px solid #ecf0f1;
             padding-bottom: 15px;
@@ -2916,8 +2917,8 @@
         #mentor-session-bar {
             display: none;
             position: absolute;
-            top: 24px;
-            right: 24px;
+            top: 34px;
+            right: 30px;
             z-index: 60;
         }
         #mentor-account-trigger {
@@ -3049,15 +3050,15 @@
             background: #fef2f2;
             color: #991b1b;
         }
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             #mentor-session-bar {
                 top: 14px;
-                right: 14px;
+                right: 12px;
             }
             #mentor-account-trigger {
-                width: 30px;
-                height: 30px;
-                font-size: 0.8rem;
+                width: 32px;
+                height: 32px;
+                font-size: 0.82rem;
             }
         }
         .mentor-bar-btn {
@@ -3423,7 +3424,7 @@
                         <span id="mentor-session-username">-</span>
                         <span id="mentor-session-role-badge" class="mentor-popover-role-badge">Administrateur</span>
                     </div>
-                    <span id="mentor-session-quota-pill" class="mentor-session-pill">Accès illimité</span>
+                    <span id="mentor-session-quota-pill" class="mentor-session-pill">Évaluation</span>
                 </div>
                 <div class="mentor-popover-actions">
                     <button type="button" id="mentor-btn-open-admin" class="mentor-popover-btn" style="display: none;" onclick="window.closeMentorAccountMenu(); window.openMentorAdminModal();">🛡️ Administration et suivi</button>
@@ -3760,11 +3761,11 @@
                 }
                 if (quotaEl) {
                     if (user.role === 'admin') {
-                        quotaEl.textContent = `Copies évaluées : ${user.copiesCount || 0} (illimité)`;
+                        quotaEl.textContent = 'Évaluation';
                     } else {
                         quotaEl.textContent = (user.quotaCopies !== null && user.quotaCopies !== undefined)
-                            ? `Copies : ${user.copiesCount || 0} / ${user.quotaCopies}`
-                            : `Copies : ${user.copiesCount || 0} (illimité)`;
+                            ? `Évaluation : ${user.copiesCount || 0} / ${user.quotaCopies}`
+                            : 'Évaluation';
                     }
                 }
                 if (adminBtn) {
@@ -6632,7 +6633,7 @@
                     <div class="methodo-block" style="border-left-color: #2563eb;">
                         <h3 style="color: #2563eb;">Exigences spécifiques du Capes externe (dissertation — 6 h)</h3>
                         <p><strong>Clarté pédagogique et rigueur notionnelle :</strong> le jury du Capes externe valorise l'investigation directe de la formulation intégrale du sujet (locutions, verbes, adverbes ou présupposés de l'énoncé) ainsi qu'un travail de définition conceptuelle autonome servant d'appui analytique à une progression tripartite équilibrée.</p>
-                        <p style="margin-top: 8px;"><strong>Écueils rédhibitoires sanctionnés :</strong> la réduction du sujet à un simple thème de cours, le catalogue doxographique juxtaposant des doctrines sans nécessité démonstrative, l'introduction de dichotomies scolaires plaquées de l'extérieur ou l'usage d'exemples purement narratifs non conceptualisés plafonnent sévèrement la note.</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> rabattre une locution dialectique sur le calcul psychologique/moral et clore par un décisionnisme étatique plafonne au palier 3 (11/20) ; substituer dans une sous-partie la sociologie empirique des rôles sociaux à l'analyse philosophique plafonne au palier 4 (14,5/20) ; à l'inverse, résoudre en troisième partie le paradoxe du partage par des médiations esthétiques, littéraires et poétiques (communauté des solitaires et partage de l'impartageable) relève du sommet du palier 5 (19/20).</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
@@ -6648,7 +6649,7 @@
                     <div class="methodo-block" style="border-left-color: #0d9488;">
                         <h3 style="color: #0d9488;">Exigences spécifiques de l'agrégation interne (dissertation — 7 h)</h3>
                         <p><strong>Posture souveraine d'enseignant-philosophe :</strong> maîtrise philosophique adulte et affirmée, affrontant directement les contradictions du sujet sans faux-fuyant scolaire. L'aporie doit être véritablement féconde et conduire à une sursomption dialectique substantielle.</p>
-                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> dissoudre en troisième partie et conclusion la borne interrogative du sujet (« où commence... ? ») dans un flux biologique ou vital sans commencement ni lieu originaire plafonne la copie au palier 3 (12/20) ; procéder par une cascade de questions ouvertes en introduction puis juxtaposer plusieurs options alternatives en conclusion (variation, juste-milieu ou acte de foi) plafonne au palier 4 (14/20).</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> un volume restreint (≤ 9-10 pages) réduisant l'interrogation modale à un inventaire de contraintes matérielles/policières ou d'exemples scolaires relève du palier 2 (8/20) ; dissoudre en troisième partie et conclusion la borne interrogative du sujet (« où commence... ? ») dans un flux biologique ou vital sans commencement ni lieu originaire plafonne la copie au palier 3 (12/20) ; procéder par une cascade de questions ouvertes en introduction puis juxtaposer plusieurs options alternatives en conclusion plafonne au palier 4 (14/20).</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
@@ -6671,14 +6672,14 @@
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
                         <h3 style="color: #7c3aed;">Exigences spécifiques : dissertation sur programme (7 h)</h3>
                         <p><strong>Précision chirurgicale et maîtrise du corpus de la session :</strong> exactitude terminologique absolue quant aux notions et auteurs au programme de l'année. Les distinctions conceptuelles fines, les débats doctrinaux contemporains et les textes clés doivent être mobilisés comme des instruments de résolution du problème posé.</p>
-                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> conclure que le lien cherché relève d'un mystère ou d'une certitude poétique indicible plafonne au palier 3 (11,5/20) ; s'en tenir à l'opposition classique entre usage constitutif et usage régulateur plafonne au palier 4 (13/20) ; privilégier le seul génitif marchand vers un royaume des fins moral sans ancrage dans le droit positif ni dans l'interaction physique situe la copie à l'entrée du palier 5 (15/20).</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> conclure que le lien cherché relève d'un mystère ou d'une certitude poétique indicible plafonne au palier 3 (11,5/20) ; s'en tenir à l'opposition classique entre usage constitutif et usage régulateur plafonne au palier 4 (13/20) ; parcourir dialectiquement la double entente syntaxique du sujet (de l'universel logique des prédicats communs à l'institution juridico-économique des <em>res communes</em>) ou élever le génitif marchand vers un royaume des fins moral situe la copie à l'entrée du palier 5 (15/20).</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
                         <h3 style="color: #7c3aed;">Exigences spécifiques : histoire de la philosophie (commentaire de texte — 6 h)</h3>
                         <p><strong>Érudition philologique et rigueur historique :</strong> maîtrise rigoureuse de la langue philosophique et du système de l'auteur. Le texte doit être restitué dans son exact contexte polémique et doctrinal jusqu'au dernier mot.</p>
-                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> laisser dans l'ombre la cible polémique contemporaine précise au profit d'une opposition générale empirisme/rationalisme ou d'un exemple anachronique (12,5/20), ou formuler une question purement fonctionnelle en laissant trois pages vierges (13/20), plafonne la copie au palier 4. La maîtrise immanente des concepts techniques originaux et des cibles savantes jusqu'à la dernière ligne ouvre l'accès aux sommets du palier 5 (16 à 17/20).</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> même lorsque la cible savante est identifiée, un découpage binaire en deux parties ou l'explication des formes du texte par la « peur de la censure » plafonne au palier 3 (10/20). Laisser dans l'ombre la cible contemporaine précise (12,5/20) ou recourir à des analogies extérieures hétérogènes avec approximation sur le niveau d'abstraction systémique de l'œuvre (13/20) plafonne au palier 4. La maîtrise immanente en trois moments ouvre l'accès au palier 5 (16 à 17/20).</p>
                     </div>`;
                 }
             }
@@ -10906,7 +10907,7 @@
                 workspaceHtml += `
                     <div class="sujet-dissertation-banner" style="margin-top: -5px; margin-bottom: 20px; padding: 20px; background: #ffffff; border-left: 5px solid var(--accent-color, #3498db); border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; text-align: center;">
                         <div style="font-size: 1.25rem; font-family: 'Merriweather', Georgia, serif; font-weight: 700; color: var(--primary-color, #1a2a3a); line-height: 1.5;">
-                            « ${escapeHtml(sujetActif)} »
+                            ${escapeHtml(sujetActif)}
                         </div>
                     </div>
                 `;
