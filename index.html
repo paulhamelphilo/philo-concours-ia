@@ -1031,6 +1031,18 @@
             border: 1px solid #fca5a5;
         }
 
+        /* Pastille spécifique Bilan stratégique en bas de la barre de navigation */
+        .quicknav-bilan-pill {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+        .quicknav-bilan-pill:hover {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+
         /* Info-bulles élégantes à gauche (Desktop) */
         .quicknav-btn[data-tooltip]::before,
         .quicknav-global-pill[data-tooltip]::before,
@@ -2753,6 +2765,7 @@
             .section-feedback-card,
             .double-curseur-verdict-box,
             .regles-implicites-box,
+            .bilan-strategique-box,
             .global-eval-dashboard,
             .noeud-critique-block,
             blockquote,
@@ -2913,13 +2926,51 @@
             display: none;
         }
 
-        /* Bouton de compte discret en haut à droite et menu déroulant */
+        /* Bouton de compte discret en haut à droite, badge Cloud et menu déroulant */
         #mentor-session-bar {
             display: none;
             position: absolute;
             top: 34px;
             right: 30px;
             z-index: 60;
+            align-items: center;
+            gap: 10px;
+        }
+        #mentor-cloud-sync-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            border-radius: 999px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #475569;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            user-select: none;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        #mentor-cloud-sync-pill:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+        #mentor-cloud-sync-pill.sync-ok {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+        #mentor-cloud-sync-pill.sync-pending {
+            background: #fffbeb;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+        #mentor-cloud-sync-pill.sync-offline {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #991b1b;
         }
         #mentor-account-trigger {
             width: 34px;
@@ -3413,8 +3464,12 @@
     <div id="floating-profile-dock" class="floating-profile-dock" style="display: none;" title="Survolez pour afficher les profils et l'historique"></div>
 
     <div class="container" id="mentor-main-container" style="display: none;">
-        <!-- Bouton de session utilisateur discret en haut à droite et menu déroulant -->
+        <!-- Bouton de session utilisateur discret en haut à droite, indicateur Cloud et menu déroulant -->
         <div id="mentor-session-bar" style="display: none;">
+            <button type="button" id="mentor-cloud-sync-pill" class="sync-ok" onclick="window.forceManualCloudSync && window.forceManualCloudSync(event)" title="Historique et brouillons synchronisés dans le Cloud (cliquer pour synchroniser maintenant)">
+                <span id="mentor-cloud-sync-icon">☁️</span>
+                <span id="mentor-cloud-sync-label">Synchronisé</span>
+            </button>
             <button type="button" id="mentor-account-trigger" onclick="window.toggleMentorAccountMenu(event)" title="Compte et session" aria-label="Compte et session">
                 <span id="mentor-account-initial">U</span>
             </button>
@@ -3425,8 +3480,10 @@
                         <span id="mentor-session-role-badge" class="mentor-popover-role-badge">Administrateur</span>
                     </div>
                     <span id="mentor-session-quota-pill" class="mentor-session-pill">Évaluation</span>
+                    <div id="mentor-popover-sync-info" style="font-size: 0.75rem; color: #166534; margin-top: 4px; font-weight: 500;">☁️ Statut cloud : synchronisé</div>
                 </div>
                 <div class="mentor-popover-actions">
+                    <button type="button" class="mentor-popover-btn" onclick="window.closeMentorAccountMenu(); if (window.forceManualCloudSync) window.forceManualCloudSync();">🔄 Synchroniser maintenant</button>
                     <button type="button" id="mentor-btn-open-admin" class="mentor-popover-btn" style="display: none;" onclick="window.closeMentorAccountMenu(); window.openMentorAdminModal();">🛡️ Administration et suivi</button>
                     <button type="button" class="mentor-popover-btn logout-btn" onclick="window.closeMentorAccountMenu(); window.logoutMentorSession();">🚪 Se déconnecter</button>
                 </div>
@@ -3745,7 +3802,7 @@
                 if (overlay) overlay.style.display = 'none';
                 if (mainContainer) mainContainer.style.display = 'block';
                 if (dock) dock.style.display = '';
-                if (bar) bar.style.display = 'block';
+                if (bar) bar.style.display = 'inline-flex';
                 const uname = String(user.username || 'U').trim();
                 const initial = (uname.charAt(0) || 'U').toUpperCase();
                 if (initialEl) initialEl.textContent = initial;
@@ -3818,6 +3875,9 @@
                     localStorage.setItem(USER_KEY, JSON.stringify(data.user));
                     updateSessionBarUI(data.user);
                     document.getElementById('mentor-login-password').value = '';
+                    if (typeof window.syncPullFromCloud === 'function') {
+                        window.syncPullFromCloud(true);
+                    }
                 } catch (err) {
                     if (errEl) {
                         errEl.textContent = err.message || 'Erreur de connexion au serveur.';
@@ -3831,13 +3891,16 @@
                 }
             };
 
-            window.logoutMentorSession = function () {
+            window.logoutMentorSession = async function () {
+                if (typeof window.flushCloudSyncNow === 'function') {
+                    try { await window.flushCloudSyncNow(); } catch (_) {}
+                }
                 localStorage.removeItem(TOKEN_KEY);
                 localStorage.removeItem(USER_KEY);
                 updateSessionBarUI(null);
             };
 
-            window.refreshMentorSessionUser = async function () {
+            window.refreshMentorSessionUser = async function (options) {
                 const token = window.getMentorAuthToken();
                 if (!token) {
                     updateSessionBarUI(null);
@@ -3856,6 +3919,9 @@
                     if (res.ok && data.success && data.user) {
                         localStorage.setItem(USER_KEY, JSON.stringify(data.user));
                         updateSessionBarUI(data.user);
+                        if ((!options || !options.skipSyncPull) && typeof window.syncPullFromCloud === 'function') {
+                            window.syncPullFromCloud(false);
+                        }
                     } else if (res.status === 401 || res.status === 403) {
                         window.logoutMentorSession();
                         window.showMentorLoginOverlay(data.error || 'Votre session a expiré.');
@@ -3863,6 +3929,9 @@
                 } catch (_) {
                     // Conserver l'affichage local en cas de micro-coupure réseau
                     updateSessionBarUI(window.getMentorCurrentUser());
+                    if (typeof window.setCloudSyncStatusUI === 'function') {
+                        window.setCloudSyncStatusUI('offline');
+                    }
                 }
             };
 
@@ -6970,10 +7039,406 @@
             }
         }
 
-        function persistStorageData() {
+        const STORAGE_OWNER_KEY = 'mentor_storage_owner_username';
+        let cloudSyncTimer = null;
+        let cloudIsSyncing = false;
+        const cloudDirtySubjects = new Set();
+        const cloudDeletedSubjects = new Set();
+        const cloudDeletedProfiles = new Set();
+
+        window.setCloudSyncStatusUI = function (status, customLabel) {
+            const pill = document.getElementById('mentor-cloud-sync-pill');
+            const icon = document.getElementById('mentor-cloud-sync-icon');
+            const label = document.getElementById('mentor-cloud-sync-label');
+            const popInfo = document.getElementById('mentor-popover-sync-info');
+            if (!pill) return;
+
+            pill.classList.remove('sync-ok', 'sync-pending', 'sync-offline');
+            if (status === 'pending') {
+                pill.classList.add('sync-pending');
+                if (icon) icon.textContent = '⏳';
+                if (label) label.textContent = customLabel || 'Sauvegarde...';
+                if (popInfo) {
+                    popInfo.textContent = '⏳ Statut cloud : sauvegarde en cours...';
+                    popInfo.style.color = '#92400e';
+                }
+            } else if (status === 'offline') {
+                pill.classList.add('sync-offline');
+                if (icon) icon.textContent = '⚠️';
+                if (label) label.textContent = customLabel || 'Mode local';
+                if (popInfo) {
+                    popInfo.textContent = '⚠️ Statut cloud : mode local (hors-ligne)';
+                    popInfo.style.color = '#991b1b';
+                }
+            } else {
+                pill.classList.add('sync-ok');
+                if (icon) icon.textContent = '☁️';
+                if (label) label.textContent = customLabel || 'Synchronisé';
+                if (popInfo) {
+                    popInfo.textContent = '☁️ Statut cloud : synchronisé';
+                    popInfo.style.color = '#166534';
+                }
+            }
+        };
+
+        function isMeaningfulSubjectEntry(sub) {
+            if (!sub || typeof sub !== 'object') return false;
+            if (Array.isArray(sub.crans) && sub.crans.length > 0) return true;
+            if (typeof sub.workingDraft === 'string') {
+                const cleaned = sub.workingDraft.replace(/\[[^\]]+\]/g, '').trim();
+                if (cleaned.length > 0) return true;
+            }
+            return false;
+        }
+
+        function markSubjectDirtyForCloud(profileId, subjectKey) {
+            const pid = Number(profileId) || Number(storageData.activeProfileId) || 1;
+            const sKey = subjectKey || lastRenderedSubjectKey || (typeof obtenirSujetActif === 'function' ? getSubjectStorageKey(state.exerciseType, state.mode, obtenirSujetActif()) : '');
+            if (sKey) {
+                cloudDirtySubjects.add(`${pid}:::${sKey}`);
+            }
+        }
+
+        window.scheduleCloudSync = function (delayMs = 2500) {
+            const token = typeof window.getMentorAuthToken === 'function' ? window.getMentorAuthToken() : '';
+            if (!token) return;
+            window.setCloudSyncStatusUI('pending', 'Enregistrement...');
+            if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+            cloudSyncTimer = setTimeout(() => {
+                window.flushCloudSyncNow();
+            }, delayMs);
+        };
+
+        window.flushCloudSyncNow = async function () {
+            if (cloudSyncTimer) {
+                clearTimeout(cloudSyncTimer);
+                cloudSyncTimer = null;
+            }
+            const token = typeof window.getMentorAuthToken === 'function' ? window.getMentorAuthToken() : '';
+            if (!token) return;
+            if (cloudIsSyncing) {
+                window.scheduleCloudSync(1500);
+                return;
+            }
+
+            cloudIsSyncing = true;
+            window.setCloudSyncStatusUI('pending', 'Sauvegarde...');
+
+            const profilesMeta = {};
+            if (storageData.profiles && typeof storageData.profiles === 'object') {
+                Object.keys(storageData.profiles).forEach(pid => {
+                    const p = storageData.profiles[pid];
+                    if (p) {
+                        profilesMeta[pid] = {
+                            id: Number(pid) || 1,
+                            createdAt: Number(p.createdAt) || Date.now(),
+                            lastActive: p.lastActive || {},
+                            lastActiveByContext: p.lastActiveByContext || {}
+                        };
+                    }
+                });
+            }
+
+            const dirtySnapshot = Array.from(cloudDirtySubjects);
+            cloudDirtySubjects.clear();
+
+            const upsertedSubjects = [];
+            dirtySnapshot.forEach(itemKey => {
+                const sepIdx = itemKey.indexOf(':::');
+                if (sepIdx === -1) return;
+                const pid = Number(itemKey.slice(0, sepIdx)) || 1;
+                const sKey = itemKey.slice(sepIdx + 3);
+                const subData = storageData.profiles?.[pid]?.subjectsData?.[sKey];
+                if (subData && isMeaningfulSubjectEntry(subData)) {
+                    upsertedSubjects.push({
+                        profileId: pid,
+                        subjectKey: sKey,
+                        data: subData
+                    });
+                }
+            });
+
+            const deletedSubSnapshot = Array.from(cloudDeletedSubjects);
+            cloudDeletedSubjects.clear();
+            const deletedSubjects = deletedSubSnapshot.map(itemKey => {
+                const sepIdx = itemKey.indexOf(':::');
+                if (sepIdx === -1) return null;
+                return {
+                    profileId: Number(itemKey.slice(0, sepIdx)) || 1,
+                    subjectKey: itemKey.slice(sepIdx + 3)
+                };
+            }).filter(Boolean);
+
+            const deletedProfiles = Array.from(cloudDeletedProfiles);
+            cloudDeletedProfiles.clear();
+
+            try {
+                const res = await fetch(CLOUD_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        action: 'sync_push',
+                        payload: {
+                            activeProfileId: Number(storageData.activeProfileId) || 1,
+                            updatedAt: Number(storageData.updatedAt) || Date.now(),
+                            profilesMeta,
+                            upsertedSubjects,
+                            deletedSubjects,
+                            deletedProfiles
+                        }
+                    })
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                window.setCloudSyncStatusUI('ok');
+            } catch (err) {
+                // En cas de coupure réseau, on remet en file d'attente les sujets modifiés
+                dirtySnapshot.forEach(k => cloudDirtySubjects.add(k));
+                deletedSubSnapshot.forEach(k => cloudDeletedSubjects.add(k));
+                deletedProfiles.forEach(p => cloudDeletedProfiles.add(p));
+                window.setCloudSyncStatusUI('offline');
+            } finally {
+                cloudIsSyncing = false;
+            }
+        };
+
+        function mergeSubjectEntriesForCloud(localSub, cloudSub) {
+            const localTs = Number(localSub?.updatedAt) || 0;
+            const cloudTs = Number(cloudSub?.updatedAt) || 0;
+            const winner = cloudTs >= localTs ? cloudSub : localSub;
+            const loser = cloudTs >= localTs ? localSub : cloudSub;
+            const winnerTs = Math.max(localTs, cloudTs);
+            const loserBoundTs = Math.min(localTs, cloudTs);
+
+            const winnerCrans = Array.isArray(winner?.crans) ? winner.crans : [];
+            const loserCrans = Array.isArray(loser?.crans) ? loser.crans : [];
+            const cransById = new Map();
+
+            winnerCrans.forEach(c => {
+                if (c && c.id !== undefined) cransById.set(Number(c.id), c);
+            });
+
+            let extraCranFromLocal = false;
+            loserCrans.forEach(c => {
+                if (!c || c.id === undefined) return;
+                const cid = Number(c.id);
+                // N'ajouter un cran issu de la version plus ancienne que s'il a été créé après sa dernière synchronisation
+                if (!cransById.has(cid) && (Number(c.timestamp) || 0) > loserBoundTs) {
+                    cransById.set(cid, c);
+                    if (loser === localSub) extraCranFromLocal = true;
+                }
+            });
+
+            const mergedCrans = Array.from(cransById.values());
+            return {
+                merged: {
+                    activeCranId: winner.activeCranId !== undefined ? winner.activeCranId : 'draft',
+                    draftParentId: winner.draftParentId !== undefined ? winner.draftParentId : null,
+                    hideDraftCorrection: Boolean(winner.hideDraftCorrection),
+                    workingDraft: (typeof winner.workingDraft === 'string' && winner.workingDraft.trim() !== '')
+                        ? winner.workingDraft
+                        : (localSub?.workingDraft || cloudSub?.workingDraft || ''),
+                    crans: mergedCrans,
+                    updatedAt: winnerTs || Date.now()
+                },
+                needsCloudPush: (localTs > cloudTs) || extraCranFromLocal
+            };
+        }
+
+        function mergeCloudAndLocalWorkspace(cloudWs) {
+            if (!cloudWs || typeof cloudWs !== 'object') return false;
+            let anyLocalNeedsPush = false;
+
+            const cloudProfiles = (cloudWs.profiles && typeof cloudWs.profiles === 'object') ? cloudWs.profiles : {};
+            if (!storageData.profiles || typeof storageData.profiles !== 'object') {
+                storageData.profiles = {};
+            }
+
+            const allPids = new Set([
+                ...Object.keys(storageData.profiles).map(Number),
+                ...Object.keys(cloudProfiles).map(Number)
+            ]);
+
+            allPids.forEach(pid => {
+                if (!pid) return;
+                const localProf = storageData.profiles[pid];
+                const cloudProf = cloudProfiles[pid];
+
+                if (!localProf && cloudProf) {
+                    storageData.profiles[pid] = {
+                        id: pid,
+                        createdAt: Number(cloudProf.createdAt) || Date.now(),
+                        lastActive: cloudProf.lastActive || {},
+                        lastActiveByContext: cloudProf.lastActiveByContext || {},
+                        subjectsData: { ...(cloudProf.subjectsData || {}) }
+                    };
+                    return;
+                }
+
+                if (localProf && !cloudProf) {
+                    const subs = localProf.subjectsData || {};
+                    Object.keys(subs).forEach(sKey => {
+                        if (isMeaningfulSubjectEntry(subs[sKey])) {
+                            cloudDirtySubjects.add(`${pid}:::${sKey}`);
+                            anyLocalNeedsPush = true;
+                        }
+                    });
+                    return;
+                }
+
+                if (localProf && cloudProf) {
+                    if (!localProf.subjectsData) localProf.subjectsData = {};
+                    const cloudSubs = cloudProf.subjectsData || {};
+                    const allSubKeys = new Set([
+                        ...Object.keys(localProf.subjectsData),
+                        ...Object.keys(cloudSubs)
+                    ]);
+
+                    allSubKeys.forEach(sKey => {
+                        const lSub = localProf.subjectsData[sKey];
+                        const cSub = cloudSubs[sKey];
+                        if (!lSub && cSub) {
+                            localProf.subjectsData[sKey] = cSub;
+                        } else if (lSub && !cSub) {
+                            if (isMeaningfulSubjectEntry(lSub)) {
+                                cloudDirtySubjects.add(`${pid}:::${sKey}`);
+                                anyLocalNeedsPush = true;
+                            }
+                        } else if (lSub && cSub) {
+                            const res = mergeSubjectEntriesForCloud(lSub, cSub);
+                            localProf.subjectsData[sKey] = res.merged;
+                            if (res.needsCloudPush) {
+                                cloudDirtySubjects.add(`${pid}:::${sKey}`);
+                                anyLocalNeedsPush = true;
+                            }
+                        }
+                    });
+
+                    // Si le Cloud est plus récent ou si le profil local n'avait pas de sujet actif défini
+                    const localHasActiveSubject = Boolean(localProf.lastActive && (localProf.lastActive.sujet || localProf.lastActive.customSujet || localProf.lastActive.explicIdx || localProf.lastActive.customText));
+                    const cloudUpdatedAt = Number(cloudWs.updatedAt) || 0;
+                    const localUpdatedAt = Number(storageData.updatedAt) || 0;
+
+                    if (cloudUpdatedAt >= localUpdatedAt || !localHasActiveSubject) {
+                        if (cloudProf.lastActive && Object.keys(cloudProf.lastActive).length > 0) {
+                            localProf.lastActive = { ...localProf.lastActive, ...cloudProf.lastActive };
+                        }
+                        if (cloudProf.lastActiveByContext) {
+                            localProf.lastActiveByContext = { ...(localProf.lastActiveByContext || {}), ...cloudProf.lastActiveByContext };
+                        }
+                    }
+                }
+            });
+
+            const cloudUpdatedAt = Number(cloudWs.updatedAt) || 0;
+            const localUpdatedAt = Number(storageData.updatedAt) || 0;
+            if (cloudUpdatedAt >= localUpdatedAt && cloudWs.activeProfileId && storageData.profiles[cloudWs.activeProfileId]) {
+                storageData.activeProfileId = Number(cloudWs.activeProfileId);
+            }
+            storageData.updatedAt = Math.max(localUpdatedAt, cloudUpdatedAt, Date.now());
+            const activeProf = getActiveProfile();
+            storageData.lastActive = activeProf.lastActive || {};
+
+            return anyLocalNeedsPush;
+        }
+
+        window.syncPullFromCloud = async function (isExplicitLogin = false) {
+            const token = typeof window.getMentorAuthToken === 'function' ? window.getMentorAuthToken() : '';
+            const currentUser = typeof window.getMentorCurrentUser === 'function' ? window.getMentorCurrentUser() : null;
+            if (!token || !currentUser) return;
+
+            const currUsername = String(currentUser.username || '').trim().toLowerCase();
+            const prevOwner = localStorage.getItem(STORAGE_OWNER_KEY);
+
+            // Isolation des comptes : si un autre utilisateur se connecte sur le même navigateur, on réinitialise le cache local
+            if (prevOwner && prevOwner !== currUsername) {
+                storageData = {
+                    version: 2,
+                    updatedAt: 0,
+                    activeProfileId: 1,
+                    profiles: { 1: createEmptyProfile(1) },
+                    lastActive: {},
+                    subjectsData: {}
+                };
+                cloudDirtySubjects.clear();
+                cloudDeletedSubjects.clear();
+                cloudDeletedProfiles.clear();
+            }
+            if (currUsername) {
+                localStorage.setItem(STORAGE_OWNER_KEY, currUsername);
+            }
+
+            window.setCloudSyncStatusUI('pending', 'Synchronisation...');
+
+            try {
+                const res = await fetch(CLOUD_FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ action: 'sync_pull' })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.error || 'Erreur sync_pull');
+                }
+
+                if (data.exists && data.workspace) {
+                    const needsPush = mergeCloudAndLocalWorkspace(data.workspace);
+                    persistStorageData({ skipCloudTrigger: true });
+                    lastRenderedSubjectKey = null;
+                    if (typeof restoreLastActiveState === 'function') restoreLastActiveState();
+                    if (typeof render === 'function') render();
+                    if (typeof updateFloatingProfileDock === 'function') updateFloatingProfileDock();
+
+                    if (needsPush || cloudDirtySubjects.size > 0) {
+                        await window.flushCloudSyncNow();
+                    } else {
+                        window.setCloudSyncStatusUI('ok');
+                    }
+                } else {
+                    // Première connexion Cloud de cet utilisateur : on téléverse automatiquement tout son historique local existant
+                    if (storageData.profiles) {
+                        Object.keys(storageData.profiles).forEach(pid => {
+                            const subs = storageData.profiles[pid]?.subjectsData || {};
+                            Object.keys(subs).forEach(sKey => {
+                                if (isMeaningfulSubjectEntry(subs[sKey])) {
+                                    cloudDirtySubjects.add(`${pid}:::${sKey}`);
+                                }
+                            });
+                        });
+                    }
+                    await window.flushCloudSyncNow();
+                }
+            } catch (err) {
+                console.warn("Synchronisation Cloud indisponible (mode local actif) :", err);
+                window.setCloudSyncStatusUI('offline');
+            }
+        };
+
+        window.forceManualCloudSync = async function (event) {
+            if (event) event.stopPropagation();
+            if (typeof saveCurrentDraftToLastRenderedSubject === 'function') {
+                saveCurrentDraftToLastRenderedSubject();
+            }
+            await window.flushCloudSyncNow();
+            await window.syncPullFromCloud(false);
+        };
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && (cloudSyncTimer || cloudDirtySubjects.size > 0)) {
+                window.flushCloudSyncNow();
+            }
+        });
+
+        function persistStorageData(options) {
             try {
                 const prof = getActiveProfile();
                 storageData.lastActive = prof.lastActive || {};
+                storageData.updatedAt = Date.now();
                 // Supprimer la duplication inutile de subjectsData à la racine (gain de 50% de mémoire localStorage)
                 delete storageData.subjectsData;
 
@@ -6999,6 +7464,11 @@
                         });
                     }
                     localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(storageData));
+                }
+
+                if (!options || !options.skipCloudTrigger) {
+                    markSubjectDirtyForCloud(storageData.activeProfileId, lastRenderedSubjectKey);
+                    window.scheduleCloudSync(2500);
                 }
             } catch (e) {
                 console.warn("Erreur sauvegarde localStorage :", e);
@@ -7301,6 +7771,7 @@
                     return;
                 }
                 storageData.profiles[1] = createEmptyProfile(1);
+                cloudDeletedProfiles.add(1);
 
                 if (storageData.activeProfileId === 1) {
                     lastRenderedSubjectKey = null;
@@ -7315,6 +7786,7 @@
                     persistStorageData();
                     updateFloatingProfileDock();
                 }
+                if (typeof window.flushCloudSyncNow === 'function') window.flushCloudSyncNow();
                 return;
             }
             if (!confirm(`Supprimer définitivement le Profil ${profileId} et toutes ses données enregistrées ?`)) {
@@ -7323,6 +7795,7 @@
 
             const wasActive = storageData.activeProfileId === profileId;
             delete storageData.profiles[profileId];
+            cloudDeletedProfiles.add(profileId);
 
             if (wasActive) {
                 storageData.activeProfileId = 1;
@@ -7338,6 +7811,7 @@
                 persistStorageData();
                 updateFloatingProfileDock();
             }
+            if (typeof window.flushCloudSyncNow === 'function') window.flushCloudSyncNow();
         }
 
         // ============ GESTION DE L'HISTORIQUE CRANTÉ (OPTION 2 : INSERTION PAR FILIATION) ============
@@ -7409,7 +7883,9 @@
                 }
             }
             entry.updatedAt = Date.now();
+            markSubjectDirtyForCloud(storageData.activeProfileId, currentSubjectKey);
             persistStorageData();
+            if (typeof window.flushCloudSyncNow === 'function') window.flushCloudSyncNow();
             render();
         }
 
@@ -8286,6 +8762,36 @@
                 if (h2Regles.parentNode) {
                     h2Regles.parentNode.insertBefore(reglesContainer, h2Regles);
                     reglesNodes.forEach(node => reglesContainer.appendChild(node));
+                }
+            }
+
+            // Embellissement visuel de la section Bilan stratégique
+            const h2Bilan = Array.from(doc.querySelectorAll('h2')).find(h => /Bilan\s+strat[ée]gique/i.test(h.textContent));
+            if (h2Bilan) {
+                if (h2Bilan.previousElementSibling && h2Bilan.previousElementSibling.tagName === 'HR') {
+                    h2Bilan.previousElementSibling.parentNode.removeChild(h2Bilan.previousElementSibling);
+                }
+                const bilanContainer = doc.createElement('div');
+                bilanContainer.id = 'sec-bilan-strategique';
+                bilanContainer.className = 'bilan-strategique-box';
+                bilanContainer.style.cssText = 'background: #ffffff; border: 1.5px solid #cbd5e1; border-left: 5px solid #2563eb; border-radius: 10px; padding: 20px 24px; margin: 25px 0; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);';
+
+                h2Bilan.style.cssText = 'color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 10px; margin-top: 0; margin-bottom: 16px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;';
+
+                const bilanNodes = [h2Bilan];
+                let cur = h2Bilan.nextElementSibling;
+                while (cur && cur.tagName !== 'H2') {
+                    const next = cur.nextElementSibling;
+                    if (cur.tagName === 'H3') {
+                        cur.style.cssText = 'color: #1e293b; font-size: 1.05rem; margin-top: 16px; margin-bottom: 8px; font-weight: 700;';
+                    }
+                    bilanNodes.push(cur);
+                    cur = next;
+                }
+
+                if (h2Bilan.parentNode) {
+                    h2Bilan.parentNode.insertBefore(bilanContainer, h2Bilan);
+                    bilanNodes.forEach(node => bilanContainer.appendChild(node));
                 }
             }
 
@@ -9294,6 +9800,9 @@
             if (!el && id === 'sec-analyse-personnalisee') {
                 el = document.querySelector('.global-eval-dashboard') || Array.from(document.querySelectorAll('h2')).find(h => /Analyse\s+personnalis/i.test(h.textContent));
             }
+            if (!el && id === 'sec-bilan-strategique') {
+                el = document.querySelector('.bilan-strategique-box') || Array.from(document.querySelectorAll('h2')).find(h => /Bilan\s+strat[ée]gique/i.test(h.textContent));
+            }
             if (!el && id === 'indice-general-conformite') {
                 el = document.querySelector('.global-eval-dashboard');
             }
@@ -9482,11 +9991,45 @@
                 }
                 prevNode = pill;
             });
+
+            // 7. Séparateur et pastille spécifique "Bilan stratégique" en bas de la barre à droite
+            let dividerBilan = document.getElementById('quicknav-divider-bilan');
+            let btnBilan = document.getElementById('quicknav-btn-bilan');
+
+            if (hasCorrection) {
+                if (!dividerBilan) {
+                    dividerBilan = document.createElement('div');
+                    dividerBilan.id = 'quicknav-divider-bilan';
+                    dividerBilan.className = 'quicknav-divider';
+                }
+                nav.appendChild(dividerBilan);
+
+                if (!btnBilan) {
+                    btnBilan = document.createElement('button');
+                    btnBilan.type = 'button';
+                    btnBilan.id = 'quicknav-btn-bilan';
+                    btnBilan.className = 'quicknav-btn quicknav-bilan-pill';
+                    btnBilan.setAttribute('data-tooltip', 'Bilan stratégique');
+                    btnBilan.setAttribute('data-target', 'sec-bilan-strategique');
+                    btnBilan.innerHTML = '⚖️';
+                    btnBilan.onclick = () => {
+                        switchCorrectionTab('rapport', false);
+                        setTimeout(() => {
+                            scrollToElement('sec-bilan-strategique') || scrollToElement('correction-box');
+                        }, 50);
+                        return false;
+                    };
+                }
+                nav.appendChild(btnBilan);
+            } else {
+                if (dividerBilan && dividerBilan.parentNode) dividerBilan.parentNode.removeChild(dividerBilan);
+                if (btnBilan && btnBilan.parentNode) btnBilan.parentNode.removeChild(btnBilan);
+            }
         }
 
         // Navigation fluide instantanée via les badges et pastilles de section (actif en continu, même pendant le streaming)
         document.addEventListener('click', function (e) {
-            const chip = e.target.closest('.section-chip, .quicknav-section-pill, .quicknav-global-pill, .global-score-badge');
+            const chip = e.target.closest('.section-chip, .quicknav-section-pill, .quicknav-global-pill, .quicknav-bilan-pill, .global-score-badge');
             if (chip) {
                 e.preventDefault();
                 const targetId = chip.getAttribute('data-target') || chip.getAttribute('href')?.replace('#', '') || (chip.classList.contains('global-score-badge') ? 'correction-box' : null);
@@ -10564,7 +11107,7 @@
 
             const stored = getSubjectStoredDraftAndCorrection(state.exerciseType, state.mode, sujetActif);
             const normStoredSujet = stored.correction && stored.correction.sujet ? getSubjectStorageKey(state.exerciseType, state.mode, stored.correction.sujet) : currentSubjectKey;
-            const hasDisplayedCorrection = stored.correction && stored.correction.html && (normStoredSujet === currentSubjectKey);
+            const hasDisplayedCorrection = stored.correction && (stored.correction.html || stored.correction.rawMarkdown) && (normStoredSujet === currentSubjectKey);
 
             if (hasDisplayedCorrection) {
                 // 1er clic : Efface l'affichage de la correction tout en conservant le texte rédigé
@@ -10867,7 +11410,7 @@
             }
             let savedCorrectionObj = stored.correction;
             let savedCorrection = null;
-            if (savedCorrectionObj && savedCorrectionObj.html && sujetActif !== '') {
+            if (savedCorrectionObj && (savedCorrectionObj.html || savedCorrectionObj.rawMarkdown) && sujetActif !== '') {
                 const normSavedSujet = savedCorrectionObj.sujet ? getSubjectStorageKey(state.exerciseType, state.mode, savedCorrectionObj.sujet) : currentSubjectKey;
                 if (normSavedSujet === currentSubjectKey) {
                     if (savedCorrectionObj.rawMarkdown) {
@@ -11195,7 +11738,7 @@
             const currentSubKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
             const storedCorrection = getSubjectStoredDraftAndCorrection(state.exerciseType, state.mode, sujetActif);
             const normStoredSub = storedCorrection.correction && storedCorrection.correction.sujet ? getSubjectStorageKey(state.exerciseType, state.mode, storedCorrection.correction.sujet) : currentSubKey;
-            const savedCorrectionObj = (storedCorrection.correction && storedCorrection.correction.html && sujetActif !== '' && normStoredSub === currentSubKey) ? storedCorrection.correction : null;
+            const savedCorrectionObj = (storedCorrection.correction && (storedCorrection.correction.html || storedCorrection.correction.rawMarkdown) && sujetActif !== '' && normStoredSub === currentSubKey) ? storedCorrection.correction : null;
 
             // Évaluation souveraine et équitable : chaque copie est évaluée en soi, de manière anonyme et absolue.
             // On ne transmet aucun historique de notation au serveur pour garantir qu'à saisie identique, la note soit identique.
@@ -11331,7 +11874,6 @@
 
                 // Reconstitution finale complète de la copie annotée
                 rafraichirCopieAnnotee(texteCumule, trainingText);
-                if (window.refreshMentorSessionUser) window.refreshMentorSessionUser();
 
                 const newCorrectionObj = {
                     sujet: sujetActif,
@@ -11397,7 +11939,14 @@
                 entry.updatedAt = Date.now();
 
                 updateLastActiveState();
+                markSubjectDirtyForCloud(storageData.activeProfileId, currentSubjectKey);
                 persistStorageData();
+                if (typeof window.flushCloudSyncNow === 'function') {
+                    window.flushCloudSyncNow();
+                }
+                if (window.refreshMentorSessionUser) {
+                    window.refreshMentorSessionUser({ skipSyncPull: true });
+                }
                 updateFloatingProfileDock();
                 const btnSecondary = document.querySelector(".btn-secondary");
                 if (btnSecondary) {
