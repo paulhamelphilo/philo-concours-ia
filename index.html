@@ -3427,7 +3427,7 @@
             <div class="mentor-admin-section">
                 <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                     <h3 style="margin: 0;">👥 Suivi compte par compte</h3>
-                    <span style="font-size: 0.78rem; color: #64748b;">Barème API : Gemini Flash (0,30 $ / 1M tokens en entrée • 2,50 $ / 1M tokens en sortie, réflexion préalable incluse)</span>
+                    <span style="font-size: 0.78rem; color: #64748b;">Barème API : Gemini 3.7 Flash (0,75 $ / 1M tokens en entrée • 3,75 $ / 1M tokens en sortie, réflexion préalable incluse)</span>
                 </div>
                 <div class="mentor-table-wrap">
                     <table class="mentor-admin-table">
@@ -4059,10 +4059,14 @@
                 if (m.includes('pro')) {
                     return { inputPer1M: 1.25, outputPer1M: 10.00 };
                 }
-                if (m.includes('lite')) {
+                if (m.includes('lite') || m.includes('2.0') || m.includes('1.5')) {
                     return { inputPer1M: 0.10, outputPer1M: 0.40 };
                 }
-                return { inputPer1M: 0.30, outputPer1M: 2.50 };
+                if (m.includes('2.5')) {
+                    return { inputPer1M: 0.30, outputPer1M: 2.50 };
+                }
+                // Tarif standard officiel Gemini 3.7 / 3.8 Flash : 0,75 $ / 1M en entrée et 3,75 $ / 1M en sortie (réflexion préalable comprise)
+                return { inputPer1M: 0.75, outputPer1M: 3.75 };
             }
 
             function calculateCorrectionCostUsd(modelName, inputTokens, outputTokens) {
@@ -4072,17 +4076,40 @@
                 return ((inTok / 1000000) * rates.inputPer1M) + ((outTok / 1000000) * rates.outputPer1M);
             }
 
-            function formatCostUsd(costUsd) {
+            function formatCostUsd(costUsd, inTok, outTok, modelName) {
                 const val = Number(costUsd) || 0;
-                if (val === 0) return '0,0000 $';
                 const eur = val * 0.92;
-                const usdStr = val < 0.1
-                    ? val.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' $'
-                    : val.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' $';
-                const eurStr = eur < 0.1
-                    ? eur.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' €'
-                    : eur.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
-                return `<span title="Équivalent indicatif : ~${eurStr}">${usdStr}</span>`;
+                const usdStr = val === 0
+                    ? '0,0000 $'
+                    : (val < 0.1
+                        ? val.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' $'
+                        : val.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' $');
+                const eurStr = eur === 0
+                    ? '0,0000 €'
+                    : (eur < 0.1
+                        ? eur.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' €'
+                        : eur.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €');
+
+                let titleText = `Équivalent indicatif : ~${eurStr}`;
+                if (inTok !== undefined && outTok !== undefined) {
+                    const inTokens = Math.max(0, Number(inTok) || 0);
+                    const outTokens = Math.max(0, Number(outTok) || 0);
+                    const mod = modelName || 'gemini-3.7-flash';
+                    const rates = getModelRatesPer1M(mod);
+                    const inCost = (inTokens / 1000000) * rates.inputPer1M;
+                    const outCost = (outTokens / 1000000) * rates.outputPer1M;
+                    const inCostStr = inCost.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' $';
+                    const outCostStr = outCost.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' $';
+                    const rateInStr = rates.inputPer1M.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+                    const rateOutStr = rates.outputPer1M.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+
+                    titleText = `Détail du calcul (${mod}) :\n` +
+                        `• Entrée : ${inTokens.toLocaleString('fr-FR')} tokens × (${rateInStr} / 1M) = ${inCostStr}\n` +
+                        `• Sortie : ${outTokens.toLocaleString('fr-FR')} tokens × (${rateOutStr} / 1M) = ${outCostStr}\n` +
+                        `• Total : ${usdStr} (~${eurStr})`;
+                }
+
+                return `<span style="cursor:help; border-bottom:1px dotted #94a3b8;" title="${escapeHtml(titleText)}">${usdStr}</span>`;
             }
 
             function formatTokensCell(inputTokens, outputTokens, thinkingTokens) {
@@ -4141,9 +4168,7 @@
                     const uOut = Math.max(Number(u.totalOutputTokens) || 0, fallback.outTok);
                     const uThink = Math.max(Number(u.totalThinkingTokens) || 0, fallback.thinkTok);
                     const uModel = u.lastModel || fallback.model || 'gemini-3.7-flash';
-                    const uCost = (u.totalCostUsd && Number(u.totalCostUsd) > 0)
-                        ? Math.max(Number(u.totalCostUsd), fallback.cost)
-                        : calculateCorrectionCostUsd(uModel, uIn, uOut);
+                    const uCost = calculateCorrectionCostUsd(uModel, uIn, uOut);
 
                     u._resolvedInputTokens = uIn;
                     u._resolvedOutputTokens = uOut;
@@ -4166,7 +4191,7 @@
                 }
                 const kpiCostEl = document.getElementById('admin-kpi-cost');
                 if (kpiCostEl) {
-                    kpiCostEl.innerHTML = formatCostUsd(globalCostUsd);
+                    kpiCostEl.innerHTML = formatCostUsd(globalCostUsd, globalInputTokens, globalOutputTokens, 'gemini-3.7-flash');
                 }
 
                 // 2. Interrupteur de confidentialité
@@ -4212,7 +4237,7 @@
 
                             const modelBadge = `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.78rem; color:#334155;">${escapeHtml(u._resolvedModel || 'gemini-3.7-flash')}</code>`;
                             const tokensHtml = formatTokensCell(u._resolvedInputTokens, u._resolvedOutputTokens, u._resolvedThinkingTokens);
-                            const costHtml = `<strong style="color:#0f172a;">${formatCostUsd(u._resolvedCostUsd)}</strong>`;
+                            const costHtml = `<strong style="color:#0f172a;">${formatCostUsd(u._resolvedCostUsd, u._resolvedInputTokens, u._resolvedOutputTokens, u._resolvedModel)}</strong>`;
 
                             return `<tr>
                                 <td>
@@ -4280,13 +4305,12 @@
                         ? formatTokensCell(inTok, outTok, thinkTok)
                         : '<span style="color:#94a3b8;">-</span>';
 
+                    const usedMod = l.model || 'gemini-3.7-flash';
                     const costVal = isCorrection
-                        ? ((l.costUsd !== undefined && l.costUsd !== null && Number(l.costUsd) > 0)
-                            ? Number(l.costUsd)
-                            : calculateCorrectionCostUsd(l.model || 'gemini-3.7-flash', inTok, outTok))
+                        ? calculateCorrectionCostUsd(usedMod, inTok, outTok)
                         : 0;
                     const costStr = isCorrection
-                        ? `<strong>${formatCostUsd(costVal)}</strong>`
+                        ? `<strong>${formatCostUsd(costVal, inTok, outTok, usedMod)}</strong>`
                         : '<span style="color:#94a3b8;">-</span>';
 
                     const gradesStr = l.noteEstimee
@@ -4408,14 +4432,12 @@
                         const inTok = Number(log.inputTokens) || 0;
                         const outTok = Number(log.outputTokens) || 0;
                         const thinkTok = Number(log.thinkingTokens) || 0;
-                        const costVal = (log.costUsd !== undefined && log.costUsd !== null && Number(log.costUsd) > 0)
-                            ? Number(log.costUsd)
-                            : calculateCorrectionCostUsd(usedModel, inTok, outTok);
+                        const costVal = calculateCorrectionCostUsd(usedModel, inTok, outTok);
 
                         body.innerHTML = `
                             <div style="margin-bottom:16px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
                                 <strong>Sujet ou texte :</strong> ${escapeHtml(log.sujet || '-')}<br>
-                                <strong>Modèle :</strong> <code>${escapeHtml(usedModel)}</code> • <strong>Tokens en entrée :</strong> ${inTok.toLocaleString('fr-FR')} • <strong>Tokens en sortie :</strong> ${outTok.toLocaleString('fr-FR')}${thinkTok > 0 ? ` (dont ${thinkTok.toLocaleString('fr-FR')} pour la réflexion préalable)` : ''} • <strong>Coût :</strong> ${formatCostUsd(costVal)}${log.noteEstimee ? ` • <strong>Note estimée :</strong> ${escapeHtml(log.noteEstimee)}/20` : ''}
+                                <strong>Modèle :</strong> <code>${escapeHtml(usedModel)}</code> • <strong>Tokens en entrée :</strong> ${inTok.toLocaleString('fr-FR')} • <strong>Tokens en sortie :</strong> ${outTok.toLocaleString('fr-FR')}${thinkTok > 0 ? ` (dont ${thinkTok.toLocaleString('fr-FR')} pour la réflexion préalable)` : ''} • <strong>Coût :</strong> ${formatCostUsd(costVal, inTok, outTok, usedModel)}${log.noteEstimee ? ` • <strong>Note estimée :</strong> ${escapeHtml(log.noteEstimee)}/20` : ''}
                             </div>
                             <h3 style="margin-bottom:8px;">✍️ Travail soumis par le candidat</h3>
                             <pre style="white-space:pre-wrap; font-family:inherit; background:#fffbeb; border:1px solid #fde68a; padding:14px; border-radius:8px; margin-bottom:20px;">${escapeHtml(log.copieText || 'Aucun texte enregistré.')}</pre>
@@ -4452,7 +4474,7 @@
                     const outTok = u._resolvedOutputTokens !== undefined ? u._resolvedOutputTokens : (u.totalOutputTokens || 0);
                     const thinkTok = u._resolvedThinkingTokens !== undefined ? u._resolvedThinkingTokens : (u.totalThinkingTokens || 0);
                     const mod = u._resolvedModel || u.lastModel || 'gemini-3.7-flash';
-                    const cost = u._resolvedCostUsd !== undefined ? u._resolvedCostUsd : (u.totalCostUsd || calculateCorrectionCostUsd(mod, inTok, outTok));
+                    const cost = u._resolvedCostUsd !== undefined ? u._resolvedCostUsd : calculateCorrectionCostUsd(mod, inTok, outTok);
                     return [
                         u.username,
                         (u.note || '').replace(/;/g, ','),
