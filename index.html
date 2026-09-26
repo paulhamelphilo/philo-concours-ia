@@ -1097,8 +1097,8 @@
             overflow: visible;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            opacity: 0.18;
-            transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1;
+            transition: box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
             box-sizing: border-box;
         }
@@ -1110,7 +1110,6 @@
         }
 
         .floating-profile-dock:hover {
-            opacity: 1 !important;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
@@ -1510,22 +1509,14 @@
                 margin: 0 1px !important;
             }
 
-            /* Info-bulles au-dessus sur Mobile */
+            /* Désactivation des info-bulles de survol sur mobile (évite la persistance au clic/toucher) */
             .quicknav-btn[data-tooltip]::before,
             .quicknav-global-pill[data-tooltip]::before,
-            .quicknav-section-pill[data-tooltip]::before {
-                right: auto;
-                left: 50%;
-                top: auto;
-                bottom: 125%;
-                transform: translateX(-50%);
-            }
-
+            .quicknav-section-pill[data-tooltip]::before,
             .quicknav-btn:hover[data-tooltip]::before,
             .quicknav-global-pill:hover[data-tooltip]::before,
             .quicknav-section-pill:hover[data-tooltip]::before {
-                opacity: 1;
-                transform: translateX(-50%) translateY(-4px);
+                display: none !important;
             }
 
             /* Dock profil & historique cranté sur mobile : Horizontal, centré, SOUS la barre d'évaluation */
@@ -1648,13 +1639,11 @@
 
             .floating-profile-dock .profile-pill[data-tooltip]::before,
             .floating-profile-dock .profile-add-btn[data-tooltip]::before,
-            .floating-profile-dock .cran-pill[data-tooltip]::before {
-                left: 50% !important;
-                top: auto !important;
-                bottom: 125% !important;
-                transform: translateX(-50%) !important;
-                font-size: 10px !important;
-                padding: 3px 6px !important;
+            .floating-profile-dock .cran-pill[data-tooltip]::before,
+            .floating-profile-dock .profile-pill:hover[data-tooltip]::before,
+            .floating-profile-dock .profile-add-btn:hover[data-tooltip]::before,
+            .floating-profile-dock .cran-pill:hover[data-tooltip]::before {
+                display: none !important;
             }
         }
 
@@ -2939,18 +2928,20 @@
         #mentor-cloud-sync-pill {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 5px 11px;
-            border-radius: 999px;
-            border: 1px solid #cbd5e1;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1.5px solid #cbd5e1;
             background: #f8fafc;
             color: #475569;
-            font-size: 0.76rem;
-            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.18s ease;
             user-select: none;
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+            padding: 0;
+            line-height: 1;
         }
         #mentor-cloud-sync-pill:hover {
             background: #f1f5f9;
@@ -3466,9 +3457,8 @@
     <div class="container" id="mentor-main-container" style="display: none;">
         <!-- Bouton de session utilisateur discret en haut à droite, indicateur Cloud et menu déroulant -->
         <div id="mentor-session-bar" style="display: none;">
-            <button type="button" id="mentor-cloud-sync-pill" class="sync-ok" onclick="window.forceManualCloudSync && window.forceManualCloudSync(event)" title="Historique et brouillons synchronisés dans le Cloud (cliquer pour synchroniser maintenant)">
+            <button type="button" id="mentor-cloud-sync-pill" class="sync-ok" onclick="window.forceManualCloudSync && window.forceManualCloudSync(event)" title="Historique et brouillons synchronisés dans le Cloud (cliquer pour synchroniser maintenant)" aria-label="Synchronisé dans le Cloud">
                 <span id="mentor-cloud-sync-icon">☁️</span>
-                <span id="mentor-cloud-sync-label">Synchronisé</span>
             </button>
             <button type="button" id="mentor-account-trigger" onclick="window.toggleMentorAccountMenu(event)" title="Compte et session" aria-label="Compte et session">
                 <span id="mentor-account-initial">U</span>
@@ -4117,9 +4107,9 @@
                     if (l.action === 'correction') actionLabel = '📝 Copie évaluée';
                     else if (l.action === 'login') actionLabel = '🔑 Connexion';
 
-                    const gradesStr = (l.noteCanonique || l.noteEstimee)
-                        ? `Canon. : <strong>${escapeHtml(l.noteCanonique || '-')}</strong>/20<br>Est. : <strong>${escapeHtml(l.noteEstimee || '-')}</strong>/20`
-                        : '<span style="color:#94a3b8;">-</span>';
+                    const gradesStr = l.noteEstimee
+                        ? `<strong>${escapeHtml(l.noteEstimee)}</strong>/20`
+                        : (l.noteCanonique ? `Canon. : <strong>${escapeHtml(l.noteCanonique)}</strong>/20` : '<span style="color:#94a3b8;">-</span>');
 
                     const contentBtn = l.hasTexts
                         ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.openMentorLogDetail('${escapeHtml(l.id)}')">📄 Lire copie et rapport</button>`
@@ -4233,7 +4223,7 @@
                         body.innerHTML = `
                             <div style="margin-bottom:16px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
                                 <strong>Sujet ou texte :</strong> ${escapeHtml(log.sujet || '-')}<br>
-                                <strong>Volume :</strong> ${log.wordCount || 0} mots • <strong>Note canonique :</strong> ${escapeHtml(log.noteCanonique || '-')}/20 • <strong>Note estimée :</strong> ${escapeHtml(log.noteEstimee || '-')}/20
+                                <strong>Volume :</strong> ${log.wordCount || 0} mots • ${log.noteEstimee ? `<strong>Note estimée :</strong> ${escapeHtml(log.noteEstimee)}/20` : ''}${log.noteCanonique ? ` • <strong>Note canonique :</strong> ${escapeHtml(log.noteCanonique)}/20` : ''}
                             </div>
                             <h3 style="margin-bottom:8px;">✍️ Texte soumis par le candidat</h3>
                             <pre style="white-space:pre-wrap; font-family:inherit; background:#fffbeb; border:1px solid #fde68a; padding:14px; border-radius:8px; margin-bottom:20px;">${escapeHtml(log.copieText || 'Aucun texte enregistré.')}</pre>
@@ -7058,6 +7048,8 @@
                 pill.classList.add('sync-pending');
                 if (icon) icon.textContent = '⏳';
                 if (label) label.textContent = customLabel || 'Sauvegarde...';
+                pill.title = 'Sauvegarde en cours dans le Cloud (cliquer pour forcer)';
+                pill.setAttribute('aria-label', 'Sauvegarde en cours dans le Cloud');
                 if (popInfo) {
                     popInfo.textContent = '⏳ Statut cloud : sauvegarde en cours...';
                     popInfo.style.color = '#92400e';
@@ -7066,6 +7058,8 @@
                 pill.classList.add('sync-offline');
                 if (icon) icon.textContent = '⚠️';
                 if (label) label.textContent = customLabel || 'Mode local';
+                pill.title = 'Mode local (hors-ligne) : données conservées sur cet appareil';
+                pill.setAttribute('aria-label', 'Mode local (hors-ligne)');
                 if (popInfo) {
                     popInfo.textContent = '⚠️ Statut cloud : mode local (hors-ligne)';
                     popInfo.style.color = '#991b1b';
@@ -7074,6 +7068,8 @@
                 pill.classList.add('sync-ok');
                 if (icon) icon.textContent = '☁️';
                 if (label) label.textContent = customLabel || 'Synchronisé';
+                pill.title = 'Historique et brouillons synchronisés dans le Cloud (cliquer pour synchroniser maintenant)';
+                pill.setAttribute('aria-label', 'Synchronisé dans le Cloud');
                 if (popInfo) {
                     popInfo.textContent = '☁️ Statut cloud : synchronisé';
                     popInfo.style.color = '#166534';
@@ -7887,6 +7883,7 @@
             persistStorageData();
             if (typeof window.flushCloudSyncNow === 'function') window.flushCloudSyncNow();
             render();
+            updateSubjectSelectBadges();
         }
 
         // Mise à jour dynamique de la barre latérale gauche (profils et crans)
@@ -8680,16 +8677,16 @@
                 }
             }
 
-            // Embellissement visuel de l'Évaluation globale
+                        // Embellissement visuel de l'Évaluation globale
             const h2Verdict = Array.from(doc.querySelectorAll('h2')).find(h => /VERDICT\s+DU\s+DOUBLE\s+CURSEUR|[ÉEe]valuation\s+globale/i.test(h.textContent));
             if (h2Verdict) {
                 const verdictContainer = doc.createElement('div');
-                verdictContainer.className = 'double-curseur-verdict-box';
-                verdictContainer.style.cssText = 'background: #ffffff; border: 2px solid #3b82f6; border-radius: 10px; padding: 20px 24px; margin: 25px 0; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.08);';
+                verdictContainer.className = 'double-curseur-verdict-box evaluation-globale-box';
+                verdictContainer.style.cssText = 'background: #ffffff; border: 1.5px solid #cbd5e1; border-left: 5px solid #0284c7; border-radius: 10px; padding: 22px 26px; margin: 25px 0; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.06);';
 
                 h2Verdict.innerHTML = 'Évaluation globale';
-                h2Verdict.style.cssText = 'color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 10px; margin-top: 0; margin-bottom: 18px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;';
-                
+                h2Verdict.style.cssText = 'color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0; margin-bottom: 18px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px; font-weight: 700;';
+
                 const verdictNodes = [h2Verdict];
                 let cur = h2Verdict.nextElementSibling;
                 while (cur && cur.tagName !== 'H2') {
@@ -8706,26 +8703,71 @@
                             cur.style.cssText = 'background: #f8fafc; color: #334155; padding: 8px 14px; border-left: 4px solid #64748b; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
                         }
                     } else if (cur.tagName === 'UL' || cur.tagName === 'OL') {
-                        // Supprimer la mention du "Positionnement de cohorte" ou des paliers
                         cur.querySelectorAll('li').forEach(li => {
                             if (/Positionnement\s+de\s+cohorte|^[^:]*palier/i.test(li.textContent.trim())) {
                                 if (li.parentNode) li.parentNode.removeChild(li);
-                            } else {
-                                if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(li.innerHTML)) {
-                                    li.innerHTML = li.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
+                                return;
+                            }
+
+                            // Détection de la ligne Note estimée
+                            const noteMatch = li.textContent.match(/Note\s+estim[ée]e\s*:\s*([0-9]{1,2}(?:[.,][0-9])?)\s*\/\s*20/i);
+                            if (noteMatch) {
+                                const noteVal = noteMatch[1].replace('.', ',');
+                                const fourchetteMatch = li.textContent.match(/fourchette\s+pr[ée]visible\s*:\s*([^\)]+)/i);
+                                const fourchetteVal = fourchetteMatch ? fourchetteMatch[1].trim() : '';
+
+                                const banner = doc.createElement('div');
+                                banner.className = 'evaluation-note-banner';
+                                banner.style.cssText = 'background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px solid #86efac; border-left: 5px solid #16a34a; border-radius: 8px; padding: 14px 20px; margin: 15px 0 18px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.06);';
+                                banner.innerHTML = `
+                                    <div style="display: flex; align-items: baseline; gap: 12px;">
+                                        <span style="font-size: 0.85rem; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.04em;">Note estimée :</span>
+                                        <span style="font-size: 1.85rem; font-weight: 800; color: #15803d; line-height: 1;">${escapeHtml(noteVal)} / 20</span>
+                                    </div>
+                                    ${fourchetteVal ? `<div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-size: 0.88rem; color: #166534; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">Fourchette prévisible : <strong>${escapeHtml(fourchetteVal)}</strong></div>` : ''}
+                                `;
+                                if (cur.parentNode) {
+                                    cur.parentNode.insertBefore(banner, cur);
                                 }
-                                // Retirer toute mention de palier résiduelle (ex. : | palier 4, - palier 5, etc.)
-                                if (/(\s*\|\s*|\s*[-–—]\s*|\s*\(\s*)palier\s*\d+[^)]*\)?/i.test(li.innerHTML)) {
-                                    li.innerHTML = li.innerHTML.replace(/(\s*\|\s*|\s*[-–—]\s*)palier\s*\d+/gi, '').replace(/\s*\(\s*palier\s*\d+[^)]*\)/gi, '');
+                                li.parentNode.removeChild(li);
+                                return;
+                            }
+
+                            // Détection de l'appréciation générale
+                            if (/Appr[ée]ciation\s+g[ée]n[ée]rale\s*:/i.test(li.textContent)) {
+                                const cleanHtml = li.innerHTML.replace(/<strong>\s*Appr[ée]ciation\s+g[ée]n[ée]rale\s*:\s*<\/strong>|Appr[ée]ciation\s+g[ée]n[ée]rale\s*:/i, '').trim();
+                                const appreDiv = doc.createElement('div');
+                                appreDiv.className = 'evaluation-appreciation-box';
+                                appreDiv.style.cssText = 'margin-top: 14px;';
+                                appreDiv.innerHTML = `
+                                    <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.03em;">Appréciation générale :</div>
+                                    <div style="font-size: 1rem; line-height: 1.7; color: #334155; text-align: justify;">${cleanHtml}</div>
+                                `;
+                                if (cur.parentNode) {
+                                    cur.parentNode.insertBefore(appreDiv, cur);
                                 }
+                                li.parentNode.removeChild(li);
+                                return;
+                            }
+
+                            if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(li.innerHTML)) {
+                                li.innerHTML = li.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
+                            }
+                            if (/(\s*\|\s*|\s*[-–—]\s*|\s*\(\s*)palier\s*\d+[^)]*\)?/i.test(li.innerHTML)) {
+                                li.innerHTML = li.innerHTML.replace(/(\s*\|\s*|\s*[-–—]\s*)palier\s*\d+/gi, '').replace(/\s*\(\s*palier\s*\d+[^)]*\)/gi, '');
                             }
                         });
+
+                        if (cur.children.length === 0 && cur.parentNode) {
+                            cur.parentNode.removeChild(cur);
+                        }
                     } else if (cur.tagName === 'BLOCKQUOTE') {
-                        // Calquer le format du texte de diagnostic sur celui des deux sections précédentes (sans fond bleu)
                         cur.style.cssText = 'background: transparent; border-left: none; padding: 4px 8px; margin: 8px 0; color: #334155; font-style: normal; line-height: 1.6;';
                         if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(cur.innerHTML)) {
                             cur.innerHTML = cur.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
                         }
+                    } else if (cur.tagName === 'P') {
+                        cur.style.cssText = 'font-size: 1rem; line-height: 1.7; color: #334155; margin-bottom: 12px; text-align: justify;';
                     }
                     verdictNodes.push(cur);
                     cur = next;
@@ -8733,7 +8775,11 @@
 
                 if (h2Verdict.parentNode) {
                     h2Verdict.parentNode.insertBefore(verdictContainer, h2Verdict);
-                    verdictNodes.forEach(node => verdictContainer.appendChild(node));
+                    verdictNodes.forEach(node => {
+                        if (node.parentNode) {
+                            verdictContainer.appendChild(node);
+                        }
+                    });
                 }
             }
 
@@ -9832,6 +9878,11 @@
             const isExplication = state.exerciseType === 'explication';
             const correctionBox = document.getElementById('correction-box');
             const hasCorrection = correctionBox && correctionBox.style.display !== 'none';
+            const hasBilan = hasCorrection && !!(
+                document.getElementById('sec-bilan-strategique') ||
+                document.querySelector('.bilan-strategique-box') ||
+                Array.from(document.querySelectorAll('#correction-text h2')).some(h => /Bilan\s+strat[ée]gique/i.test(h.textContent))
+            );
             const validSections = Array.isArray(sectionsList) ? sectionsList.filter(s => s && typeof s.score === 'number') : [];
 
             // Calculer ou récupérer le score global de conformité
@@ -9841,7 +9892,7 @@
             }
 
             // Empreinte d'état pour éviter toute manipulation inutile du DOM pendant le streaming
-            const stateKey = `${isExplication}|${hasCorrection}|${finalGlobalScore}|` +
+            const stateKey = `${isExplication}|${hasCorrection}|${hasBilan}|${finalGlobalScore}|` +
                 validSections.map(s => `${s.anchorId}:${s.score}:${s.name}`).join(';');
 
             if (nav._lastQuicknavStateKey === stateKey) {
@@ -9992,11 +10043,11 @@
                 prevNode = pill;
             });
 
-            // 7. Séparateur et pastille spécifique "Bilan stratégique" en bas de la barre à droite
+            // 7. Séparateur et pastille spécifique "Bilan stratégique" en bas de la barre à droite (affichés uniquement quand la section commence à être créée)
             let dividerBilan = document.getElementById('quicknav-divider-bilan');
             let btnBilan = document.getElementById('quicknav-btn-bilan');
 
-            if (hasCorrection) {
+            if (hasBilan) {
                 if (!dividerBilan) {
                     dividerBilan = document.createElement('div');
                     dividerBilan.id = 'quicknav-divider-bilan';
@@ -10595,6 +10646,75 @@
             return CONCOURS_ANNALES[state.concours] || null;
         }
 
+        function getSubjectBadgeInfo(stored) {
+            if (!stored) return '';
+            if (Array.isArray(stored.crans) && stored.crans.length > 0) {
+                const count = stored.crans.length;
+                let latestCran = null;
+                let maxTs = -1;
+                stored.crans.forEach(c => {
+                    const ts = c.timestamp || 0;
+                    if (ts >= maxTs) {
+                        maxTs = ts;
+                        latestCran = c;
+                    }
+                });
+                const score = (latestCran && typeof latestCran.score === 'number') ? `${latestCran.score}/100` : '';
+                return ` 🟢 (${count} évaluation${count > 1 ? 's' : ''}${score ? ' — ' + score : ''})`;
+            }
+            if (typeof stored.draft === 'string' && stored.draft.trim() !== '') {
+                const stripped = stored.draft.replace(/\[[^\]]+\]/g, '').trim();
+                if (stripped !== '') {
+                    return ' 📝 (brouillon)';
+                }
+            }
+            return '';
+        }
+
+        function updateSubjectSelectBadges() {
+            const cData = getActiveAnnalesData();
+            if (!cData) return;
+
+            const selectSujet = document.getElementById("select-sujet");
+            if (selectSujet && Array.isArray(cData.dissertation)) {
+                if (selectSujet.options.length <= 1) {
+                    populateSujetsConcours();
+                } else {
+                    cData.dissertation.forEach(item => {
+                        const opt = Array.from(selectSujet.options).find(o => o.value === item.title);
+                        if (opt) {
+                            const stored = getSubjectStoredDraftAndCorrection('dissertation', 'redaction', item.title);
+                            const badgeText = getSubjectBadgeInfo(stored);
+                            const expectedText = `${item.session} — ${item.title}${badgeText}`;
+                            if (opt.textContent !== expectedText) {
+                                opt.textContent = expectedText;
+                            }
+                        }
+                    });
+                }
+            }
+
+            const selectExp = document.getElementById("select-explic-text");
+            if (selectExp && Array.isArray(cData.explication)) {
+                if (selectExp.options.length <= 1) {
+                    populateExplicConcours();
+                } else {
+                    cData.explication.forEach((item, idx) => {
+                        const optVal = "annale_" + idx;
+                        const opt = Array.from(selectExp.options).find(o => o.value === optVal);
+                        if (opt) {
+                            const stored = getSubjectStoredDraftAndCorrection('explication', 'redaction', item.label || item.title);
+                            const badgeText = getSubjectBadgeInfo(stored);
+                            const expectedText = `${item.label}${badgeText}`;
+                            if (opt.textContent !== expectedText) {
+                                opt.textContent = expectedText;
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
         function populateSujetsConcours() {
             const selectSujet = document.getElementById("select-sujet");
             if (!selectSujet) return;
@@ -10621,22 +10741,19 @@
                     opt.value = item.title;
 
                     // Badge dynamique des corrections / brouillons enregistrés
-                    let badgeText = '';
                     const stored = getSubjectStoredDraftAndCorrection('dissertation', 'redaction', item.title);
+                    const badgeText = getSubjectBadgeInfo(stored);
                     if (stored && Array.isArray(stored.crans) && stored.crans.length > 0) {
-                        const count = stored.crans.length;
-                        const latestCran = stored.crans[stored.crans.length - 1];
-                        const score = (latestCran && typeof latestCran.score === 'number') ? `${latestCran.score}/100` : '';
-                        badgeText = ` 🟢 (${count} évaluation${count > 1 ? 's' : ''}${score ? ' — ' + score : ''})`;
-                        const cranTs = (latestCran && latestCran.timestamp) ? latestCran.timestamp : 0;
-                        if (cranTs >= bestEvaluatedTs) {
-                            bestEvaluatedTs = cranTs;
+                        let maxTs = -1;
+                        stored.crans.forEach(c => {
+                            const ts = c.timestamp || 0;
+                            if (ts >= maxTs) {
+                                maxTs = ts;
+                            }
+                        });
+                        if (maxTs >= bestEvaluatedTs) {
+                            bestEvaluatedTs = maxTs;
                             bestEvaluatedVal = item.title;
-                        }
-                    } else if (stored && typeof stored.draft === 'string' && stored.draft.trim() !== '') {
-                        const stripped = stored.draft.replace(/\[[^\]]+\]/g, '').trim();
-                        if (stripped !== '') {
-                            badgeText = ' 📝 (brouillon)';
                         }
                     }
 
@@ -10645,10 +10762,10 @@
                 });
 
                 const allTitles = cData.dissertation.map(d => d.title);
-                if (savedCtx && savedCtx.sujet && allTitles.includes(savedCtx.sujet)) {
-                    targetVal = savedCtx.sujet;
-                } else if (prevVal && allTitles.includes(prevVal)) {
+                if (prevVal && allTitles.includes(prevVal)) {
                     targetVal = prevVal;
+                } else if (savedCtx && savedCtx.sujet && allTitles.includes(savedCtx.sujet)) {
+                    targetVal = savedCtx.sujet;
                 } else if (bestEvaluatedVal) {
                     targetVal = bestEvaluatedVal;
                 }
@@ -10703,22 +10820,19 @@
                     const optVal = "annale_" + idx;
                     opt.value = optVal;
 
-                    let badgeText = '';
                     const stored = getSubjectStoredDraftAndCorrection('explication', 'redaction', item.label || item.title);
+                    const badgeText = getSubjectBadgeInfo(stored);
                     if (stored && Array.isArray(stored.crans) && stored.crans.length > 0) {
-                        const count = stored.crans.length;
-                        const latestCran = stored.crans[stored.crans.length - 1];
-                        const score = (latestCran && typeof latestCran.score === 'number') ? `${latestCran.score}/100` : '';
-                        badgeText = ` 🟢 (${count} évaluation${count > 1 ? 's' : ''}${score ? ' — ' + score : ''})`;
-                        const cranTs = (latestCran && latestCran.timestamp) ? latestCran.timestamp : 0;
-                        if (cranTs >= bestEvaluatedTs) {
-                            bestEvaluatedTs = cranTs;
+                        let maxTs = -1;
+                        stored.crans.forEach(c => {
+                            const ts = c.timestamp || 0;
+                            if (ts >= maxTs) {
+                                maxTs = ts;
+                            }
+                        });
+                        if (maxTs >= bestEvaluatedTs) {
+                            bestEvaluatedTs = maxTs;
                             bestEvaluatedVal = optVal;
-                        }
-                    } else if (stored && typeof stored.draft === 'string' && stored.draft.trim() !== '') {
-                        const stripped = stored.draft.replace(/\[[^\]]+\]/g, '').trim();
-                        if (stripped !== '') {
-                            badgeText = ' 📝 (brouillon)';
                         }
                     }
 
@@ -10727,10 +10841,10 @@
                 });
 
                 const allVals = cData.explication.map((_, idx) => "annale_" + idx);
-                if (savedCtx && savedCtx.explicIdx && allVals.includes(savedCtx.explicIdx)) {
-                    targetVal = savedCtx.explicIdx;
-                } else if (prevVal && allVals.includes(prevVal)) {
+                if (prevVal && allVals.includes(prevVal)) {
                     targetVal = prevVal;
+                } else if (savedCtx && savedCtx.explicIdx && allVals.includes(savedCtx.explicIdx)) {
+                    targetVal = savedCtx.explicIdx;
                 } else if (bestEvaluatedVal) {
                     targetVal = bestEvaluatedVal;
                 } else if (allVals.length > 0) {
@@ -11429,12 +11543,9 @@
             const currentLength = currentText.trim().length === 0 ? 0 : currentText.length;
             const charInfo = getCharCountInfo(currentLength, maxLength);
 
-            let exerciseTitle = '';
-            if (state.exerciseType === 'dissertation') {
-                exerciseTitle = `Dissertation philosophique (${state.concours} — ${state.epreuve})`;
-            } else if (state.exerciseType === 'explication') {
-                exerciseTitle = `Explication de texte philosophique (${state.concours} — ${state.epreuve})`;
-            }
+            let exerciseTitle = (state.concours && state.epreuve)
+                ? `${state.concours} — ${state.epreuve}`
+                : (state.exerciseType === 'dissertation' ? 'Dissertation philosophique' : 'Explication de texte philosophique');
 
             let workspaceHtml = `
                 <div class="workspace-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
@@ -11646,6 +11757,7 @@
             const savedGlobalScore = (savedCorrection && savedCorrectionObj && typeof savedCorrectionObj.globalScore === 'number') ? savedCorrectionObj.globalScore : null;
             updateFloatingQuickNav(savedScores, savedGlobalScore);
             updateFloatingProfileDock();
+            updateSubjectSelectBadges();
 
             updateLastActiveState();
             persistStorageData();
@@ -11754,6 +11866,7 @@
 
             document.getElementById("loading-msg").style.display = "block";
             document.getElementById("correction-box").style.display = "none";
+            updateFloatingQuickNav([], null);
 
             try {
                 // Détermine les paramètres d'envoi pour l'évaluation unifiée
@@ -11802,6 +11915,7 @@
                 if (badgeInit) badgeInit.style.display = "none";
                 const containerInit = document.getElementById("copie-annotee-container");
                 if (containerInit) containerInit.innerHTML = "";
+                updateFloatingQuickNav([], null);
 
                 document.getElementById("correction-box").scrollIntoView({
                     behavior: 'smooth',
@@ -11948,6 +12062,7 @@
                     window.refreshMentorSessionUser({ skipSyncPull: true });
                 }
                 updateFloatingProfileDock();
+                updateSubjectSelectBadges();
                 const btnSecondary = document.querySelector(".btn-secondary");
                 if (btnSecondary) {
                     btnSecondary.innerText = "Effacer la correction";
