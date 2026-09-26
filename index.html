@@ -332,8 +332,8 @@
         }
 
         .dashboard-title {
-            font-size: 16px;
-            font-weight: bold;
+            font-size: 17.5px;
+            font-weight: 700;
             color: var(--primary-color);
             display: flex;
             align-items: center;
@@ -348,7 +348,7 @@
         }
 
         .global-score-badge {
-            font-size: 20px;
+            font-size: 16.5px;
             font-weight: 800;
             padding: 4px 14px;
             border-radius: 20px;
@@ -584,11 +584,11 @@
         }
 
         .section-card-title {
-            font-size: 16px;
+            font-size: 17.5px;
             font-weight: 800;
             color: #1e293b;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
             margin: 0;
             white-space: normal;
             word-break: break-word;
@@ -649,7 +649,7 @@
         }
 
         .section-score-delta {
-            font-size: 12px;
+            font-size: 12.5px;
             font-weight: 700;
             padding: 2px 8px;
             border-radius: 10px;
@@ -660,21 +660,35 @@
         }
 
         .section-score-pill {
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 800;
             padding: 3px 12px;
             border-radius: 12px;
             white-space: nowrap;
         }
 
-        /* Intertitres unifiés (« Analyse critique » et « Pistes d'amélioration »)
-           dans la section générale comme à l'intérieur des nœuds critiques */
-        .section-feedback-card h4,
-        .section-feedback-card h5,
+        /* Intertitres de section (« Analyse critique » et « Pistes d'amélioration ») :
+           hiérarchie strictement décroissante au-dessus du corps de texte (15 px) */
+        .section-feedback-card > h4,
+        .section-feedback-card > h5 {
+            color: #0f172a;
+            font-size: 16.5px;
+            font-weight: 700;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            padding-bottom: 0;
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.1px;
+            line-height: 1.4;
+        }
+
         .noeud-critique-block h5,
         .noeud-critique-block h4:not(:first-child) {
-            color: #334155;
-            font-size: 14.5px;
+            color: #0f172a;
+            font-size: 16px;
             font-weight: 700;
             margin-top: 16px;
             margin-bottom: 6px;
@@ -683,7 +697,8 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            letter-spacing: 0.15px;
+            letter-spacing: 0.1px;
+            line-height: 1.4;
         }
 
         .section-card-header + h4,
@@ -691,11 +706,60 @@
             margin-top: 4px;
         }
 
-        .section-feedback-card p {
+        .section-feedback-card p,
+        .section-feedback-card li,
+        .evaluation-globale-box p,
+        .evaluation-globale-box li,
+        .regles-implicites-box p,
+        .regles-implicites-box li,
+        .bilan-strategique-box p,
+        .bilan-strategique-box li {
             color: #1e293b;
             line-height: 1.65;
             margin: 0 0 12px 0;
             font-size: 15px;
+        }
+
+        .section-feedback-card li,
+        .evaluation-globale-box li,
+        .regles-implicites-box li,
+        .bilan-strategique-box li {
+            margin-bottom: 6px;
+        }
+
+        .section-feedback-card p strong,
+        .section-feedback-card li strong,
+        .noeud-critique-block p strong,
+        .noeud-critique-block li strong,
+        .regles-implicites-box p strong,
+        .regles-implicites-box li strong,
+        .bilan-strategique-box p strong,
+        .bilan-strategique-box li strong {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .regles-implicites-box h3,
+        .bilan-strategique-box h3,
+        .evaluation-globale-box h3 {
+            color: #0f172a;
+            font-size: 17px;
+            font-weight: 700;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .regles-implicites-box h4,
+        .bilan-strategique-box h4,
+        .evaluation-globale-box h4 {
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 14px;
+            margin-bottom: 6px;
+            line-height: 1.4;
         }
 
         /* Pistes d'amélioration épurées (sans barre latérale ni boîte grise,
@@ -749,7 +813,8 @@
         .section-feedback-card blockquote li,
         .noeud-critique-block blockquote li {
             margin-bottom: 6px;
-            line-height: 1.6;
+            line-height: 1.65;
+            font-size: 15px;
         }
 
         .section-feedback-card blockquote li:last-child,
@@ -778,7 +843,7 @@
         /* Titre du nœud critique en en-tête de la case (prééminence visuelle conservée) */
         .noeud-critique-block > h4:first-child {
             color: #1e3a8a;
-            font-size: 15.5px;
+            font-size: 16.5px;
             font-weight: 700;
             margin: 0 0 12px 0;
             padding-bottom: 8px;
@@ -786,6 +851,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            line-height: 1.4;
         }
 
         .noeud-critique-block > h4:first-child + h5,
@@ -820,7 +886,8 @@
             border-color: #f9dcdc;
         }
 
-        .noeud-critique-block p {
+        .noeud-critique-block p,
+        .noeud-critique-block li {
             color: #1e293b;
             line-height: 1.65;
             margin: 0 0 12px 0;
@@ -1481,7 +1548,7 @@
             .section-card-title {
                 white-space: normal !important;
                 word-break: break-word !important;
-                font-size: 14px !important;
+                font-size: 16.5px !important;
             }
 
             .section-card-bar-wrap {
@@ -9030,7 +9097,8 @@
             // Embellissement visuel de l'Évaluation globale
             const h2Verdict = Array.from(doc.querySelectorAll('h2')).find(h => /VERDICT\s+DU\s+DOUBLE\s+CURSEUR|[ÉEe]valuation\s+globale/i.test(h.textContent));
             if (h2Verdict) {
-                const verdictContainer = doc.createElement('div');
+                const existingVerdictBox = h2Verdict.closest('.evaluation-globale-box');
+                const verdictContainer = existingVerdictBox || doc.createElement('div');
                 verdictContainer.className = 'double-curseur-verdict-box evaluation-globale-box';
                 verdictContainer.style.cssText = 'background: #ffffff; border: 1.5px solid #cbd5e1; border-left: 5px solid #334155; border-radius: 10px; padding: 22px 26px; margin: 25px 0; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);';
 
@@ -9047,7 +9115,7 @@
                 }
 
                 // Insérer le conteneur à la place de h2Verdict et y placer le titre en premier
-                if (h2Verdict.parentNode) {
+                if (!existingVerdictBox && h2Verdict.parentNode) {
                     h2Verdict.parentNode.insertBefore(verdictContainer, h2Verdict);
                     verdictContainer.appendChild(h2Verdict);
                 }
@@ -9059,13 +9127,13 @@
                         if (node.tagName === 'H3') {
                             if (/Curseur\s*1|Note\s+estim[ée]e\s+r[ée]elle|[ÉEe]valuation\s+selon\s+les\s+exigences\s+r[ée]elles/i.test(node.textContent)) {
                                 node.innerHTML = 'Évaluation selon les exigences réelles du concours';
-                                node.style.cssText = 'background: #f8fafc; color: #1e293b; padding: 8px 14px; border-left: 4px solid #475569; border-radius: 4px; margin-top: 15px; margin-bottom: 10px; font-size: 1.1rem;';
+                                node.style.cssText = 'background: #f8fafc; color: #1e293b; padding: 8px 14px; border-left: 4px solid #475569; border-radius: 4px; margin-top: 15px; margin-bottom: 10px; font-size: 17px; font-weight: 700;';
                             } else if (/Curseur\s*2|Note\s+d['’]exigence|[ÉEe]valuation\s+selon\s+les\s+exigences\s+canoniques/i.test(node.textContent)) {
                                 node.innerHTML = 'Évaluation selon les exigences canoniques';
-                                node.style.cssText = 'background: #eff6ff; color: #1e40af; padding: 8px 14px; border-left: 4px solid #3b82f6; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
+                                node.style.cssText = 'background: #eff6ff; color: #1e40af; padding: 8px 14px; border-left: 4px solid #3b82f6; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 17px; font-weight: 700;';
                             } else if (/Delta|Diagnostic/i.test(node.textContent)) {
                                 node.innerHTML = 'Diagnostic pédagogique de l\'écart';
-                                node.style.cssText = 'background: #f8fafc; color: #334155; padding: 8px 14px; border-left: 4px solid #64748b; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
+                                node.style.cssText = 'background: #f8fafc; color: #334155; padding: 8px 14px; border-left: 4px solid #64748b; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 17px; font-weight: 700;';
                             }
                         }
                         verdictContainer.appendChild(node);
@@ -9085,6 +9153,14 @@
 
                     rawNodes.forEach(node => {
                         if (node.tagName === 'HR') {
+                            if (node.parentNode) node.parentNode.removeChild(node);
+                            return;
+                        }
+                        if (node.classList && node.classList.contains('evaluation-appreciation-box')) {
+                            Array.from(node.querySelectorAll('p')).forEach(pEl => {
+                                const cleaned = cleanAppreciationText(pEl.innerHTML);
+                                if (cleaned) appreciationParagraphs.push(cleaned);
+                            });
                             if (node.parentNode) node.parentNode.removeChild(node);
                             return;
                         }
@@ -9135,17 +9211,17 @@
                         }
                     });
 
-                    // 1. Insertion du bandeau de note au ton neutre et institutionnel
+                    // 1. Insertion du bandeau de note au ton neutre et institutionnel (centré verticalement, taille normale, note en gras)
                     if (extractedNote) {
                         const banner = doc.createElement('div');
                         banner.className = 'evaluation-note-banner';
-                        banner.style.cssText = 'background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #334155; border-radius: 8px; padding: 14px 20px; margin: 14px 0 18px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;';
+                        banner.style.cssText = 'background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #334155; border-radius: 8px; padding: 12px 18px; margin: 14px 0 18px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;';
                         banner.innerHTML = `
-                            <div style="display: flex; align-items: baseline; gap: 12px;">
-                                <span style="font-size: 0.88rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.04em;">Note estimée :</span>
-                                <span style="font-size: 1.8rem; font-weight: 800; color: #0f172a; line-height: 1;">${escapeHtml(extractedNote)} / 20</span>
+                            <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 15px; line-height: 1.4; color: #334155; font-weight: 600; margin: 0;">
+                                <span>Note estimée :</span>
+                                <strong style="font-size: 15px; font-weight: 700; color: #0f172a;">${escapeHtml(extractedNote)} / 20</strong>
                             </div>
-                            ${extractedFourchette ? `<div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 14px; font-size: 0.88rem; color: #334155; font-weight: 600;">Fourchette prévisible : <strong style="color: #0f172a;">${escapeHtml(extractedFourchette)}</strong></div>` : ''}
+                            ${extractedFourchette ? `<div style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 14px; font-size: 15px; line-height: 1.4; color: #334155; font-weight: 600; margin: 0;"><span>Fourchette prévisible :</span> <strong style="font-size: 15px; font-weight: 700; color: #0f172a;">${escapeHtml(extractedFourchette)}</strong></div>` : ''}
                         `;
                         verdictContainer.appendChild(banner);
                     }
@@ -9154,15 +9230,15 @@
                     if (appreciationParagraphs.length > 0) {
                         const appreDiv = doc.createElement('div');
                         appreDiv.className = 'evaluation-appreciation-box';
-                        appreDiv.style.cssText = 'margin-top: 14px;';
+                        appreDiv.style.cssText = 'margin-top: 16px;';
                         const parasHtml = appreciationParagraphs.map(p => {
                             if (/^<p[\s>]/i.test(p)) {
-                                return p.replace(/<p([^>]*)>/gi, '<p$1 style="font-size: 1rem; line-height: 1.7; color: #334155; margin: 0 0 12px 0; text-align: justify;">');
+                                return p.replace(/<p[^>]*>/gi, '<p style="font-size: 15px; line-height: 1.65; color: #1e293b; margin: 0 0 12px 0; text-align: justify;">');
                             }
-                            return `<p style="font-size: 1rem; line-height: 1.7; color: #334155; margin: 0 0 12px 0; text-align: justify;">${p}</p>`;
+                            return `<p style="font-size: 15px; line-height: 1.65; color: #1e293b; margin: 0 0 12px 0; text-align: justify;">${p}</p>`;
                         }).join('');
                         appreDiv.innerHTML = `
-                            <div style="font-size: 0.92rem; font-weight: 700; color: #1e293b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.03em;">Appréciation générale :</div>
+                            <div style="font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 10px; line-height: 1.4;">Appréciation générale :</div>
                             <div>${parasHtml}</div>
                         `;
                         verdictContainer.appendChild(appreDiv);
@@ -9177,24 +9253,27 @@
                 if (h2Regles.previousElementSibling && h2Regles.previousElementSibling.tagName === 'HR') {
                     h2Regles.previousElementSibling.parentNode.removeChild(h2Regles.previousElementSibling);
                 }
-                const reglesContainer = doc.createElement('div');
+                const existingReglesBox = h2Regles.closest('.regles-implicites-box');
+                const reglesContainer = existingReglesBox || doc.createElement('div');
                 reglesContainer.id = 'sec-regles-implicites';
                 reglesContainer.className = 'regles-implicites-box';
                 reglesContainer.style.cssText = 'background: #fffbeb; border: 1.5px solid #fde68a; border-left: 5px solid #f59e0b; border-radius: 10px; padding: 20px 24px; margin: 25px 0; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.08);';
 
-                h2Regles.style.cssText = 'color: #92400e; border-bottom: 2px solid #fde68a; padding-bottom: 10px; margin-top: 0; margin-bottom: 16px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;';
+                h2Regles.style.cssText = 'color: #92400e; border-bottom: 2px solid #fde68a; padding-bottom: 10px; margin-top: 0; margin-bottom: 16px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px; font-weight: 700;';
 
-                const reglesNodes = [h2Regles];
-                let cur = h2Regles.nextElementSibling;
-                while (cur && cur.tagName !== 'H2') {
-                    const next = cur.nextElementSibling;
-                    reglesNodes.push(cur);
-                    cur = next;
-                }
+                if (!existingReglesBox) {
+                    const reglesNodes = [h2Regles];
+                    let cur = h2Regles.nextElementSibling;
+                    while (cur && cur.tagName !== 'H2') {
+                        const next = cur.nextElementSibling;
+                        reglesNodes.push(cur);
+                        cur = next;
+                    }
 
-                if (h2Regles.parentNode) {
-                    h2Regles.parentNode.insertBefore(reglesContainer, h2Regles);
-                    reglesNodes.forEach(node => reglesContainer.appendChild(node));
+                    if (h2Regles.parentNode) {
+                        h2Regles.parentNode.insertBefore(reglesContainer, h2Regles);
+                        reglesNodes.forEach(node => reglesContainer.appendChild(node));
+                    }
                 }
             }
 
@@ -9204,25 +9283,26 @@
                 if (h2Bilan.previousElementSibling && h2Bilan.previousElementSibling.tagName === 'HR') {
                     h2Bilan.previousElementSibling.parentNode.removeChild(h2Bilan.previousElementSibling);
                 }
-                const bilanContainer = doc.createElement('div');
+                const existingBilanBox = h2Bilan.closest('.bilan-strategique-box');
+                const bilanContainer = existingBilanBox || doc.createElement('div');
                 bilanContainer.id = 'sec-bilan-strategique';
                 bilanContainer.className = 'bilan-strategique-box';
                 bilanContainer.style.cssText = 'background: #ffffff; border: 1.5px solid #cbd5e1; border-left: 5px solid #2563eb; border-radius: 10px; padding: 20px 24px; margin: 25px 0; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.08);';
 
-                h2Bilan.style.cssText = 'color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 10px; margin-top: 0; margin-bottom: 16px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;';
+                h2Bilan.style.cssText = 'color: #1e3a8a; border-bottom: 2px solid #bfdbfe; padding-bottom: 10px; margin-top: 0; margin-bottom: 16px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px; font-weight: 700;';
 
                 const bilanNodes = [h2Bilan];
                 let cur = h2Bilan.nextElementSibling;
                 while (cur && cur.tagName !== 'H2') {
                     const next = cur.nextElementSibling;
                     if (cur.tagName === 'H3') {
-                        cur.style.cssText = 'color: #1e293b; font-size: 1.05rem; margin-top: 16px; margin-bottom: 8px; font-weight: 700;';
+                        cur.style.cssText = 'color: #0f172a; font-size: 17px; margin-top: 16px; margin-bottom: 8px; font-weight: 700; line-height: 1.4;';
                     }
                     bilanNodes.push(cur);
                     cur = next;
                 }
 
-                if (h2Bilan.parentNode) {
+                if (!existingBilanBox && h2Bilan.parentNode) {
                     h2Bilan.parentNode.insertBefore(bilanContainer, h2Bilan);
                     bilanNodes.forEach(node => bilanContainer.appendChild(node));
                 }
