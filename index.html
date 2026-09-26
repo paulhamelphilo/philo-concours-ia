@@ -8677,109 +8677,151 @@
                 }
             }
 
-                        // Embellissement visuel de l'Évaluation globale
+            // Embellissement visuel de l'Évaluation globale
             const h2Verdict = Array.from(doc.querySelectorAll('h2')).find(h => /VERDICT\s+DU\s+DOUBLE\s+CURSEUR|[ÉEe]valuation\s+globale/i.test(h.textContent));
             if (h2Verdict) {
                 const verdictContainer = doc.createElement('div');
                 verdictContainer.className = 'double-curseur-verdict-box evaluation-globale-box';
-                verdictContainer.style.cssText = 'background: #ffffff; border: 1.5px solid #cbd5e1; border-left: 5px solid #0284c7; border-radius: 10px; padding: 22px 26px; margin: 25px 0; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.06);';
+                verdictContainer.style.cssText = 'background: #ffffff; border: 1.5px solid #cbd5e1; border-left: 5px solid #334155; border-radius: 10px; padding: 22px 26px; margin: 25px 0; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);';
 
                 h2Verdict.innerHTML = 'Évaluation globale';
                 h2Verdict.style.cssText = 'color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-top: 0; margin-bottom: 18px; font-size: 1.25rem; display: flex; align-items: center; gap: 8px; font-weight: 700;';
 
-                const verdictNodes = [h2Verdict];
+                // Collecter tous les nœuds enfants de cette section dans l'ordre exact
+                const rawNodes = [];
                 let cur = h2Verdict.nextElementSibling;
                 while (cur && cur.tagName !== 'H2') {
                     const next = cur.nextElementSibling;
-                    if (cur.tagName === 'H3') {
-                        if (/Curseur\s*1|Note\s+estim[ée]e\s+r[ée]elle|[ÉEe]valuation\s+selon\s+les\s+exigences\s+r[ée]elles/i.test(cur.textContent)) {
-                            cur.innerHTML = 'Évaluation selon les exigences réelles du concours';
-                            cur.style.cssText = 'background: #f0fdf4; color: #166534; padding: 8px 14px; border-left: 4px solid #16a34a; border-radius: 4px; margin-top: 15px; margin-bottom: 10px; font-size: 1.1rem;';
-                        } else if (/Curseur\s*2|Note\s+d['’]exigence|[ÉEe]valuation\s+selon\s+les\s+exigences\s+canoniques/i.test(cur.textContent)) {
-                            cur.innerHTML = 'Évaluation selon les exigences canoniques';
-                            cur.style.cssText = 'background: #eff6ff; color: #1e40af; padding: 8px 14px; border-left: 4px solid #3b82f6; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
-                        } else if (/Delta|Diagnostic/i.test(cur.textContent)) {
-                            cur.innerHTML = 'Diagnostic pédagogique de l\'écart';
-                            cur.style.cssText = 'background: #f8fafc; color: #334155; padding: 8px 14px; border-left: 4px solid #64748b; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
-                        }
-                    } else if (cur.tagName === 'UL' || cur.tagName === 'OL') {
-                        cur.querySelectorAll('li').forEach(li => {
-                            if (/Positionnement\s+de\s+cohorte|^[^:]*palier/i.test(li.textContent.trim())) {
-                                if (li.parentNode) li.parentNode.removeChild(li);
-                                return;
-                            }
-
-                            // Détection de la ligne Note estimée
-                            const noteMatch = li.textContent.match(/Note\s+estim[ée]e\s*:\s*([0-9]{1,2}(?:[.,][0-9])?)\s*\/\s*20/i);
-                            if (noteMatch) {
-                                const noteVal = noteMatch[1].replace('.', ',');
-                                const fourchetteMatch = li.textContent.match(/fourchette\s+pr[ée]visible\s*:\s*([^\)]+)/i);
-                                const fourchetteVal = fourchetteMatch ? fourchetteMatch[1].trim() : '';
-
-                                const banner = doc.createElement('div');
-                                banner.className = 'evaluation-note-banner';
-                                banner.style.cssText = 'background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px solid #86efac; border-left: 5px solid #16a34a; border-radius: 8px; padding: 14px 20px; margin: 15px 0 18px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 2px 6px rgba(22, 163, 74, 0.06);';
-                                banner.innerHTML = `
-                                    <div style="display: flex; align-items: baseline; gap: 12px;">
-                                        <span style="font-size: 0.85rem; font-weight: 700; color: #166534; text-transform: uppercase; letter-spacing: 0.04em;">Note estimée :</span>
-                                        <span style="font-size: 1.85rem; font-weight: 800; color: #15803d; line-height: 1;">${escapeHtml(noteVal)} / 20</span>
-                                    </div>
-                                    ${fourchetteVal ? `<div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 6px; padding: 6px 14px; font-size: 0.88rem; color: #166534; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">Fourchette prévisible : <strong>${escapeHtml(fourchetteVal)}</strong></div>` : ''}
-                                `;
-                                if (cur.parentNode) {
-                                    cur.parentNode.insertBefore(banner, cur);
-                                }
-                                li.parentNode.removeChild(li);
-                                return;
-                            }
-
-                            // Détection de l'appréciation générale
-                            if (/Appr[ée]ciation\s+g[ée]n[ée]rale\s*:/i.test(li.textContent)) {
-                                const cleanHtml = li.innerHTML.replace(/<strong>\s*Appr[ée]ciation\s+g[ée]n[ée]rale\s*:\s*<\/strong>|Appr[ée]ciation\s+g[ée]n[ée]rale\s*:/i, '').trim();
-                                const appreDiv = doc.createElement('div');
-                                appreDiv.className = 'evaluation-appreciation-box';
-                                appreDiv.style.cssText = 'margin-top: 14px;';
-                                appreDiv.innerHTML = `
-                                    <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.03em;">Appréciation générale :</div>
-                                    <div style="font-size: 1rem; line-height: 1.7; color: #334155; text-align: justify;">${cleanHtml}</div>
-                                `;
-                                if (cur.parentNode) {
-                                    cur.parentNode.insertBefore(appreDiv, cur);
-                                }
-                                li.parentNode.removeChild(li);
-                                return;
-                            }
-
-                            if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(li.innerHTML)) {
-                                li.innerHTML = li.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
-                            }
-                            if (/(\s*\|\s*|\s*[-–—]\s*|\s*\(\s*)palier\s*\d+[^)]*\)?/i.test(li.innerHTML)) {
-                                li.innerHTML = li.innerHTML.replace(/(\s*\|\s*|\s*[-–—]\s*)palier\s*\d+/gi, '').replace(/\s*\(\s*palier\s*\d+[^)]*\)/gi, '');
-                            }
-                        });
-
-                        if (cur.children.length === 0 && cur.parentNode) {
-                            cur.parentNode.removeChild(cur);
-                        }
-                    } else if (cur.tagName === 'BLOCKQUOTE') {
-                        cur.style.cssText = 'background: transparent; border-left: none; padding: 4px 8px; margin: 8px 0; color: #334155; font-style: normal; line-height: 1.6;';
-                        if (/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/i.test(cur.innerHTML)) {
-                            cur.innerHTML = cur.innerHTML.replace(/Fondement\s*\([^)]*crit[èe]res\s+officiels[^)]*\)/gi, 'Fondement (critères exprimés par les rapports du jury)');
-                        }
-                    } else if (cur.tagName === 'P') {
-                        cur.style.cssText = 'font-size: 1rem; line-height: 1.7; color: #334155; margin-bottom: 12px; text-align: justify;';
-                    }
-                    verdictNodes.push(cur);
+                    rawNodes.push(cur);
                     cur = next;
                 }
 
+                // Insérer le conteneur à la place de h2Verdict et y placer le titre en premier
                 if (h2Verdict.parentNode) {
                     h2Verdict.parentNode.insertBefore(verdictContainer, h2Verdict);
-                    verdictNodes.forEach(node => {
-                        if (node.parentNode) {
-                            verdictContainer.appendChild(node);
+                    verdictContainer.appendChild(h2Verdict);
+                }
+
+                const hasLegacyH3 = rawNodes.some(n => n.tagName === 'H3');
+                if (hasLegacyH3) {
+                    // Rétrocompatibilité avec les anciens rapports à 3 sous-sections
+                    rawNodes.forEach(node => {
+                        if (node.tagName === 'H3') {
+                            if (/Curseur\s*1|Note\s+estim[ée]e\s+r[ée]elle|[ÉEe]valuation\s+selon\s+les\s+exigences\s+r[ée]elles/i.test(node.textContent)) {
+                                node.innerHTML = 'Évaluation selon les exigences réelles du concours';
+                                node.style.cssText = 'background: #f8fafc; color: #1e293b; padding: 8px 14px; border-left: 4px solid #475569; border-radius: 4px; margin-top: 15px; margin-bottom: 10px; font-size: 1.1rem;';
+                            } else if (/Curseur\s*2|Note\s+d['’]exigence|[ÉEe]valuation\s+selon\s+les\s+exigences\s+canoniques/i.test(node.textContent)) {
+                                node.innerHTML = 'Évaluation selon les exigences canoniques';
+                                node.style.cssText = 'background: #eff6ff; color: #1e40af; padding: 8px 14px; border-left: 4px solid #3b82f6; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
+                            } else if (/Delta|Diagnostic/i.test(node.textContent)) {
+                                node.innerHTML = 'Diagnostic pédagogique de l\'écart';
+                                node.style.cssText = 'background: #f8fafc; color: #334155; padding: 8px 14px; border-left: 4px solid #64748b; border-radius: 4px; margin-top: 18px; margin-bottom: 10px; font-size: 1.1rem;';
+                            }
+                        }
+                        verdictContainer.appendChild(node);
+                    });
+                } else {
+                    // Nouveau format unifié : extraction séquentielle garantie (1. Note estimée -> 2. Appréciation générale en paragraphes ordonnés)
+                    let extractedNote = '';
+                    let extractedFourchette = '';
+                    const appreciationParagraphs = [];
+
+                    const cleanAppreciationText = (htmlStr) => {
+                        return htmlStr
+                            .replace(/^(?:\s*<p[^>]*>\s*)?(?:<strong>\s*Appr[ée]ciation\s+g[ée]n[ée]rale\s*:?\s*<\/strong>\s*:?\s*|Appr[ée]ciation\s+g[ée]n[ée]rale\s*:\s*)/i, (m) => m.startsWith('<p') ? '<p>' : '')
+                            .replace(/^\s*<br\s*\/?\s*>\s*/i, '')
+                            .replace(/(\s*\|\s*|\s*[-–—]\s*)palier\s*\d+/gi, '')
+                            .replace(/\s*\(\s*palier\s*\d+[^)]*\)/gi, '')
+                            .replace(/\bdans\s+un\s+(?:solide\s+|bon\s+|excellent\s+|faible\s+|fragile\s+)?palier\s*\d+\b/gi, 'à ce niveau d\'exigence')
+                            .replace(/\bau\s+palier\s*\d+\b/gi, 'à ce niveau')
+                            .replace(/\ble\s+palier\s*\d+\b/gi, 'ce palier')
+                            .trim();
+                    };
+
+                    rawNodes.forEach(node => {
+                        if (node.tagName === 'HR') {
+                            if (node.parentNode) node.parentNode.removeChild(node);
+                            return;
+                        }
+                        if (node.tagName === 'UL' || node.tagName === 'OL') {
+                            Array.from(node.querySelectorAll('li')).forEach(li => {
+                                const txt = li.textContent.trim();
+                                if (/Positionnement\s+de\s+cohorte|^[^:]*palier/i.test(txt)) {
+                                    return;
+                                }
+                                const noteMatch = txt.match(/Note\s+estim[ée]e\s*:\s*([0-9]{1,2}(?:[.,][0-9])?)\s*\/\s*20/i);
+                                if (noteMatch && !extractedNote) {
+                                    extractedNote = noteMatch[1].replace('.', ',');
+                                    const fMatch = txt.match(/fourchette\s+pr[ée]visible\s*:\s*([^\)]+)/i);
+                                    if (fMatch) extractedFourchette = fMatch[1].trim();
+                                    return;
+                                }
+                                const cleaned = cleanAppreciationText(li.innerHTML);
+                                if (cleaned) {
+                                    appreciationParagraphs.push(cleaned);
+                                }
+                            });
+                            if (node.parentNode) node.parentNode.removeChild(node);
+                        } else if (node.tagName === 'P' || node.tagName === 'DIV' || node.tagName === 'BLOCKQUOTE') {
+                            const txt = node.textContent.trim();
+                            if (!txt) {
+                                if (node.parentNode) node.parentNode.removeChild(node);
+                                return;
+                            }
+                            const noteMatch = txt.match(/Note\s+estim[ée]e\s*:\s*([0-9]{1,2}(?:[.,][0-9])?)\s*\/\s*20/i);
+                            if (noteMatch && !extractedNote && txt.length < 160) {
+                                extractedNote = noteMatch[1].replace('.', ',');
+                                const fMatch = txt.match(/fourchette\s+pr[ée]visible\s*:\s*([^\)]+)/i);
+                                if (fMatch) extractedFourchette = fMatch[1].trim();
+                                if (node.parentNode) node.parentNode.removeChild(node);
+                                return;
+                            }
+                            if (/^Appr[ée]ciation\s+g[ée]n[ée]rale\s*:?$/i.test(txt)) {
+                                if (node.parentNode) node.parentNode.removeChild(node);
+                                return;
+                            }
+                            const cleaned = cleanAppreciationText(node.innerHTML);
+                            if (cleaned) {
+                                appreciationParagraphs.push(cleaned);
+                            }
+                            if (node.parentNode) node.parentNode.removeChild(node);
+                        } else {
+                            if (node.parentNode) node.parentNode.removeChild(node);
                         }
                     });
+
+                    // 1. Insertion du bandeau de note au ton neutre et institutionnel
+                    if (extractedNote) {
+                        const banner = doc.createElement('div');
+                        banner.className = 'evaluation-note-banner';
+                        banner.style.cssText = 'background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #334155; border-radius: 8px; padding: 14px 20px; margin: 14px 0 18px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;';
+                        banner.innerHTML = `
+                            <div style="display: flex; align-items: baseline; gap: 12px;">
+                                <span style="font-size: 0.88rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.04em;">Note estimée :</span>
+                                <span style="font-size: 1.8rem; font-weight: 800; color: #0f172a; line-height: 1;">${escapeHtml(extractedNote)} / 20</span>
+                            </div>
+                            ${extractedFourchette ? `<div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 14px; font-size: 0.88rem; color: #334155; font-weight: 600;">Fourchette prévisible : <strong style="color: #0f172a;">${escapeHtml(extractedFourchette)}</strong></div>` : ''}
+                        `;
+                        verdictContainer.appendChild(banner);
+                    }
+
+                    // 2. Insertion de l'appréciation générale avec ses paragraphes dans l'ordre strict
+                    if (appreciationParagraphs.length > 0) {
+                        const appreDiv = doc.createElement('div');
+                        appreDiv.className = 'evaluation-appreciation-box';
+                        appreDiv.style.cssText = 'margin-top: 14px;';
+                        const parasHtml = appreciationParagraphs.map(p => {
+                            if (/^<p[\s>]/i.test(p)) {
+                                return p.replace(/<p([^>]*)>/gi, '<p$1 style="font-size: 1rem; line-height: 1.7; color: #334155; margin: 0 0 12px 0; text-align: justify;">');
+                            }
+                            return `<p style="font-size: 1rem; line-height: 1.7; color: #334155; margin: 0 0 12px 0; text-align: justify;">${p}</p>`;
+                        }).join('');
+                        appreDiv.innerHTML = `
+                            <div style="font-size: 0.92rem; font-weight: 700; color: #1e293b; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.03em;">Appréciation générale :</div>
+                            <div>${parasHtml}</div>
+                        `;
+                        verdictContainer.appendChild(appreDiv);
+                    }
                 }
             }
 
@@ -11697,8 +11739,8 @@
                             <textarea id="training-textarea" rows="18" maxlength="${maxLength}" placeholder="Rédigez ou collez votre travail ici (copie complète, introduction avec ou sans première partie, moment de développement ou fragment réflexif)... L'évaluateur IA adapte son diagnostic de manière autonome." oninput="preserveAndCount(this)" onkeydown="handleTextareaKeydown(event, this)" onfocus="handleTextareaFocus(this)" onpaste="handleTextareaPaste(event, this)">${currentText}</textarea>
                             <div id="char-count" style="text-align: right; font-size: 13px; color: ${charInfo.color}; font-weight: ${charInfo.fontWeight}; margin-top: 5px;">${charInfo.label}</div>
                         </div>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
-                            <button class="btn btn-submit" onclick="envoyerCorrection()">Correction IA</button>
+                        <button class="btn btn-submit" onclick="envoyerCorrection()">Correction IA</button>
+                        <div style="display:flex; justify-content:center; margin-top:10px; margin-bottom:10px;">
                             <button class="btn btn-secondary" onclick="resetTraining()">${savedCorrection ? 'Effacer la correction' : 'Remise à zéro'}</button>
                         </div>
                         <div id="loading-msg" class="loading">Le correcteur IA analyse votre travail conformément à la méthodologie, veuillez patienter (environ 5 à 10 secondes)<span class="loading-dots"></span></div>
