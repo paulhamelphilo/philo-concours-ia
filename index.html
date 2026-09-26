@@ -3757,7 +3757,7 @@
     </div>
 
     <script>
-        const APP_BUILD_VERSION = "2026.09.26.left_dock_sync_v1";
+        const APP_BUILD_VERSION = "2026.09.26.robust_cloud_sync_v2";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -3773,16 +3773,21 @@
                     cache: 'no-store'
                 })
                 .then(res => res.text())
-                .then(html => {
+                .then(async html => {
                     const match = html.match(/const\s+APP_BUILD_VERSION\s*=\s*["']([^"']+)["']/);
                     if (match && match[1] && match[1] !== APP_BUILD_VERSION) {
-                        console.log("Nouvelle version Mentor IA disponible (" + match[1] + "). Actualisation transparente...");
-                        // Sauvegarde de sécurité absolue du brouillon avant tout rechargement
+                        console.log("Nouvelle version Mentor IA disponible (" + match[1] + "). Synchronisation avant actualisation...");
+                        // Sauvegarde de sécurité absolue du brouillon et synchronisation Cloud avant rechargement
                         if (typeof saveCurrentDraftToLastRenderedSubject === 'function') {
                             saveCurrentDraftToLastRenderedSubject();
                         }
                         if (typeof persistStorageData === 'function') {
                             persistStorageData();
+                        }
+                        if (typeof window.flushCloudSyncNow === 'function') {
+                            try {
+                                await window.flushCloudSyncNow();
+                            } catch (_) {}
                         }
                         window.location.reload(true);
                     }
@@ -7244,6 +7249,10 @@
             return `${ex}_${md}:${s}`;
         }
 
+        let isStorageLoaded = false;
+        let isAppFullyLoaded = false;
+        let cloudRetryTimer = null;
+
         function loadStorageData() {
             try {
                 // 1. Priorité aux données V2
@@ -7256,6 +7265,7 @@
                         storageData.profiles = parsedV2.profiles;
                         const activeProf = getActiveProfile();
                         storageData.lastActive = activeProf.lastActive || {};
+                        isStorageLoaded = true;
                         return;
                     }
                 }
@@ -7313,13 +7323,19 @@
                         storageData.profiles = { 1: prof1 };
                         storageData.lastActive = prof1.lastActive;
                         persistStorageData();
+                        isStorageLoaded = true;
                         return;
                     }
                 }
+                isStorageLoaded = true;
             } catch (e) {
-                console.warn("Erreur chargement/migration localStorage:", e);
+                console.warn("Erreur chargement/migration localStorage :", e);
+                isStorageLoaded = true;
             }
         }
+
+        // Chargement synchrone immédiat dès l'évaluation du script pour parer toute course critique
+        loadStorageData();
 
         const STORAGE_OWNER_KEY = 'mentor_storage_owner_username';
         let cloudSyncTimer = null;
@@ -7402,6 +7418,9 @@
                 clearTimeout(cloudSyncTimer);
                 cloudSyncTimer = null;
             }
+            if (!isStorageLoaded && typeof loadStorageData === 'function') {
+                loadStorageData();
+            }
             const token = typeof window.getMentorAuthToken === 'function' ? window.getMentorAuthToken() : '';
             if (!token) return;
             if (cloudIsSyncing) {
@@ -7463,6 +7482,7 @@
             try {
                 const res = await fetch(CLOUD_FUNCTION_URL, {
                     method: 'POST',
+                    keepalive: true,
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
@@ -7479,14 +7499,37 @@
                         }
                     })
                 });
+
+                if (res.status === 401 || res.status === 403) {
+                    console.warn("Session Cloud expirée ou non autorisée lors de la sauvegarde.");
+                    if (typeof window.logoutMentorSession === 'function') {
+                        window.logoutMentorSession();
+                    }
+                    if (typeof window.showMentorLoginOverlay === 'function') {
+                        window.showMentorLoginOverlay("Votre session a expiré ou le serveur a été mis à jour. Veuillez vous reconnecter pour poursuivre la synchronisation.");
+                    }
+                    window.setCloudSyncStatusUI('offline', 'Session expirée');
+                    return;
+                }
+
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 window.setCloudSyncStatusUI('ok');
             } catch (err) {
-                // En cas de coupure réseau, on remet en file d'attente les sujets modifiés
+                // En cas de coupure réseau ou redéploiement, on remet en file d'attente les sujets modifiés
                 dirtySnapshot.forEach(k => cloudDirtySubjects.add(k));
                 deletedSubSnapshot.forEach(k => cloudDeletedSubjects.add(k));
                 deletedProfiles.forEach(p => cloudDeletedProfiles.add(p));
                 window.setCloudSyncStatusUI('offline');
+
+                // Reprise automatique avec réessai après micro-coupure de déploiement
+                if (!cloudRetryTimer && navigator.onLine) {
+                    cloudRetryTimer = setTimeout(() => {
+                        cloudRetryTimer = null;
+                        if (navigator.onLine && typeof window.flushCloudSyncNow === 'function') {
+                            window.flushCloudSyncNow();
+                        }
+                    }, 7000);
+                }
             } finally {
                 cloudIsSyncing = false;
             }
@@ -7633,6 +7676,9 @@
         }
 
         window.syncPullFromCloud = async function (isExplicitLogin = false) {
+            if (!isStorageLoaded && typeof loadStorageData === 'function') {
+                loadStorageData();
+            }
             const token = typeof window.getMentorAuthToken === 'function' ? window.getMentorAuthToken() : '';
             const currentUser = typeof window.getMentorCurrentUser === 'function' ? window.getMentorCurrentUser() : null;
             if (!token || !currentUser) return;
@@ -7669,6 +7715,19 @@
                     },
                     body: JSON.stringify({ action: 'sync_pull' })
                 });
+
+                if (res.status === 401 || res.status === 403) {
+                    console.warn("Session Cloud expirée lors de la synchronisation.");
+                    if (typeof window.logoutMentorSession === 'function') {
+                        window.logoutMentorSession();
+                    }
+                    if (typeof window.showMentorLoginOverlay === 'function') {
+                        window.showMentorLoginOverlay("Votre session a expiré ou le serveur a été mis à jour. Veuillez vous reconnecter pour actualiser vos travaux.");
+                    }
+                    window.setCloudSyncStatusUI('offline', 'Session expirée');
+                    return;
+                }
+
                 const data = await res.json();
                 if (!res.ok || !data.success) {
                     throw new Error(data.error || 'Erreur sync_pull');
@@ -7678,9 +7737,11 @@
                     const needsPush = mergeCloudAndLocalWorkspace(data.workspace);
                     persistStorageData({ skipCloudTrigger: true });
                     lastRenderedSubjectKey = null;
-                    if (typeof restoreLastActiveState === 'function') restoreLastActiveState();
-                    if (typeof render === 'function') render();
-                    if (typeof updateFloatingProfileDock === 'function') updateFloatingProfileDock();
+                    if (isAppFullyLoaded) {
+                        if (typeof restoreLastActiveState === 'function') restoreLastActiveState();
+                        if (typeof render === 'function') render();
+                        if (typeof updateFloatingProfileDock === 'function') updateFloatingProfileDock();
+                    }
 
                     if (needsPush || cloudDirtySubjects.size > 0) {
                         await window.flushCloudSyncNow();
@@ -7715,6 +7776,13 @@
             await window.flushCloudSyncNow();
             await window.syncPullFromCloud(false);
         };
+
+        window.addEventListener('online', () => {
+            console.log("Connexion réseau rétablie, relance de la synchronisation Cloud...");
+            if (typeof window.forceManualCloudSync === 'function') {
+                window.forceManualCloudSync();
+            }
+        });
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden' && (cloudSyncTimer || cloudDirtySubjects.size > 0)) {
@@ -10809,6 +10877,7 @@
             populateExplicConcours();
             restoreLastActiveState();
             render();
+            isAppFullyLoaded = true;
         };
 
         // === SYNCHRONISATION MULTI-ONGLETS / RETOUR DE NAVIGATION ===
