@@ -15,7 +15,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2014_Capes_Ext_Dissert_Partager_19sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 18,
+    "note_blind_c1": 19,
     "note_blind_c2": 19,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2014_Capes_Ext_Dissert_Partager_19_A000029752_EVALUATION_BLIND.md"
@@ -36,9 +36,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2017_Capes_Ext_Explic_Cournot_15sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14.5,
-    "note_blind_c2": 15,
-    "delta_blind": 0,
+    "note_blind_c1": 14,
+    "note_blind_c2": 14,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2017_Capes_Ext_Explic_Cournot_15_A000031128_EVALUATION_BLIND.md"
   },
   {
@@ -57,9 +57,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2020_Capes_Ext_Explic_Diderot_14sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
-    "note_blind_c2": 14,
-    "delta_blind": 0,
+    "note_blind_c1": 14.5,
+    "note_blind_c2": 14.5,
+    "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Capes_Ext_Explic_Diderot_14_A000570164_EVALUATION_BLIND.md"
   },
   {
@@ -78,9 +78,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Capes_Ext_Dissert_Dire_vouloir_dire_12sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
-    "note_blind_c2": 12,
-    "delta_blind": 0,
+    "note_blind_c1": 11,
+    "note_blind_c2": 11,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Capes_Ext_Dissert_Dire_vouloir_dire_12_A000048554_EVALUATION_BLIND.md"
   },
   {
@@ -99,7 +99,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Capes_Ext_Explic_Spinoza_18sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 17,
+    "note_blind_c1": 18,
     "note_blind_c2": 18,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Capes_Ext_Explic_Spinoza_18_A000048554_EVALUATION_BLIND.md"
@@ -121,8 +121,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 13.5,
-    "note_blind_c2": 14,
-    "delta_blind": -0.5,
+    "note_blind_c2": 13.5,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Capes_Ext_Explic_Kant_14-5_A000069339_EVALUATION_BLIND.md"
   },
   {
@@ -141,9 +141,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2023_Capes_Ext_Dissert_Etre_soi_meme_14-5sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14,
-    "note_blind_c2": 14.5,
-    "delta_blind": 0,
+    "note_blind_c1": 15,
+    "note_blind_c2": 15,
+    "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Capes_Ext_Dissert_Etre_soi_meme_14-5_N231NAT1060696_EVALUATION_BLIND.md"
   },
   {
@@ -163,8 +163,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 15,
-    "note_blind_c2": 15.5,
-    "delta_blind": -0.5,
+    "note_blind_c2": 15,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Capes_Ext_Explic_Nietzsche_16_N231NAT1061153_EVALUATION_BLIND.md"
   },
   {
@@ -183,7 +183,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2024_Capes_Ext_Dissert_Avenir_17sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 16,
+    "note_blind_c1": 17,
     "note_blind_c2": 17,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2024_Capes_Ext_Dissert_Avenir_17_N240NAT1070735_EVALUATION_BLIND.md"
@@ -204,9 +204,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2026_Capes_Ext_Dissert_Pour-et-contre_11sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 10.5,
-    "note_blind_c2": 11,
-    "delta_blind": 0,
+    "note_blind_c1": 11.5,
+    "note_blind_c2": 11.5,
+    "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2026_Capes_Ext_Dissert_Pour-et-contre_11_RemiEscande_EVALUATION_BLIND.md"
   },
   {
@@ -226,8 +226,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 15,
-    "note_blind_c2": 15.5,
-    "delta_blind": -0.5,
+    "note_blind_c2": 15,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2026_Capes_Ext_Explic_Hegel_16_RemiEscande_EVALUATION_BLIND.md"
   },
   {
@@ -247,8 +247,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 11.5,
-    "note_blind_c2": 12.5,
-    "delta_blind": 0.5,
+    "note_blind_c2": 11.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2015_Agreg_Ext_Dissert_Normes_12_Amaury_EVALUATION_BLIND.md"
   },
   {
@@ -267,9 +267,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2015_Agreg_Ext_Dissert_Normes_14sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
-    "note_blind_c2": 14,
-    "delta_blind": 0,
+    "note_blind_c1": 13,
+    "note_blind_c2": 13,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2015_Agreg_Ext_Dissert_Normes_14_A_EVALUATION_BLIND.md"
   },
   {
@@ -288,7 +288,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2015_Agreg_Ext_Explic_Marx_13sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
+    "note_blind_c1": 13,
     "note_blind_c2": 13,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2015_Agreg_Ext_Explic_Marx_13_Amaury_EVALUATION_BLIND.md"
@@ -309,7 +309,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2015_Agreg_Ext_Dissert_Phenomene_13sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
+    "note_blind_c1": 13,
     "note_blind_c2": 13,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2015_Agreg_Ext_Dissert_Phenomene_13_Amaury_EVALUATION_BLIND.md"
@@ -330,9 +330,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2018_Agreg_Ext_Dissert_Compo1_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 7,
-    "note_blind_c2": 7.5,
-    "delta_blind": 0.5,
+    "note_blind_c1": 8,
+    "note_blind_c2": 8,
+    "delta_blind": 1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2018_Agreg_Ext_Dissert_Compo1_7_LaurieK_EVALUATION_BLIND.md"
   },
   {
@@ -351,7 +351,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2018_Agreg_Ext_Dissert_Compo2_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 6.5,
+    "note_blind_c1": 7,
     "note_blind_c2": 7,
     "delta_blind": 1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2018_Agreg_Ext_Dissert_Compo2_6_LaurieK_EVALUATION_BLIND.md"
@@ -372,7 +372,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2018_Agreg_Ext_Explic_HistoirePhilo_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 9,
+    "note_blind_c1": 9.5,
     "note_blind_c2": 9.5,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2018_Agreg_Ext_Explic_HistoirePhilo_9-5_LaurieK_EVALUATION_BLIND.md"
@@ -393,9 +393,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2018_Agreg_Ext_Explic_Hume_13_A000072769_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
-    "note_blind_c2": 13,
-    "delta_blind": 0,
+    "note_blind_c1": 12,
+    "note_blind_c2": 12,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2018_Agreg_Ext_Explic_Hume_13_A000072769_EVALUATION_BLIND.md"
   },
   {
@@ -414,7 +414,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2020_Agreg_Ext_Dissert_Affects_15_A000525568_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14.5,
+    "note_blind_c1": 15,
     "note_blind_c2": 15,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Agreg_Ext_Dissert_Affects_15_A000525568_EVALUATION_BLIND.md"
@@ -435,7 +435,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2020_Agreg_Ext_Dissert_Affects_15_A000526119_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14.5,
+    "note_blind_c1": 15,
     "note_blind_c2": 15,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Agreg_Ext_Dissert_Affects_15_A000526119_EVALUATION_BLIND.md"
@@ -457,8 +457,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 10.5,
-    "note_blind_c2": 11,
-    "delta_blind": 0,
+    "note_blind_c2": 10.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Dissert_Droit_11_A000024770_EVALUATION_BLIND.md"
   },
   {
@@ -468,7 +468,7 @@
     "session": "2021",
     "epreuve_num": 1,
     "type_epreuve": "Dissertation",
-    "sujet": "Le droit",
+    "sujet": "Que peut le droit ?",
     "pages": 12,
     "size_mb": 4.15,
     "note_officielle": 12,
@@ -477,9 +477,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Ext_Dissert_Droit_12sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
-    "note_blind_c2": 13,
-    "delta_blind": 1,
+    "note_blind_c1": 12,
+    "note_blind_c2": 12,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Dissert_Droit_12_LaurentK_EVALUATION_BLIND.md"
   },
   {
@@ -489,7 +489,7 @@
     "session": "2021",
     "epreuve_num": 1,
     "type_epreuve": "Dissertation",
-    "sujet": "Le droit",
+    "sujet": "Que peut le droit ?",
     "pages": 12,
     "size_mb": 3.68,
     "note_officielle": 14,
@@ -498,7 +498,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Ext_Dissert_Droit_14sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
+    "note_blind_c1": 14,
     "note_blind_c2": 14,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Dissert_Droit_14_FlorianM_EVALUATION_BLIND.md"
@@ -519,7 +519,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Ext_Dissert_Commun_11-5_A000024770_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11,
+    "note_blind_c1": 11.5,
     "note_blind_c2": 11.5,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Dissert_Commun_11-5_A000024770_EVALUATION_BLIND.md"
@@ -531,7 +531,7 @@
     "session": "2021",
     "epreuve_num": 2,
     "type_epreuve": "Dissertation",
-    "sujet": "Les choses en commun",
+    "sujet": "Les choses ont-elles quelque chose en commun ?",
     "pages": 16,
     "size_mb": 5.37,
     "note_officielle": 13,
@@ -540,7 +540,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Ext_Dissert_ChosesEnCommun_13sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
+    "note_blind_c1": 13,
     "note_blind_c2": 13,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Dissert_Commun_13_LaurentK_EVALUATION_BLIND.md"
@@ -552,7 +552,7 @@
     "session": "2021",
     "epreuve_num": 2,
     "type_epreuve": "Dissertation",
-    "sujet": "Les choses en commun",
+    "sujet": "Les choses ont-elles quelque chose en commun ?",
     "pages": 16,
     "size_mb": 4.58,
     "note_officielle": 15,
@@ -562,8 +562,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 14.5,
-    "note_blind_c2": 15,
-    "delta_blind": 0,
+    "note_blind_c2": 14.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Dissert_Commun_15_FlorianM_EVALUATION_BLIND.md"
   },
   {
@@ -573,7 +573,7 @@
     "session": "2021",
     "epreuve_num": 3,
     "type_epreuve": "Explication de texte",
-    "sujet": "Denis Diderot, Salon de 1767",
+    "sujet": "Denis Diderot, Pensées sur l'interprétation de la nature (§ XII)",
     "pages": 12,
     "size_mb": 4.1,
     "note_officielle": 7,
@@ -582,7 +582,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Ext_Explic_Diderot_7sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 6.5,
+    "note_blind_c1": 7,
     "note_blind_c2": 7,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Explic_Diderot_7_LaurentK_EVALUATION_BLIND.md"
@@ -603,7 +603,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Ext_Explic_Diderot_10_A000024770_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 9.5,
+    "note_blind_c1": 10,
     "note_blind_c2": 10,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Explic_Diderot_10_A000024770_EVALUATION_BLIND.md"
@@ -624,9 +624,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Ext_Explic_Diderot_16_A000024910_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 15.5,
-    "note_blind_c2": 16,
-    "delta_blind": 0,
+    "note_blind_c1": 15,
+    "note_blind_c2": 15,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Ext_Explic_Diderot_16_A000024910_EVALUATION_BLIND.md"
   },
   {
@@ -645,7 +645,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2022_Agreg_Ext_Dissert_Principes_13_A000025124_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
+    "note_blind_c1": 13,
     "note_blind_c2": 13,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Ext_Dissert_Principes_13_A000025124_EVALUATION_BLIND.md"
@@ -666,7 +666,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2022_Agreg_Ext_Explic_Hobbes_13_A000025124_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
+    "note_blind_c1": 13,
     "note_blind_c2": 13,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Ext_Explic_Hobbes_13_A000025124_EVALUATION_BLIND.md"
@@ -687,7 +687,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2023_Agreg_Ext_Dissert_Egalite_12_N231NAT1031951_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
+    "note_blind_c1": 12,
     "note_blind_c2": 12,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Agreg_Ext_Dissert_Egalite_12_N231NAT1031951_EVALUATION_BLIND.md"
@@ -708,9 +708,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2023_Agreg_Ext_Dissert_Corps_15_N231NAT1032730_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14.5,
-    "note_blind_c2": 15,
-    "delta_blind": 0,
+    "note_blind_c1": 15.5,
+    "note_blind_c2": 15.5,
+    "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Agreg_Ext_Dissert_Corps_15_N231NAT1032730_EVALUATION_BLIND.md"
   },
   {
@@ -729,7 +729,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2023_Agreg_Ext_Explic_Ciceron_17_N231NAT1032730_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 16.5,
+    "note_blind_c1": 17,
     "note_blind_c2": 17,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Agreg_Ext_Explic_Ciceron_17_N231NAT1032730_EVALUATION_BLIND.md"
@@ -750,9 +750,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2023_Agreg_Ext_Explic_Ciceron_17_N231NAT1031951_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 16.5,
-    "note_blind_c2": 17,
-    "delta_blind": 0,
+    "note_blind_c1": 16,
+    "note_blind_c2": 16,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Agreg_Ext_Explic_Ciceron_17_N231NAT1031951_EVALUATION_BLIND.md"
   },
   {
@@ -771,7 +771,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2026_Agreg_Ext_Dissert_Beaute-du-monde_7-5_RemiEscande_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 8,
+    "note_blind_c1": 8.5,
     "note_blind_c2": 8.5,
     "delta_blind": 1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2026_Agreg_Ext_Dissert_Beaute-du-monde_7-5_RemiEscande_EVALUATION_BLIND.md"
@@ -792,9 +792,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2026_Agreg_Ext_Dissert_Paix_7-5_RemiEscande_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 7,
-    "note_blind_c2": 7.5,
-    "delta_blind": 0,
+    "note_blind_c1": 8,
+    "note_blind_c2": 8,
+    "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2026_Agreg_Ext_Dissert_Paix_7-5_RemiEscande_EVALUATION_BLIND.md"
   },
   {
@@ -813,7 +813,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2026_Agreg_Ext_Explic_Bachelard_12-5_RemiEscande_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
+    "note_blind_c1": 13,
     "note_blind_c2": 13,
     "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2026_Agreg_Ext_Explic_Bachelard_12-5_RemiEscande_EVALUATION_BLIND.md"
@@ -834,9 +834,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2012_Agreg_Int_Dissert_LeconsExperience_15sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13,
-    "note_blind_c2": 14,
-    "delta_blind": -1,
+    "note_blind_c1": 15.5,
+    "note_blind_c2": 15.5,
+    "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2012_Agreg_Int_Dissert_LeconsExperience_15_A000000499_EVALUATION_BLIND.md"
   },
   {
@@ -855,9 +855,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2017_Agreg_Int_Explic_Ciceron_15_A000000513_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14.5,
-    "note_blind_c2": 15,
-    "delta_blind": 0,
+    "note_blind_c1": 14,
+    "note_blind_c2": 14,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2017_Agreg_Int_Explic_Ciceron_15_A000000513_EVALUATION_BLIND.md"
   },
   {
@@ -876,7 +876,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2018_Agreg_Int_Explic_Lucrece_9_A000120113_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 8.5,
+    "note_blind_c1": 9,
     "note_blind_c2": 9,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2018_Agreg_Int_Explic_Lucrece_9_A000120113_EVALUATION_BLIND.md"
@@ -897,9 +897,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2018_Agreg_Int_Dissert_Interpretation_12_A000120113_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 16.5,
-    "note_blind_c2": 17,
-    "delta_blind": 5,
+    "note_blind_c1": 12,
+    "note_blind_c2": 12,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2018_Agreg_Int_Dissert_Interpretation_12_A000120113_EVALUATION_BLIND.md"
   },
   {
@@ -918,7 +918,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2019_Agreg_Int_Dissert_Theorie_12sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
+    "note_blind_c1": 12,
     "note_blind_c2": 12,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2019_Agreg_Int_Dissert_Theorie_12_FrancoisC_EVALUATION_BLIND.md"
@@ -930,7 +930,7 @@
     "session": "2019",
     "epreuve_num": 1,
     "type_epreuve": "Explication de texte",
-    "sujet": "Texte de Denis Diderot",
+    "sujet": "Denis Diderot, Supplément au voyage de Bougainville (nature, morale et lois)",
     "pages": 16,
     "size_mb": 4.56,
     "note_officielle": 14,
@@ -940,8 +940,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 13.5,
-    "note_blind_c2": 14,
-    "delta_blind": 0,
+    "note_blind_c2": 13.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2019_Agreg_Int_Explic_Diderot_14_FrancoisC_EVALUATION_BLIND.md"
   },
   {
@@ -961,8 +961,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 16.5,
-    "note_blind_c2": 17,
-    "delta_blind": 0,
+    "note_blind_c2": 16.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2019_Agreg_Int_Dissert_Liberte_17_A000000175_EVALUATION_BLIND.md"
   },
   {
@@ -981,7 +981,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2020_Agreg_Int_Dissert_HorsProg_DM_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 9.5,
+    "note_blind_c1": 10,
     "note_blind_c2": 10,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Agreg_Int_Dissert_HorsProg_10_DM_EVALUATION_BLIND.md"
@@ -1002,9 +1002,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2020_Agreg_Int_Dissert_HorsProg_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12,
-    "note_blind_c2": 13,
-    "delta_blind": 5,
+    "note_blind_c1": 8,
+    "note_blind_c2": 8,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Agreg_Int_Dissert_HorsProg_8_PH_EVALUATION_BLIND.md"
   },
   {
@@ -1024,8 +1024,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 11,
-    "note_blind_c2": 11.5,
-    "delta_blind": 0,
+    "note_blind_c2": 11,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Agreg_Int_Dissert_Representation_11-5_DM_EVALUATION_BLIND.md"
   },
   {
@@ -1044,7 +1044,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2020_Agreg_Int_Dissert_Representation_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 6.5,
+    "note_blind_c1": 7,
     "note_blind_c2": 7,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Agreg_Int_Dissert_Representation_7_PH_EVALUATION_BLIND.md"
@@ -1065,9 +1065,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2020_Agreg_Int_Explic_Platon_DM_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
-    "note_blind_c2": 12.5,
-    "delta_blind": 0.5,
+    "note_blind_c1": 12,
+    "note_blind_c2": 12,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Agreg_Int_Explic_Platon_12_DM_EVALUATION_BLIND.md"
   },
   {
@@ -1086,15 +1086,15 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2020_Agreg_Int_Explic_Platon_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 9,
-    "note_blind_c2": 9.5,
-    "delta_blind": 5,
+    "note_blind_c1": 4.5,
+    "note_blind_c2": 4.5,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2020_Agreg_Int_Explic_Platon_4-5_PH_EVALUATION_BLIND.md"
   },
   {
     "filename": "2021_Agreg_Int_Dissert_Droit_8_PH.pdf",
     "rel_path": "Agregation_Interne/2021/2021_Agreg_Int_Dissert_Droit_8_PH.pdf",
-    "concours": "Agrégation interne",
+    "concours": "Agrégation externe",
     "session": "2021",
     "epreuve_num": 1,
     "type_epreuve": "Dissertation",
@@ -1107,7 +1107,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Dissert_Droit_8_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 7.5,
+    "note_blind_c1": 8,
     "note_blind_c2": 8,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Droit_8_PH_EVALUATION_BLIND.md"
@@ -1128,7 +1128,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Dissert_Inconscient_12sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
+    "note_blind_c1": 12,
     "note_blind_c2": 12,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Inconscient_12_EVALUATION_BLIND.md"
@@ -1149,7 +1149,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Dissert_Inconscient_13sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
+    "note_blind_c1": 13,
     "note_blind_c2": 13,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Inconscient_13_LaurentK_EVALUATION_BLIND.md"
@@ -1170,7 +1170,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Dissert_Inconscient_14sur20_1_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
+    "note_blind_c1": 14,
     "note_blind_c2": 14,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Inconscient_14-1_EVALUATION_BLIND.md"
@@ -1191,9 +1191,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Dissert_Inconscient_14sur20_2_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
-    "note_blind_c2": 14,
-    "delta_blind": 0,
+    "note_blind_c1": 15,
+    "note_blind_c2": 15,
+    "delta_blind": 1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Inconscient_14-2_EVALUATION_BLIND.md"
   },
   {
@@ -1212,7 +1212,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Dissert_Inconscient_14sur20_3_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13,
+    "note_blind_c1": 13.5,
     "note_blind_c2": 13.5,
     "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Inconscient_14-3_EVALUATION_BLIND.md"
@@ -1234,8 +1234,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 16.5,
-    "note_blind_c2": 17,
-    "delta_blind": 0,
+    "note_blind_c2": 16.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Inconscient_17-1_EVALUATION_BLIND.md"
   },
   {
@@ -1254,7 +1254,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Dissert_Inconscient_17sur20_2_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 16,
+    "note_blind_c1": 17,
     "note_blind_c2": 17,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Inconscient_17-2_EVALUATION_BLIND.md"
@@ -1262,11 +1262,11 @@
   {
     "filename": "2021_Agreg_Int_Dissert_Commun_8-5_PH.pdf",
     "rel_path": "Agregation_Interne/2021/2021_Agreg_Int_Dissert_Commun_8-5_PH.pdf",
-    "concours": "Agrégation interne",
+    "concours": "Agrégation externe",
     "session": "2021",
     "epreuve_num": 2,
     "type_epreuve": "Dissertation",
-    "sujet": "Le commun (PH)",
+    "sujet": "Les choses ont-elles quelque chose en commun ?",
     "pages": 12,
     "size_mb": 4.32,
     "note_officielle": 8.5,
@@ -1275,7 +1275,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Dissert_Commun_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 7.5,
+    "note_blind_c1": 8,
     "note_blind_c2": 8,
     "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Dissert_Commun_8-5_PH_EVALUATION_BLIND.md"
@@ -1296,9 +1296,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Explic_Condillac_10sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
-    "note_blind_c2": 13.5,
-    "delta_blind": 3.5,
+    "note_blind_c1": 10,
+    "note_blind_c2": 10,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Explic_Condillac_10_LaurentK_EVALUATION_BLIND.md"
   },
   {
@@ -1317,9 +1317,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Explic_Condillac_15sur20_1_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
-    "note_blind_c2": 13,
-    "delta_blind": -2,
+    "note_blind_c1": 15,
+    "note_blind_c2": 15,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Explic_Condillac_15-1_EVALUATION_BLIND.md"
   },
   {
@@ -1338,7 +1338,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Explic_Condillac_15sur20_2_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14.5,
+    "note_blind_c1": 15,
     "note_blind_c2": 15,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Explic_Condillac_15-2_EVALUATION_BLIND.md"
@@ -1359,7 +1359,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Explic_Condillac_17sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 15,
+    "note_blind_c1": 16,
     "note_blind_c2": 16,
     "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Explic_Condillac_17_EVALUATION_BLIND.md"
@@ -1367,7 +1367,7 @@
   {
     "filename": "2021_Agreg_Int_Explic_Diderot_7_PH.pdf",
     "rel_path": "Agregation_Interne/2021/2021_Agreg_Int_Explic_Diderot_7_PH.pdf",
-    "concours": "Agrégation interne",
+    "concours": "Agrégation externe",
     "session": "2021",
     "epreuve_num": 3,
     "type_epreuve": "Explication de texte",
@@ -1380,7 +1380,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Explic_Diderot_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 6.5,
+    "note_blind_c1": 7,
     "note_blind_c2": 7,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Explic_Diderot_7_PH_EVALUATION_BLIND.md"
@@ -1401,9 +1401,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Explic_Foucault_12sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
-    "note_blind_c2": 13,
-    "delta_blind": 1,
+    "note_blind_c1": 12,
+    "note_blind_c2": 12,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Explic_Foucault_12_EVALUATION_BLIND.md"
   },
   {
@@ -1422,7 +1422,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Explic_Foucault_13sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
+    "note_blind_c1": 13,
     "note_blind_c2": 13,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Explic_Foucault_13_EVALUATION_BLIND.md"
@@ -1443,9 +1443,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2021_Agreg_Int_Explic_Foucault_18sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
-    "note_blind_c2": 14,
-    "delta_blind": -4,
+    "note_blind_c1": 18,
+    "note_blind_c2": 18,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2021_Agreg_Int_Explic_Foucault_18_EVALUATION_BLIND.md"
   },
   {
@@ -1464,7 +1464,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2022_Agreg_Int_Dissert_Bonheur_6-5_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 6,
+    "note_blind_c1": 6.5,
     "note_blind_c2": 6.5,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Dissert_Bonheur_6-5_PH_EVALUATION_BLIND.md"
@@ -1485,9 +1485,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2022_Agreg_Int_Dissert_Bonheur_Christophe_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 7.5,
-    "note_blind_c2": 8,
-    "delta_blind": 0,
+    "note_blind_c1": 8.5,
+    "note_blind_c2": 8.5,
+    "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Dissert_Bonheur_8_ChristopheGallique_EVALUATION_BLIND.md"
   },
   {
@@ -1507,8 +1507,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 9,
-    "note_blind_c2": 9.5,
-    "delta_blind": 0.5,
+    "note_blind_c2": 9,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Dissert_Bonheur_9_LucieC_EVALUATION_BLIND.md"
   },
   {
@@ -1527,9 +1527,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2022_Agreg_Int_Dissert_Justice_LucieC_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 12.5,
-    "note_blind_c2": 13,
-    "delta_blind": 0,
+    "note_blind_c1": 12,
+    "note_blind_c2": 12,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Dissert_Justice_13_LucieC_EVALUATION_BLIND.md"
   },
   {
@@ -1548,9 +1548,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/Agreg_Int_Dissert_Bonheur_Charaa_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
-    "note_blind_c2": 14.5,
-    "delta_blind": -0.5,
+    "note_blind_c1": 16,
+    "note_blind_c2": 16,
+    "delta_blind": 1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Dissert_Bonheur_15_Charaa_EVALUATION_BLIND.md"
   },
   {
@@ -1569,9 +1569,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/Agreg_Int_Dissert_Compo2_A000000392_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 15.5,
-    "note_blind_c2": 16,
-    "delta_blind": 0.5,
+    "note_blind_c1": 16.5,
+    "note_blind_c2": 16.5,
+    "delta_blind": 1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Dissert_Bonheur_15-5_A000000392_EVALUATION_BLIND.md"
   },
   {
@@ -1590,9 +1590,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2022_Agreg_Int_Dissert_Bonheur_16sur20_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 16.5,
-    "note_blind_c2": 17.5,
-    "delta_blind": 1.5,
+    "note_blind_c1": 15.5,
+    "note_blind_c2": 15.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Dissert_Bonheur_16_MarieB_EVALUATION_BLIND.md"
   },
   {
@@ -1612,8 +1612,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 15,
-    "note_blind_c2": 16,
-    "delta_blind": 0,
+    "note_blind_c2": 15,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Dissert_Bonheur_16_A000000347_EVALUATION_BLIND.md"
   },
   {
@@ -1623,7 +1623,7 @@
     "session": "2022",
     "epreuve_num": 2,
     "type_epreuve": "Explication de texte",
-    "sujet": "John Stuart Mill / Leibniz",
+    "sujet": "John Stuart Mill, L'Utilitarisme, chap. V (le sentiment de justice et l'utilité)",
     "pages": 12,
     "size_mb": 4.75,
     "note_officielle": 8,
@@ -1632,7 +1632,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2022_Agreg_Int_Explic_Mill_8_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 8,
+    "note_blind_c1": 8.5,
     "note_blind_c2": 8.5,
     "delta_blind": 0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Explic_Mill_8_PH_EVALUATION_BLIND.md"
@@ -1644,7 +1644,7 @@
     "session": "2022",
     "epreuve_num": 1,
     "type_epreuve": "Explication de texte",
-    "sujet": "John Stuart Mill, L'Utilitarisme",
+    "sujet": "John Stuart Mill, L'Utilitarisme, chap. V (le sentiment de justice et l'utilité)",
     "pages": 12,
     "size_mb": 4.08,
     "note_officielle": 12,
@@ -1653,7 +1653,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/Agreg_Int_Explic_Mill_CdeBelsunce_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
+    "note_blind_c1": 12,
     "note_blind_c2": 12,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Explic_Mill_12_CdeBelsunce_EVALUATION_BLIND.md"
@@ -1665,7 +1665,7 @@
     "session": "2022",
     "epreuve_num": 1,
     "type_epreuve": "Explication de texte",
-    "sujet": "John Stuart Mill, L'Utilitarisme",
+    "sujet": "John Stuart Mill, L'Utilitarisme, chap. V (le sentiment de justice et l'utilité)",
     "pages": 12,
     "size_mb": 3.69,
     "note_officielle": 12,
@@ -1674,7 +1674,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2022_Agreg_Int_Explic_Agreg2022_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
+    "note_blind_c1": 12,
     "note_blind_c2": 12,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Explic_Mill_12_A000000384_EVALUATION_BLIND.md"
@@ -1686,7 +1686,7 @@
     "session": "2022",
     "epreuve_num": 1,
     "type_epreuve": "Explication de texte",
-    "sujet": "Leibniz, Méditation sur la justice",
+    "sujet": "Leibniz, Méditation sur la notion commune de la justice",
     "pages": 12,
     "size_mb": 3.87,
     "note_officielle": 14,
@@ -1695,7 +1695,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/Agreg_Int_Explic_Leibniz_Anonyme_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
+    "note_blind_c1": 14,
     "note_blind_c2": 14,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Explic_Leibniz_14_A000000456_EVALUATION_BLIND.md"
@@ -1707,7 +1707,7 @@
     "session": "2022",
     "epreuve_num": 1,
     "type_epreuve": "Explication de texte",
-    "sujet": "Leibniz, Méditation sur la justice",
+    "sujet": "Leibniz, Méditation sur la notion commune de la justice",
     "pages": 16,
     "size_mb": 4.66,
     "note_officielle": 16,
@@ -1717,8 +1717,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 15.5,
-    "note_blind_c2": 16.5,
-    "delta_blind": 0.5,
+    "note_blind_c2": 15.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Explic_Leibniz_16_MarieB_EVALUATION_BLIND.md"
   },
   {
@@ -1728,7 +1728,7 @@
     "session": "2022",
     "epreuve_num": 1,
     "type_epreuve": "Explication de texte",
-    "sujet": "Leibniz, Théodicée (le problème du mal)",
+    "sujet": "Leibniz, Méditation sur la notion commune de la justice",
     "pages": 20,
     "size_mb": 4.51,
     "note_officielle": 17,
@@ -1737,9 +1737,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/Agreg_Int_Dissert_Compo1_A000000554_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 15.5,
-    "note_blind_c2": 16.5,
-    "delta_blind": -0.5,
+    "note_blind_c1": 17,
+    "note_blind_c2": 17,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Explic_Leibniz_17_A000000554_EVALUATION_BLIND.md"
   },
   {
@@ -1749,7 +1749,7 @@
     "session": "2022",
     "epreuve_num": 1,
     "type_epreuve": "Explication de texte",
-    "sujet": "John Stuart Mill, L'Utilitarisme",
+    "sujet": "John Stuart Mill, L'Utilitarisme, chap. V (le sentiment de justice et l'utilité)",
     "pages": 20,
     "size_mb": 4.73,
     "note_officielle": 19,
@@ -1758,9 +1758,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/Agreg_Ext_Explic_Mill_GauthierTumpich_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14,
-    "note_blind_c2": 14.5,
-    "delta_blind": -4.5,
+    "note_blind_c1": 18,
+    "note_blind_c2": 18,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2022_Agreg_Int_Explic_Mill_19_GauthierTumpich_EVALUATION_BLIND.md"
   },
   {
@@ -1779,7 +1779,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2023_Agreg_Int_Dissert_ConnaissanceDeSoi_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 9.5,
+    "note_blind_c1": 10,
     "note_blind_c2": 10,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Agreg_Int_Dissert_ConnaissanceDeSoi_10_PH_EVALUATION_BLIND.md"
@@ -1800,9 +1800,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2023_Agreg_Int_Explic_SpinozaSchopenhauer_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
-    "note_blind_c2": 12,
-    "delta_blind": 0,
+    "note_blind_c1": 13,
+    "note_blind_c2": 13,
+    "delta_blind": 1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Agreg_Int_Explic_SpinozaSchopenhauer_12_PH_EVALUATION_BLIND.md"
   },
   {
@@ -1821,9 +1821,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2023_Agreg_Int_Explic_SpinozaSchopenhauer_AnnoteeMatthieu_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
-    "note_blind_c2": 12,
-    "delta_blind": 0,
+    "note_blind_c1": 11,
+    "note_blind_c2": 11,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2023_Agreg_Int_Explic_SpinozaSchopenhauer_12_PH_AnnoteeMatthieu_EVALUATION_BLIND.md"
   },
   {
@@ -1842,7 +1842,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2024_Agreg_Int_Dissert_Doute_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 9.5,
+    "note_blind_c1": 10,
     "note_blind_c2": 10,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2024_Agreg_Int_Dissert_Doute_10_PH_EVALUATION_BLIND.md"
@@ -1863,7 +1863,7 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2024_Agreg_Int_Explic_HumeNietzsche_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 11.5,
+    "note_blind_c1": 12,
     "note_blind_c2": 12,
     "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2024_Agreg_Int_Explic_HumeNietzsche_12_PH_EVALUATION_BLIND.md"
@@ -1875,7 +1875,7 @@
     "session": "2025",
     "epreuve_num": 1,
     "type_epreuve": "Explication de texte",
-    "sujet": "Karl Popper, La logique de la découverte scientifique",
+    "sujet": "Karl Popper, La logique de la découverte scientifique (chap. X, § 85)",
     "pages": 12,
     "size_mb": 3.02,
     "note_officielle": 18,
@@ -1884,9 +1884,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2025_Agreg_Int_Explic_Popper_18_N250NAT1016180_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
-    "note_blind_c2": 14,
-    "delta_blind": -4,
+    "note_blind_c1": 18,
+    "note_blind_c2": 18,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2025_Agreg_Int_Explic_Popper_18_N250NAT1016180_EVALUATION_BLIND.md"
   },
   {
@@ -1906,8 +1906,8 @@
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
     "note_blind_c1": 13.5,
-    "note_blind_c2": 14.5,
-    "delta_blind": 0.5,
+    "note_blind_c2": 13.5,
+    "delta_blind": -0.5,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2025_Agreg_Int_Dissert_Creation_14_N250NAT1016180_EVALUATION_BLIND.md"
   },
   {
@@ -1917,7 +1917,7 @@
     "session": "2025",
     "epreuve_num": 1,
     "type_epreuve": "Dissertation",
-    "sujet": "La création (7 h)",
+    "sujet": "Qu'est-ce qui est au principe de la création ?",
     "pages": 16,
     "size_mb": 5.54,
     "note_officielle": 14.5,
@@ -1926,9 +1926,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2025_Agreg_Int_Dissert_Creation_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 13.5,
-    "note_blind_c2": 14,
-    "delta_blind": -0.5,
+    "note_blind_c1": 14.5,
+    "note_blind_c2": 14.5,
+    "delta_blind": 0,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2025_Agreg_Int_Dissert_Creation_14-5_PH_EVALUATION_BLIND.md"
   },
   {
@@ -1947,9 +1947,9 @@
     "transcription_integrale": "Copies/Transcriptions_Integrales/2025_Agreg_Int_Explic_Creation_PH_INTEGRALE.md",
     "statut_transcription": "Transcrite intégralement (100 %)",
     "statut_etalonnage": "Étalonnée (Double Aveugle — 93/93)",
-    "note_blind_c1": 14.5,
-    "note_blind_c2": 15,
-    "delta_blind": 0,
+    "note_blind_c1": 14,
+    "note_blind_c2": 14,
+    "delta_blind": -1,
     "rapport_blind": "Copies/Transcriptions_Integrales/EVALUATIONS_BLIND/2025_Agreg_Int_Explic_Creation_15_PH_EVALUATION_BLIND.md"
   }
 ]
