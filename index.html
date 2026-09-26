@@ -3757,7 +3757,7 @@
     </div>
 
     <script>
-        const APP_BUILD_VERSION = "2026.09.26.robust_cloud_sync_v2";
+        const APP_BUILD_VERSION = "2026.09.26.robust_cloud_sync_v3";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -7457,10 +7457,36 @@
                 const sKey = itemKey.slice(sepIdx + 3);
                 const subData = storageData.profiles?.[pid]?.subjectsData?.[sKey];
                 if (subData && isMeaningfulSubjectEntry(subData)) {
+                    const cleanCrans = (Array.isArray(subData.crans) ? subData.crans : []).map(c => {
+                        if (!c || typeof c !== 'object') return null;
+                        let cleanCorr = null;
+                        if (c.correction && typeof c.correction === 'object') {
+                            cleanCorr = { ...c.correction };
+                            delete cleanCorr.html;
+                            delete cleanCorr.atelierHtml;
+                        }
+                        return {
+                            id: Number(c.id) || 1,
+                            parentId: c.parentId !== undefined ? c.parentId : null,
+                            timestamp: Number(c.timestamp) || Date.now(),
+                            timeLabel: String(c.timeLabel || ''),
+                            score: typeof c.score === 'number' ? c.score : null,
+                            draft: typeof c.draft === 'string' ? c.draft : '',
+                            correction: cleanCorr
+                        };
+                    }).filter(Boolean);
+
                     upsertedSubjects.push({
                         profileId: pid,
                         subjectKey: sKey,
-                        data: subData
+                        data: {
+                            activeCranId: subData.activeCranId !== undefined ? subData.activeCranId : 'draft',
+                            draftParentId: subData.draftParentId !== undefined ? subData.draftParentId : null,
+                            hideDraftCorrection: Boolean(subData.hideDraftCorrection),
+                            workingDraft: typeof subData.workingDraft === 'string' ? subData.workingDraft : '',
+                            crans: cleanCrans,
+                            updatedAt: Number(subData.updatedAt) || Date.now()
+                        }
                     });
                 }
             });
@@ -7482,7 +7508,6 @@
             try {
                 const res = await fetch(CLOUD_FUNCTION_URL, {
                     method: 'POST',
-                    keepalive: true,
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
@@ -7515,6 +7540,7 @@
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 window.setCloudSyncStatusUI('ok');
             } catch (err) {
+                console.error("Échec de la sauvegarde Cloud :", err);
                 // En cas de coupure réseau ou redéploiement, on remet en file d'attente les sujets modifiés
                 dirtySnapshot.forEach(k => cloudDirtySubjects.add(k));
                 deletedSubSnapshot.forEach(k => cloudDeletedSubjects.add(k));
