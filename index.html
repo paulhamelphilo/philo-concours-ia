@@ -3318,12 +3318,16 @@
                     <div class="mentor-kpi-value" id="admin-kpi-users">-</div>
                 </div>
                 <div class="mentor-kpi-card">
-                    <div class="mentor-kpi-label">Copies évaluées</div>
+                    <div class="mentor-kpi-label">Travaux évalués</div>
                     <div class="mentor-kpi-value" id="admin-kpi-copies">-</div>
                 </div>
                 <div class="mentor-kpi-card">
-                    <div class="mentor-kpi-label">Volume total analysé</div>
-                    <div class="mentor-kpi-value" id="admin-kpi-words">-</div>
+                    <div class="mentor-kpi-label">Tokens totaux (entrée / sortie)</div>
+                    <div class="mentor-kpi-value" id="admin-kpi-tokens" style="font-size: 1.15rem;">-</div>
+                </div>
+                <div class="mentor-kpi-card">
+                    <div class="mentor-kpi-label">Coût total estimé</div>
+                    <div class="mentor-kpi-value" id="admin-kpi-cost">-</div>
                 </div>
             </div>
 
@@ -3332,15 +3336,15 @@
                 <div>
                     <h3 style="margin-bottom: 4px;">🔒 Confidentialité et archivage des textes soumis</h3>
                     <div style="font-size: 0.85rem; color: #475569;" id="admin-privacy-status-text">
-                        État actuel : désactivé par défaut (seuls les compteurs, dates, concours, sujets et notes sont enregistrés ; les textes des copies ne sont pas conservés).
+                        État actuel : désactivé par défaut (seuls les compteurs, dates, concours, sujets, tokens et notes sont enregistrés ; les textes des travaux ne sont pas conservés).
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                     <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; background: #ffffff; padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
                         <input type="checkbox" id="admin-toggle-store-texts" onchange="window.toggleMentorStoreTexts(this.checked)">
-                        <span>Enregistrer le texte des copies et des rapports</span>
+                        <span>Enregistrer le texte des travaux et des rapports</span>
                     </label>
-                    <button type="button" class="mentor-bar-btn" onclick="window.purgeMentorArchivedTexts()" title="Supprimer tous les textes de copies et rapports enregistrés tout en gardant les compteurs">🧹 Purger les textes archivés</button>
+                    <button type="button" class="mentor-bar-btn" onclick="window.purgeMentorArchivedTexts()" title="Supprimer tous les textes de travaux et rapports enregistrés tout en gardant les compteurs">🧹 Purger les textes archivés</button>
                 </div>
             </div>
 
@@ -3362,7 +3366,7 @@
                             <input type="text" id="admin-input-note" placeholder="Ex. : Collègue agrégation">
                         </div>
                         <div>
-                            <label for="admin-input-quota-copies">Quota max de copies</label>
+                            <label for="admin-input-quota-copies">Quota max de travaux</label>
                             <input type="number" id="admin-input-quota-copies" min="0" placeholder="Vide = illimité">
                         </div>
                         <div>
@@ -3379,7 +3383,10 @@
 
             <!-- Liste des comptes et suivi par compte -->
             <div class="mentor-admin-section">
-                <h3>👥 Suivi compte par compte</h3>
+                <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">👥 Suivi compte par compte</h3>
+                    <span style="font-size: 0.78rem; color: #64748b;">Barème API : Gemini Flash (0,30 $ / 1M tokens en entrée • 2,50 $ / 1M tokens en sortie, réflexion préalable incluse)</span>
+                </div>
                 <div class="mentor-table-wrap">
                     <table class="mentor-admin-table">
                         <thead>
@@ -3388,14 +3395,16 @@
                                 <th>Mot de passe</th>
                                 <th>Statut</th>
                                 <th>Connexions</th>
-                                <th>Copies (quota)</th>
-                                <th>Mots soumis</th>
+                                <th>Travaux (quota)</th>
+                                <th>Modèle</th>
+                                <th>Tokens (entrée / sortie)</th>
+                                <th>Coût total</th>
                                 <th>Dernière activité</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="admin-users-tbody">
-                            <tr><td colspan="8" style="text-align:center; padding: 18px;">Chargement des comptes...</td></tr>
+                            <tr><td colspan="10" style="text-align:center; padding: 18px;">Chargement des comptes...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -3412,7 +3421,7 @@
                         </select>
                         <select id="admin-filter-action" onchange="window.renderMentorAdminLogs()" style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
                             <option value="">Toutes les actions</option>
-                            <option value="correction">Copies évaluées uniquement</option>
+                            <option value="correction">Travaux évalués uniquement</option>
                             <option value="login">Connexions uniquement</option>
                         </select>
                     </div>
@@ -3426,13 +3435,15 @@
                                 <th>Action</th>
                                 <th>Concours et épreuve</th>
                                 <th>Sujet ou texte traité</th>
-                                <th>Mots</th>
-                                <th>Notes (canon. / est.)</th>
+                                <th>Modèle</th>
+                                <th>Tokens (entrée / sortie)</th>
+                                <th>Coût</th>
+                                <th>Note estimée</th>
                                 <th>Contenu</th>
                             </tr>
                         </thead>
                         <tbody id="admin-logs-tbody">
-                            <tr><td colspan="8" style="text-align:center; padding: 18px;">Chargement de l'historique...</td></tr>
+                            <tr><td colspan="10" style="text-align:center; padding: 18px;">Chargement de l'historique...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -3440,11 +3451,11 @@
         </div>
     </div>
 
-    <!-- Sous-fenêtre de lecture d'une copie et de son rapport -->
+    <!-- Sous-fenêtre de lecture d'un travail et de son rapport -->
     <div id="mentor-log-detail-modal" style="display: none;">
         <div class="mentor-admin-panel" style="max-width: 960px;">
             <div class="mentor-admin-header">
-                <h2 id="mentor-log-detail-title">📄 Consultation de la copie et du rapport</h2>
+                <h2 id="mentor-log-detail-title">📄 Consultation du travail et du rapport</h2>
                 <button type="button" class="mentor-bar-btn admin-btn" onclick="document.getElementById('mentor-log-detail-modal').style.display='none'">Fermer ✕</button>
             </div>
             <div id="mentor-log-detail-body" style="max-height: 75vh; overflow-y: auto; font-size: 0.92rem; line-height: 1.6;"></div>
@@ -4001,18 +4012,120 @@
                 }
             };
 
+            function getModelRatesPer1M(modelName) {
+                const m = String(modelName || 'gemini-3.7-flash').toLowerCase();
+                if (m.includes('pro')) {
+                    return { inputPer1M: 1.25, outputPer1M: 10.00 };
+                }
+                if (m.includes('lite')) {
+                    return { inputPer1M: 0.10, outputPer1M: 0.40 };
+                }
+                return { inputPer1M: 0.30, outputPer1M: 2.50 };
+            }
+
+            function calculateCorrectionCostUsd(modelName, inputTokens, outputTokens) {
+                const rates = getModelRatesPer1M(modelName);
+                const inTok = Math.max(0, Number(inputTokens) || 0);
+                const outTok = Math.max(0, Number(outputTokens) || 0);
+                return ((inTok / 1000000) * rates.inputPer1M) + ((outTok / 1000000) * rates.outputPer1M);
+            }
+
+            function formatCostUsd(costUsd) {
+                const val = Number(costUsd) || 0;
+                if (val === 0) return '0,0000 $';
+                const eur = val * 0.92;
+                const usdStr = val < 0.1
+                    ? val.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' $'
+                    : val.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' $';
+                const eurStr = eur < 0.1
+                    ? eur.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' €'
+                    : eur.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+                return `<span title="Équivalent indicatif : ~${eurStr}">${usdStr}</span>`;
+            }
+
+            function formatTokensCell(inputTokens, outputTokens, thinkingTokens) {
+                const inTok = Number(inputTokens) || 0;
+                const outTok = Number(outputTokens) || 0;
+                const thinkTok = Number(thinkingTokens) || 0;
+                if (inTok === 0 && outTok === 0) {
+                    return '<span style="color:#94a3b8;">0</span>';
+                }
+                const thinkInfo = thinkTok > 0
+                    ? ` <span style="color:#64748b; font-size:0.74rem;" title="Tokens utilisés pour la réflexion préalable inclus dans la sortie">(dont ${thinkTok.toLocaleString('fr-FR')} réflex.)</span>`
+                    : '';
+                return `<div style="line-height:1.35; font-size:0.8rem;">
+                    <div><span style="color:#475569;">Entrée :</span> <strong>${inTok.toLocaleString('fr-FR')}</strong></div>
+                    <div><span style="color:#475569;">Sortie :</span> <strong>${outTok.toLocaleString('fr-FR')}</strong>${thinkInfo}</div>
+                </div>`;
+            }
+
             function renderAdminDashboardUI() {
                 const users = currentAdminData.users || [];
+                const logs = currentAdminData.logs || [];
                 const settings = currentAdminData.settings || {};
+
+                // Agrégation par compte (avec repli sur les journaux si nécessaire)
+                const logStatsByUser = {};
+                logs.forEach(l => {
+                    if (l.action !== 'correction' || !l.username) return;
+                    if (!logStatsByUser[l.username]) {
+                        logStatsByUser[l.username] = { inTok: 0, outTok: 0, thinkTok: 0, cost: 0, model: '' };
+                    }
+                    const s = logStatsByUser[l.username];
+                    const inT = Number(l.inputTokens) || 0;
+                    const outT = Number(l.outputTokens) || 0;
+                    const thT = Number(l.thinkingTokens) || 0;
+                    const mod = l.model || 'gemini-3.7-flash';
+                    const c = (l.costUsd !== undefined && l.costUsd !== null) ? Number(l.costUsd) : calculateCorrectionCostUsd(mod, inT, outT);
+                    s.inTok += inT;
+                    s.outTok += outT;
+                    s.thinkTok += thT;
+                    s.cost += c;
+                    if (!s.model && l.model) s.model = l.model;
+                });
 
                 // 1. KPIs
                 const activeUsersCount = users.filter(u => u.active !== false).length;
                 const totalCopies = users.reduce((acc, u) => acc + (u.copiesCount || 0), 0);
-                const totalWords = users.reduce((acc, u) => acc + (u.totalWords || 0), 0);
+
+                let globalInputTokens = 0;
+                let globalOutputTokens = 0;
+                let globalThinkingTokens = 0;
+                let globalCostUsd = 0;
+
+                users.forEach(u => {
+                    const fallback = logStatsByUser[u.username] || { inTok: 0, outTok: 0, thinkTok: 0, cost: 0, model: '' };
+                    const uIn = Math.max(Number(u.totalInputTokens) || 0, fallback.inTok);
+                    const uOut = Math.max(Number(u.totalOutputTokens) || 0, fallback.outTok);
+                    const uThink = Math.max(Number(u.totalThinkingTokens) || 0, fallback.thinkTok);
+                    const uModel = u.lastModel || fallback.model || 'gemini-3.7-flash';
+                    const uCost = (u.totalCostUsd && Number(u.totalCostUsd) > 0)
+                        ? Math.max(Number(u.totalCostUsd), fallback.cost)
+                        : calculateCorrectionCostUsd(uModel, uIn, uOut);
+
+                    u._resolvedInputTokens = uIn;
+                    u._resolvedOutputTokens = uOut;
+                    u._resolvedThinkingTokens = uThink;
+                    u._resolvedModel = uModel;
+                    u._resolvedCostUsd = uCost;
+
+                    globalInputTokens += uIn;
+                    globalOutputTokens += uOut;
+                    globalThinkingTokens += uThink;
+                    globalCostUsd += uCost;
+                });
 
                 document.getElementById('admin-kpi-users').textContent = `${activeUsersCount} / ${users.length}`;
                 document.getElementById('admin-kpi-copies').textContent = totalCopies.toLocaleString('fr-FR');
-                document.getElementById('admin-kpi-words').textContent = totalWords.toLocaleString('fr-FR') + ' mots';
+                const kpiTokensEl = document.getElementById('admin-kpi-tokens');
+                if (kpiTokensEl) {
+                    kpiTokensEl.innerHTML = `${globalInputTokens.toLocaleString('fr-FR')} E <span style="color:#94a3b8; font-weight:400;">/</span> ${globalOutputTokens.toLocaleString('fr-FR')} S`;
+                    kpiTokensEl.title = `Entrée : ${globalInputTokens.toLocaleString('fr-FR')} tokens • Sortie : ${globalOutputTokens.toLocaleString('fr-FR')} tokens (dont ${globalThinkingTokens.toLocaleString('fr-FR')} tokens de réflexion préalable)`;
+                }
+                const kpiCostEl = document.getElementById('admin-kpi-cost');
+                if (kpiCostEl) {
+                    kpiCostEl.innerHTML = formatCostUsd(globalCostUsd);
+                }
 
                 // 2. Interrupteur de confidentialité
                 const toggleEl = document.getElementById('admin-toggle-store-texts');
@@ -4020,9 +4133,9 @@
                 if (toggleEl) toggleEl.checked = Boolean(settings.storeEssayTexts);
                 if (statusTextEl) {
                     if (settings.storeEssayTexts) {
-                        statusTextEl.innerHTML = 'État actuel : <strong style="color:#166534;">activé</strong> (les copies soumises et les rapports générés sont enregistrés pour lecture dans le journal ci-dessous).';
+                        statusTextEl.innerHTML = 'État actuel : <strong style="color:#166534;">activé</strong> (les travaux soumis et les rapports générés sont enregistrés pour lecture dans le journal ci-dessous).';
                     } else {
-                        statusTextEl.innerHTML = 'État actuel : <strong style="color:#475569;">désactivé par défaut</strong> (confidentialité maximale : seuls les compteurs, dates, concours, sujets et notes sont enregistrés).';
+                        statusTextEl.innerHTML = 'État actuel : <strong style="color:#475569;">désactivé par défaut</strong> (confidentialité maximale : seuls les compteurs, dates, concours, sujets, tokens et notes sont enregistrés).';
                     }
                 }
 
@@ -4039,7 +4152,7 @@
                 const usersTbody = document.getElementById('admin-users-tbody');
                 if (usersTbody) {
                     if (users.length === 0) {
-                        usersTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Aucun compte enregistré.</td></tr>';
+                        usersTbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Aucun compte enregistré.</td></tr>';
                     } else {
                         usersTbody.innerHTML = users.map(u => {
                             const isAdmin = u.role === 'admin';
@@ -4055,6 +4168,10 @@
                                 ? `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${escapeHtml(u.plainPassword)}</code>`
                                 : '<span style="color:#94a3b8;">(défini dans env.yaml)</span>';
 
+                            const modelBadge = `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.78rem; color:#334155;">${escapeHtml(u._resolvedModel || 'gemini-3.7-flash')}</code>`;
+                            const tokensHtml = formatTokensCell(u._resolvedInputTokens, u._resolvedOutputTokens, u._resolvedThinkingTokens);
+                            const costHtml = `<strong style="color:#0f172a;">${formatCostUsd(u._resolvedCostUsd)}</strong>`;
+
                             return `<tr>
                                 <td>
                                     <strong>${escapeHtml(u.username)}</strong>
@@ -4065,7 +4182,9 @@
                                 <td>${badgeHtml}</td>
                                 <td>${u.loginCount || 0}</td>
                                 <td>${copiesStr}</td>
-                                <td>${(u.totalWords || 0).toLocaleString('fr-FR')}</td>
+                                <td>${modelBadge}</td>
+                                <td>${tokensHtml}</td>
+                                <td>${costHtml}</td>
                                 <td style="font-size:0.8rem;">${escapeHtml(formatDateFr(u.lastActiveAt || u.lastLoginAt))}</td>
                                 <td>
                                     <div style="display:flex; gap:5px; flex-wrap:wrap;">
@@ -4098,21 +4217,42 @@
                 });
 
                 if (filtered.length === 0) {
-                    logsTbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px; color:#64748b;">Aucune activité correspondant à ces critères.</td></tr>';
+                    logsTbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:16px; color:#64748b;">Aucune activité correspondant à ces critères.</td></tr>';
                     return;
                 }
 
                 logsTbody.innerHTML = filtered.map(l => {
+                    const isCorrection = l.action === 'correction';
                     let actionLabel = 'Connexion';
-                    if (l.action === 'correction') actionLabel = '📝 Copie évaluée';
+                    if (isCorrection) actionLabel = '📝 Travail évalué';
                     else if (l.action === 'login') actionLabel = '🔑 Connexion';
+
+                    const modelStr = isCorrection
+                        ? `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.76rem; color:#334155;">${escapeHtml(l.model || 'gemini-3.7-flash')}</code>`
+                        : '<span style="color:#94a3b8;">-</span>';
+
+                    const inTok = Number(l.inputTokens) || 0;
+                    const outTok = Number(l.outputTokens) || 0;
+                    const thinkTok = Number(l.thinkingTokens) || 0;
+                    const tokensStr = isCorrection
+                        ? formatTokensCell(inTok, outTok, thinkTok)
+                        : '<span style="color:#94a3b8;">-</span>';
+
+                    const costVal = isCorrection
+                        ? ((l.costUsd !== undefined && l.costUsd !== null && Number(l.costUsd) > 0)
+                            ? Number(l.costUsd)
+                            : calculateCorrectionCostUsd(l.model || 'gemini-3.7-flash', inTok, outTok))
+                        : 0;
+                    const costStr = isCorrection
+                        ? `<strong>${formatCostUsd(costVal)}</strong>`
+                        : '<span style="color:#94a3b8;">-</span>';
 
                     const gradesStr = l.noteEstimee
                         ? `<strong>${escapeHtml(l.noteEstimee)}</strong>/20`
-                        : (l.noteCanonique ? `Canon. : <strong>${escapeHtml(l.noteCanonique)}</strong>/20` : '<span style="color:#94a3b8;">-</span>');
+                        : '<span style="color:#94a3b8;">-</span>';
 
                     const contentBtn = l.hasTexts
-                        ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.openMentorLogDetail('${escapeHtml(l.id)}')">📄 Lire copie et rapport</button>`
+                        ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.openMentorLogDetail('${escapeHtml(l.id)}')">📄 Lire travail et rapport</button>`
                         : '<span style="color:#94a3b8; font-size:0.78rem;">Non archivé</span>';
 
                     return `<tr>
@@ -4120,9 +4260,11 @@
                         <td><strong>${escapeHtml(l.username)}</strong></td>
                         <td>${actionLabel}</td>
                         <td>${escapeHtml(l.concours ? l.concours + (l.epreuve ? ' • ' + l.epreuve : '') : '-')}</td>
-                        <td style="max-width:280px;">${escapeHtml(l.sujet || '-')}</td>
-                        <td>${l.wordCount ? l.wordCount.toLocaleString('fr-FR') : '-'}</td>
-                        <td style="font-size:0.8rem;">${gradesStr}</td>
+                        <td style="max-width:260px;">${escapeHtml(l.sujet || '-')}</td>
+                        <td>${modelStr}</td>
+                        <td>${tokensStr}</td>
+                        <td style="white-space:nowrap; font-size:0.82rem;">${costStr}</td>
+                        <td style="font-size:0.82rem;">${gradesStr}</td>
                         <td>${contentBtn}</td>
                     </tr>`;
                 }).join('');
@@ -4165,7 +4307,7 @@
             };
 
             window.resetMentorUserCounters = async function (username) {
-                if (!confirm(`Voulez-vous remettre à zéro le compteur de copies évaluées pour le compte « ${username} » ?`)) return;
+                if (!confirm(`Voulez-vous remettre à zéro les compteurs (travaux évalués, tokens et coût) pour le compte « ${username} » ?`)) return;
                 try {
                     await callAdminApi('admin_save_user', {
                         userData: { username, resetCounters: true }
@@ -4198,7 +4340,7 @@
             };
 
             window.purgeMentorArchivedTexts = async function () {
-                if (!confirm("Voulez-vous effacer tous les textes de copies et de rapports enregistrés dans la base ? (Tous les compteurs, sujets, dates et notes seront conservés).")) return;
+                if (!confirm("Voulez-vous effacer tous les textes de travaux et de rapports enregistrés dans la base ? (Tous les compteurs, sujets, dates, tokens et notes seront conservés).")) return;
                 try {
                     const res = await callAdminApi('admin_purge_texts');
                     alert(`Purge effectuée : ${res.purgedCount || 0} entrée(s) nettoyée(s).`);
@@ -4220,12 +4362,20 @@
                         title.textContent = `📄 ${log.username} — ${log.concours || ''} (${formatDateFr(log.timestamp)})`;
                     }
                     if (body) {
+                        const usedModel = log.model || 'gemini-3.7-flash';
+                        const inTok = Number(log.inputTokens) || 0;
+                        const outTok = Number(log.outputTokens) || 0;
+                        const thinkTok = Number(log.thinkingTokens) || 0;
+                        const costVal = (log.costUsd !== undefined && log.costUsd !== null && Number(log.costUsd) > 0)
+                            ? Number(log.costUsd)
+                            : calculateCorrectionCostUsd(usedModel, inTok, outTok);
+
                         body.innerHTML = `
                             <div style="margin-bottom:16px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
                                 <strong>Sujet ou texte :</strong> ${escapeHtml(log.sujet || '-')}<br>
-                                <strong>Volume :</strong> ${log.wordCount || 0} mots • ${log.noteEstimee ? `<strong>Note estimée :</strong> ${escapeHtml(log.noteEstimee)}/20` : ''}${log.noteCanonique ? ` • <strong>Note canonique :</strong> ${escapeHtml(log.noteCanonique)}/20` : ''}
+                                <strong>Modèle :</strong> <code>${escapeHtml(usedModel)}</code> • <strong>Tokens en entrée :</strong> ${inTok.toLocaleString('fr-FR')} • <strong>Tokens en sortie :</strong> ${outTok.toLocaleString('fr-FR')}${thinkTok > 0 ? ` (dont ${thinkTok.toLocaleString('fr-FR')} pour la réflexion préalable)` : ''} • <strong>Coût :</strong> ${formatCostUsd(costVal)}${log.noteEstimee ? ` • <strong>Note estimée :</strong> ${escapeHtml(log.noteEstimee)}/20` : ''}
                             </div>
-                            <h3 style="margin-bottom:8px;">✍️ Texte soumis par le candidat</h3>
+                            <h3 style="margin-bottom:8px;">✍️ Travail soumis par le candidat</h3>
                             <pre style="white-space:pre-wrap; font-family:inherit; background:#fffbeb; border:1px solid #fde68a; padding:14px; border-radius:8px; margin-bottom:20px;">${escapeHtml(log.copieText || 'Aucun texte enregistré.')}</pre>
                             <h3 style="margin-bottom:8px;">🏛️ Rapport généré par le Mentor</h3>
                             <div style="background:#ffffff; border:1px solid #cbd5e1; padding:16px; border-radius:8px;">${window.marked ? window.marked.parse(log.rapportText || '') : escapeHtml(log.rapportText || '')}</div>
@@ -4254,18 +4404,29 @@
 
             window.exportMentorDataCSV = function () {
                 const users = currentAdminData.users || [];
-                const headers = ['Identifiant', 'Note', 'Role', 'Statut', 'Connexions', 'Copies_evaluees', 'Quota_copies', 'Mots_soumis', 'Derniere_activite'];
-                const rows = users.map(u => [
-                    u.username,
-                    (u.note || '').replace(/;/g, ','),
-                    u.role,
-                    u.active !== false ? 'Actif' : 'Suspendu',
-                    u.loginCount || 0,
-                    u.copiesCount || 0,
-                    u.quotaCopies !== null && u.quotaCopies !== undefined ? u.quotaCopies : 'Illimite',
-                    u.totalWords || 0,
-                    u.lastActiveAt || u.lastLoginAt || ''
-                ]);
+                const headers = ['Identifiant', 'Note', 'Role', 'Statut', 'Connexions', 'Travaux_evalues', 'Quota_travaux', 'Modele', 'Tokens_entree', 'Tokens_sortie_dont_reflexion', 'Tokens_reflexion', 'Cout_total_USD', 'Derniere_activite'];
+                const rows = users.map(u => {
+                    const inTok = u._resolvedInputTokens !== undefined ? u._resolvedInputTokens : (u.totalInputTokens || 0);
+                    const outTok = u._resolvedOutputTokens !== undefined ? u._resolvedOutputTokens : (u.totalOutputTokens || 0);
+                    const thinkTok = u._resolvedThinkingTokens !== undefined ? u._resolvedThinkingTokens : (u.totalThinkingTokens || 0);
+                    const mod = u._resolvedModel || u.lastModel || 'gemini-3.7-flash';
+                    const cost = u._resolvedCostUsd !== undefined ? u._resolvedCostUsd : (u.totalCostUsd || calculateCorrectionCostUsd(mod, inTok, outTok));
+                    return [
+                        u.username,
+                        (u.note || '').replace(/;/g, ','),
+                        u.role,
+                        u.active !== false ? 'Actif' : 'Suspendu',
+                        u.loginCount || 0,
+                        u.copiesCount || 0,
+                        u.quotaCopies !== null && u.quotaCopies !== undefined ? u.quotaCopies : 'Illimite',
+                        mod,
+                        inTok,
+                        outTok,
+                        thinkTok,
+                        Number(cost || 0).toFixed(4).replace('.', ','),
+                        u.lastActiveAt || u.lastLoginAt || ''
+                    ];
+                });
                 const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\r\n');
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
@@ -6692,7 +6853,7 @@
                     <div class="methodo-block" style="border-left-color: #2563eb;">
                         <h3 style="color: #2563eb;">Exigences spécifiques du Capes externe (dissertation — 6 h)</h3>
                         <p><strong>Clarté pédagogique et rigueur notionnelle :</strong> le jury du Capes externe valorise l'investigation directe de la formulation intégrale du sujet (locutions, verbes, adverbes ou présupposés de l'énoncé) ainsi qu'un travail de définition conceptuelle autonome servant d'appui analytique à une progression tripartite équilibrée.</p>
-                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> rabattre une locution dialectique sur le calcul psychologique/moral et clore par un décisionnisme étatique plafonne au palier 3 (11/20) ; substituer dans une sous-partie la sociologie empirique des rôles sociaux à l'analyse philosophique plafonne au palier 4 (14,5/20) ; à l'inverse, résoudre en troisième partie le paradoxe du partage par des médiations esthétiques, littéraires et poétiques (communauté des solitaires et partage de l'impartageable) relève du sommet du palier 5 (19/20).</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> rabattre une locution dialectique sur le calcul psychologique/moral et clore par un décisionnisme étatique plafonne la note à 11/20 (seuil de moyenne) ; substituer dans une sous-partie la sociologie empirique des rôles sociaux à l'analyse philosophique plafonne la note à 14,5/20 (zone d'admissibilité) ; à l'inverse, résoudre en troisième partie le paradoxe du partage par des médiations esthétiques, littéraires et poétiques (communauté des solitaires et partage de l'impartageable) relève du sommet de l'excellence (19/20).</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
@@ -6708,14 +6869,14 @@
                     <div class="methodo-block" style="border-left-color: #0d9488;">
                         <h3 style="color: #0d9488;">Exigences spécifiques de l'agrégation interne (dissertation — 7 h)</h3>
                         <p><strong>Posture souveraine d'enseignant-philosophe :</strong> maîtrise philosophique adulte et affirmée, affrontant directement les contradictions du sujet sans faux-fuyant scolaire. L'aporie doit être véritablement féconde et conduire à une sursomption dialectique substantielle.</p>
-                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> un volume restreint (≤ 9-10 pages) réduisant l'interrogation modale à un inventaire de contraintes matérielles/policières ou d'exemples scolaires relève du palier 2 (8/20) ; dissoudre en troisième partie et conclusion la borne interrogative du sujet (« où commence... ? ») dans un flux biologique ou vital sans commencement ni lieu originaire plafonne la copie au palier 3 (12/20) ; procéder par une cascade de questions ouvertes en introduction puis juxtaposer plusieurs options alternatives en conclusion plafonne au palier 4 (14/20).</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> un volume restreint (≤ 9-10 pages) réduisant l'interrogation modale à un inventaire de contraintes matérielles ou d'exemples scolaires bloque la note sous la moyenne (7,5 à 8,5/20) ; dissoudre en troisième partie et conclusion la détermination conceptuelle exigée par le sujet dans un flux indifférencié plafonne la note au seuil de moyenne (11,5 à 12,0/20) ; procéder par une cascade de questions ouvertes en introduction sans aporie déductive puis juxtaposer plusieurs options alternatives hétérogènes en conclusion retient la note entre 13,0 et 14,0/20 ; en revanche, nouer dès l'introduction une aporie stricte sur le syntagme directeur, déployer une érudition textuelle et philologique précise dans les deux premières parties et résoudre le problème en troisième partie par un déplacement réflexif, sémiotique, axiologique ou ontologique aboutissant à une thèse unifiée ouvre de plein droit l'accès aux notes d'excellence (15,0 à 18,5/20).</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #0d9488;">
                         <h3 style="color: #0d9488;">Exigences spécifiques de l'agrégation interne (explication de texte — 6 h 30)</h3>
                         <p><strong>Profondeur herméneutique et immanence :</strong> faire entendre la voix singulière de l'auteur et la nécessité interne de son cheminement argumentatif. Refus absolu de tout placage de doctrines extérieures ou de « faux-amis techniques » : chaque formule du texte doit être soumise à une micro-analyse philosophique exigeante.</p>
-                        <p style="margin-top: 8px;"><strong>Discrimination au sein du palier 5 :</strong> une explication linéaire intégrale aux transitions descriptives se situe à l'entrée du palier 5 (15/20), tandis qu'une explication encadrée par une problématisation épistémologique de premier plan et incarnée dans l'histoire précise des sciences atteint le sommet du barème (18/20).</p>
+                        <p style="margin-top: 8px;"><strong>Discrimination des notes d'excellence :</strong> une explication linéaire intégrale aux transitions descriptives se situe à 15/20, tandis qu'une explication encadrée par une problématisation épistémologique de premier plan et incarnée dans l'histoire précise des sciences atteint le sommet des notes (18/20).</p>
                     </div>`;
                 }
             } else if (c === 'Agrégation Externe') {
@@ -6724,21 +6885,21 @@
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
                         <h3 style="color: #7c3aed;">Exigences spécifiques : dissertation hors-programme (7 h)</h3>
                         <p><strong>Amplitude ontologique et radicalité spéculative :</strong> épreuve mesurant l'envergure de la culture philosophique et la capacité à penser de manière autonome au plus haut niveau. La troisième partie doit obligatoirement opérer un déplacement conceptuel majeur (sursomption ontologique) et non un simple compromis.</p>
-                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> résoudre la tension entre l'ordre normatif idéal et la contrainte des faits par une fonction morale de consolation ou d'espérance (11/20), ou rapatrier en 8 pages un idéal politique irréalisable dans un simple sentiment subjectif envers son semblable (12/20), plafonne la copie au palier 3.</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> résoudre la tension entre l'ordre normatif idéal et la contrainte des faits par une fonction morale de consolation ou d'espérance (11/20), ou rapatrier en 8 pages un idéal politique irréalisable dans un simple sentiment subjectif envers son semblable (12/20), plafonne la note au seuil de moyenne (11 à 12/20).</p>
                     </div>`;
                 } else if (ep === 'Dissertation sur programme') {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
                         <h3 style="color: #7c3aed;">Exigences spécifiques : dissertation sur programme (7 h)</h3>
                         <p><strong>Précision chirurgicale et maîtrise du corpus de la session :</strong> exactitude terminologique absolue quant aux notions et auteurs au programme de l'année. Les distinctions conceptuelles fines, les débats doctrinaux contemporains et les textes clés doivent être mobilisés comme des instruments de résolution du problème posé.</p>
-                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> conclure que le lien cherché relève d'un mystère ou d'une certitude poétique indicible plafonne au palier 3 (11,5/20) ; s'en tenir à l'opposition classique entre usage constitutif et usage régulateur plafonne au palier 4 (13/20) ; parcourir dialectiquement la double entente syntaxique du sujet (de l'universel logique des prédicats communs à l'institution juridico-économique des <em>res communes</em>) ou élever le génitif marchand vers un royaume des fins moral situe la copie à l'entrée du palier 5 (15/20).</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> conclure que le lien cherché relève d'un mystère ou d'une certitude poétique indicible plafonne la note à 11,5/20 ; s'en tenir à l'opposition classique entre usage constitutif et usage régulateur plafonne la note à 13/20 ; parcourir dialectiquement la double entente syntaxique du sujet (de l'universel logique des prédicats communs à l'institution juridico-économique des <em>res communes</em>) ou élever le génitif marchand vers un royaume des fins moral situe la note à l'entrée de l'excellence (15/20).</p>
                     </div>`;
                 } else {
                     specificitesHtml = `
                     <div class="methodo-block" style="border-left-color: #7c3aed;">
                         <h3 style="color: #7c3aed;">Exigences spécifiques : histoire de la philosophie (commentaire de texte — 6 h)</h3>
                         <p><strong>Érudition philologique et rigueur historique :</strong> maîtrise rigoureuse de la langue philosophique et du système de l'auteur. Le texte doit être restitué dans son exact contexte polémique et doctrinal jusqu'au dernier mot.</p>
-                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> même lorsque la cible savante est identifiée, un découpage binaire en deux parties ou l'explication des formes du texte par la « peur de la censure » plafonne au palier 3 (10/20). Laisser dans l'ombre la cible contemporaine précise (12,5/20) ou recourir à des analogies extérieures hétérogènes avec approximation sur le niveau d'abstraction systémique de l'œuvre (13/20) plafonne au palier 4. La maîtrise immanente en trois moments ouvre l'accès au palier 5 (16 à 17/20).</p>
+                        <p style="margin-top: 8px;"><strong>Seuils méthodologiques d'étalonnage :</strong> même lorsque la cible savante est identifiée, un découpage binaire en deux parties ou l'explication des formes du texte par la « peur de la censure » plafonne la note au seuil de moyenne (10/20). Laisser dans l'ombre la cible contemporaine précise (12,5/20) ou recourir à des analogies extérieures hétérogènes avec approximation sur le niveau d'abstraction systémique de l'œuvre (13/20) plafonne la note à 12,5 - 13/20. La maîtrise immanente en trois moments ouvre l'accès aux notes d'excellence (16 à 17/20).</p>
                     </div>`;
                 }
             }
@@ -6783,20 +6944,20 @@
                 </div>`;
             }
 
-            // Paliers d'évaluation adaptés au concours
-            const palier1Desc = (c === 'Capes Externe')
+            // Échelle de notation adaptée au concours
+            const noteEliminatoireDesc = (c === 'Capes Externe')
                 ? "très insuffisant / éliminatoire (note réglementairement éliminatoire : ≤ 5/20). Contresens majeurs, absence de problématisation, catalogue d'auteurs hors-sol, devoir amputé."
                 : "très insuffisant / éliminatoire de fait (seule la note de 0/20 étant réglementairement éliminatoire). Contresens majeurs, absence de problématisation, catalogue d'auteurs hors-sol, devoir amputé.";
 
-            const paliersHtml = `
+            const echelleNotationHtml = `
             <div class="methodo-block" style="background: #f8fafc; border-left-color: #64748b;">
-                <h3>Paliers d'évaluation fondés sur les rapports du jury (/20)</h3>
+                <h3>Échelle de notation fondée sur les rapports du jury (/20)</h3>
                 <ul style="list-style: none; padding-left: 0; margin-top: 8px; line-height: 1.7; font-size: 0.92rem;">
-                    <li><strong style="color: #16a34a;">🟢 Palier 5 (15 à 20/20) :</strong> excellence spéculative, aporie féconde, sursomption dialectique réelle, élégance de style, pensée souveraine avec les auteurs.</li>
-                    <li><strong style="color: #2563eb;">🔵 Palier 4 (12,5 à 14,5/20) :</strong> solide et admissible confortable. Démonstration rigoureuse, problématisation tenue, définitions exactes, aucun contresens.</li>
-                    <li><strong style="color: #ca8a04;">🟡 Palier 3 (10 à 12/20) :</strong> admissible au seuil de moyenne. Épreuve comprise, règles respectées, mais prudence ou troisième partie écourtée.</li>
-                    <li><strong style="color: #ea580c;">🟠 Palier 2 (7 à 9,5/20) :</strong> fragile / sous la barre. Travail scolaire, présence d'un écueil caractérisé (plan binaire, paraphrase, fausse transition).</li>
-                    <li><strong style="color: #dc2626;">🔴 Palier 1 (0 à 6,5/20) :</strong> ${palier1Desc}</li>
+                    <li><strong style="color: #16a34a;">🟢 Tranche 15 à 20/20 (excellence / très bien classé) :</strong> maîtrise conceptuelle souveraine, aporie féconde, sursomption dialectique réelle, élégance de style, pensée souveraine avec les auteurs.</li>
+                    <li><strong style="color: #2563eb;">🔵 Tranche 12,5 à 14,5/20 (solide / admissible confortable) :</strong> démonstration rigoureuse, problématisation tenue, définitions exactes, aucun contresens.</li>
+                    <li><strong style="color: #ca8a04;">🟡 Tranche 10 à 12/20 (seuil de moyenne / admissible juste) :</strong> épreuve comprise, règles respectées, mais prudence ou troisième partie écourtée.</li>
+                    <li><strong style="color: #ea580c;">🟠 Tranche 7 à 9,5/20 (fragile / sous la barre d'admissibilité) :</strong> travail scolaire, présence d'un écueil caractérisé (plan binaire, paraphrase, fausse transition).</li>
+                    <li><strong style="color: #dc2626;">🔴 Tranche 0 à 6,5/20 (très insuffisant / éliminatoire) :</strong> ${noteEliminatoireDesc}</li>
                 </ul>
             </div>`;
 
@@ -6820,7 +6981,7 @@
                 </div>
                 ${specificitesHtml}
                 ${architectureHtml}
-                ${paliersHtml}
+                ${echelleNotationHtml}
                 ${codesTacitesHtml}
             `;
         }
@@ -8452,11 +8613,51 @@
             }
         }
 
+        function purgerMentionsPaliers(text) {
+            if (!text) return text;
+            return text
+                .replace(/(\s*\|\s*|\s*[-–—]\s*)palier\s*\d+/gi, '')
+                .replace(/\s*\(\s*palier\s*\d+[^)]*\)/gi, '')
+                .replace(/\bfranchir\s+(?:un\s+|le\s+)?palier\s+sup[ée]rieur\b/gi, 'élever la note vers la tranche supérieure')
+                .replace(/\bfranchir\s+(?:un\s+|le\s+)?palier\s+d[ée]cisif\b/gi, 'faire franchir un cap décisif à la note')
+                .replace(/\bfranchir\s+(?:un\s+|le\s+)?palier\b/gi, 'gagner des points décisifs')
+                .replace(/\bacc[èe]s\s+au\s+palier\s*5\b/gi, 'accès aux notes d\'excellence (15 à 20/20)')
+                .replace(/\bacc[èe]s\s+au\s+palier\s*4\b/gi, 'accès aux notes d\'admissibilité (13 à 14/20)')
+                .replace(/\bacc[èe]s\s+au\s+palier\s*3\b/gi, 'accès au seuil de moyenne (10 à 12/20)')
+                .replace(/\bau\s+palier\s*5\b/gi, 'aux notes d\'excellence (15 à 20/20)')
+                .replace(/\bau\s+palier\s*4\b/gi, 'dans la zone d\'admissibilité (12,5 à 14,5/20)')
+                .replace(/\bau\s+palier\s*3\b/gi, 'au seuil de moyenne (10 à 12/20)')
+                .replace(/\bau\s+palier\s*2\b/gi, 'sous la barre d\'admissibilité (7 à 9,5/20)')
+                .replace(/\bau\s+palier\s*1\b/gi, 'en zone éliminatoire (0 à 6,5/20)')
+                .replace(/\bde\s+palier\s*5\b/gi, 'd\'excellence (15 à 20/20)')
+                .replace(/\bde\s+palier\s*4\b/gi, 'd\'admissibilité (12,5 à 14,5/20)')
+                .replace(/\bde\s+palier\s*3\b/gi, 'de seuil de moyenne (10 à 12/20)')
+                .replace(/\bde\s+palier\s*2\b/gi, 'sous la moyenne (7 à 9,5/20)')
+                .replace(/\bde\s+palier\s*1\b/gi, 'éliminatoire (0 à 6,5/20)')
+                .replace(/\bpalier\s*5\b/gi, 'tranche d\'excellence (15 à 20/20)')
+                .replace(/\bpalier\s*4\b/gi, 'tranche d\'admissibilité (12,5 à 14,5/20)')
+                .replace(/\bpalier\s*3\b/gi, 'seuil de moyenne (10 à 12/20)')
+                .replace(/\bpalier\s*2\b/gi, 'tranche fragile (7 à 9,5/20)')
+                .replace(/\bpalier\s*1\b/gi, 'tranche insuffisante (0 à 6,5/20)')
+                .replace(/\bdans\s+un\s+(?:solide\s+|bon\s+|excellent\s+|faible\s+|fragile\s+)?palier\s*\d+\b/gi, 'à ce niveau d\'exigence')
+                .replace(/\bce\s+palier\b/gi, 'ce niveau de note')
+                .replace(/\bun\s+palier\b/gi, 'un niveau de note')
+                .replace(/\ble\s+palier\b/gi, 'le niveau de note')
+                .replace(/\bdes\s+paliers\b/gi, 'des tranches de notation')
+                .replace(/\bles\s+paliers\b/gi, 'les tranches de notation')
+                .replace(/\bpaliers\b/gi, 'tranches de notes')
+                .replace(/\bPalier\b/g, 'Note')
+                .replace(/\bpalier\b/g, 'note');
+        }
+
         function transformerRenduCorrection(rawHtml, previousCorrectionObj, currentDraftBySection) {
             if (!rawHtml) return { html: '', sections: [], globalScore: null };
 
+            // Épuration stricte de toute mention de paliers au profit du registre exclusif des notes et points
+            const htmlEpure = purgerMentionsPaliers(rawHtml);
+
             const parser = new DOMParser();
-            const doc = parser.parseFromString(rawHtml, 'text/html');
+            const doc = parser.parseFromString(htmlEpure, 'text/html');
 
             // Restructurer l'en-tête du rapport (titre sobre sans icône, concours, sujet, nature du travail)
             restructurerEnteteRapport(doc);
@@ -8727,14 +8928,9 @@
                     const appreciationParagraphs = [];
 
                     const cleanAppreciationText = (htmlStr) => {
-                        return htmlStr
+                        return purgerMentionsPaliers(htmlStr
                             .replace(/^(?:\s*<p[^>]*>\s*)?(?:<strong>\s*Appr[ée]ciation\s+g[ée]n[ée]rale\s*:?\s*<\/strong>\s*:?\s*|Appr[ée]ciation\s+g[ée]n[ée]rale\s*:\s*)/i, (m) => m.startsWith('<p') ? '<p>' : '')
-                            .replace(/^\s*<br\s*\/?\s*>\s*/i, '')
-                            .replace(/(\s*\|\s*|\s*[-–—]\s*)palier\s*\d+/gi, '')
-                            .replace(/\s*\(\s*palier\s*\d+[^)]*\)/gi, '')
-                            .replace(/\bdans\s+un\s+(?:solide\s+|bon\s+|excellent\s+|faible\s+|fragile\s+)?palier\s*\d+\b/gi, 'à ce niveau d\'exigence')
-                            .replace(/\bau\s+palier\s*\d+\b/gi, 'à ce niveau')
-                            .replace(/\ble\s+palier\s*\d+\b/gi, 'ce palier')
+                            .replace(/^\s*<br\s*\/?\s*>\s*/i, ''))
                             .trim();
                     };
 
