@@ -9191,6 +9191,9 @@
             // Embellissement visuel de l'Évaluation globale
             const h2Verdict = Array.from(doc.querySelectorAll('h2')).find(h => /VERDICT\s+DU\s+DOUBLE\s+CURSEUR|[ÉEe]valuation\s+globale/i.test(h.textContent));
             if (h2Verdict) {
+                if (h2Verdict.previousElementSibling && h2Verdict.previousElementSibling.tagName === 'HR') {
+                    h2Verdict.previousElementSibling.parentNode.removeChild(h2Verdict.previousElementSibling);
+                }
                 const existingVerdictBox = h2Verdict.closest('.evaluation-globale-box');
                 const verdictContainer = existingVerdictBox || doc.createElement('div');
                 verdictContainer.className = 'double-curseur-verdict-box evaluation-globale-box';
@@ -9400,6 +9403,54 @@
                     h2Bilan.parentNode.insertBefore(bilanContainer, h2Bilan);
                     bilanNodes.forEach(node => bilanContainer.appendChild(node));
                 }
+            }
+
+            // Réorganisation de l'affichage en tête de rapport :
+            // Ordre visuel : En-tête -> 1. Évaluation globale -> 2. Bilan stratégique -> 3. Règles implicites -> 4. Analyse personnalisée
+            doc.querySelectorAll('.deliberation-streaming-placeholder').forEach(el => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            });
+
+            const headerBanner = doc.querySelector('.rapport-eval-header');
+            const verdictBox = doc.querySelector('.evaluation-globale-box');
+            const bilanBox = doc.querySelector('.bilan-strategique-box');
+            const reglesBox = doc.querySelector('.regles-implicites-box');
+
+            if (verdictBox && verdictBox.parentNode) verdictBox.parentNode.removeChild(verdictBox);
+            if (bilanBox && bilanBox.parentNode) bilanBox.parentNode.removeChild(bilanBox);
+            if (reglesBox && reglesBox.parentNode) reglesBox.parentNode.removeChild(reglesBox);
+
+            const topAnchorNode = headerBanner ? headerBanner.nextSibling : doc.body.firstChild;
+
+            if (verdictBox) {
+                doc.body.insertBefore(verdictBox, topAnchorNode);
+            }
+            if (bilanBox) {
+                doc.body.insertBefore(bilanBox, topAnchorNode);
+            }
+
+            const isStreamingNow = (typeof state !== 'undefined' && Boolean(state.streamingTexteCumule));
+            if (isStreamingNow && (!verdictBox || !bilanBox || !reglesBox)) {
+                const waitingBox = doc.createElement('div');
+                waitingBox.className = 'deliberation-streaming-placeholder';
+                waitingBox.style.cssText = 'background: #f8fafc; border: 1.5px dashed #94a3b8; border-left: 5px solid #334155; border-radius: 10px; padding: 18px 22px; margin: 22px 0; color: #334155; font-size: 14.5px; line-height: 1.6; display: flex; align-items: center; gap: 14px;';
+                waitingBox.innerHTML = `
+                    <span style="font-size: 1.35rem; line-height: 1;">⏳</span>
+                    <div>
+                        <strong style="color: #0f172a; display: block; margin-bottom: 3px;">Délibération finale en cours à l'issue de l'analyse détaillée</strong>
+                        <span>La note estimée, l'appréciation générale, le bilan stratégique et les règles implicites s'afficheront en tête de rapport dès l'achèvement de l'examen analytique des moments.</span>
+                    </div>
+                `;
+                doc.body.insertBefore(waitingBox, topAnchorNode);
+            }
+
+            if (reglesBox) {
+                doc.body.insertBefore(reglesBox, topAnchorNode);
+            }
+
+            // Nettoyage des séparateurs HR résiduels en fin de document
+            while (doc.body.lastElementChild && doc.body.lastElementChild.tagName === 'HR') {
+                doc.body.removeChild(doc.body.lastElementChild);
             }
 
             // Suppression complète de la section des Annotations chirurgicales du rapport d'évaluation (accessible via l'onglet dédié en haut)
@@ -10492,10 +10543,14 @@
                 nav.insertBefore(btnRedac, insertBeforeNode);
             }
 
-            // 3. Boutons de navigation du rapport (Rapport, Règles implicites, Analyse personnalisée)
+            // 3. Boutons de navigation du rapport dans l'ordre vertical de la page :
+            // Rapport (Évaluation globale) -> Bilan stratégique -> Règles implicites -> Analyse personnalisée
             let btnRapport = document.getElementById('quicknav-btn-rapport');
+            let btnBilan = document.getElementById('quicknav-btn-bilan');
             let btnRegles = document.getElementById('quicknav-btn-regles');
             let btnAnalyse = document.getElementById('quicknav-btn-analyse');
+            let dividerBilan = document.getElementById('quicknav-divider-bilan');
+            if (dividerBilan && dividerBilan.parentNode) dividerBilan.parentNode.removeChild(dividerBilan);
 
             if (hasCorrection) {
                 if (!btnRapport) {
@@ -10506,8 +10561,35 @@
                     btnRapport.setAttribute('data-tooltip', 'Rapport d\'évaluation');
                     btnRapport.innerHTML = '🏛️';
                     btnRapport.onclick = () => { switchCorrectionTab('rapport', false); scrollToElement('correction-box'); return false; };
-                    btnRedac.insertAdjacentElement('afterend', btnRapport);
                 }
+                btnRedac.insertAdjacentElement('afterend', btnRapport);
+
+                let prevTopBtn = btnRapport;
+
+                if (hasBilan) {
+                    if (!btnBilan) {
+                        btnBilan = document.createElement('button');
+                        btnBilan.type = 'button';
+                        btnBilan.id = 'quicknav-btn-bilan';
+                        btnBilan.className = 'quicknav-btn quicknav-bilan-pill';
+                        btnBilan.setAttribute('data-tooltip', 'Bilan stratégique');
+                        btnBilan.setAttribute('data-target', 'sec-bilan-strategique');
+                        btnBilan.innerHTML = '⚖️';
+                        btnBilan.onclick = () => {
+                            switchCorrectionTab('rapport', false);
+                            setTimeout(() => {
+                                scrollToElement('sec-bilan-strategique') || scrollToElement('correction-box');
+                            }, 50);
+                            return false;
+                        };
+                    }
+                    prevTopBtn.insertAdjacentElement('afterend', btnBilan);
+                    prevTopBtn = btnBilan;
+                } else if (btnBilan && btnBilan.parentNode) {
+                    btnBilan.parentNode.removeChild(btnBilan);
+                    btnBilan = null;
+                }
+
                 if (!btnRegles) {
                     btnRegles = document.createElement('button');
                     btnRegles.type = 'button';
@@ -10516,8 +10598,10 @@
                     btnRegles.setAttribute('data-tooltip', 'Règles implicites du concours');
                     btnRegles.innerHTML = '🤫';
                     btnRegles.onclick = () => { switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-regles-implicites') || scrollToElement('correction-box'); }, 50); return false; };
-                    btnRapport.insertAdjacentElement('afterend', btnRegles);
                 }
+                prevTopBtn.insertAdjacentElement('afterend', btnRegles);
+                prevTopBtn = btnRegles;
+
                 if (!btnAnalyse) {
                     btnAnalyse = document.createElement('button');
                     btnAnalyse.type = 'button';
@@ -10526,10 +10610,11 @@
                     btnAnalyse.setAttribute('data-tooltip', 'Analyse personnalisée du travail');
                     btnAnalyse.innerHTML = '🔍';
                     btnAnalyse.onclick = () => { switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-analyse-personnalisee') || scrollToElement('correction-box'); }, 50); return false; };
-                    btnRegles.insertAdjacentElement('afterend', btnAnalyse);
                 }
+                prevTopBtn.insertAdjacentElement('afterend', btnAnalyse);
             } else {
                 if (btnRapport && btnRapport.parentNode) btnRapport.parentNode.removeChild(btnRapport);
+                if (btnBilan && btnBilan.parentNode) btnBilan.parentNode.removeChild(btnBilan);
                 if (btnRegles && btnRegles.parentNode) btnRegles.parentNode.removeChild(btnRegles);
                 if (btnAnalyse && btnAnalyse.parentNode) btnAnalyse.parentNode.removeChild(btnAnalyse);
             }
@@ -10544,9 +10629,9 @@
                     globalPill.href = '#indice-general-conformite';
                     globalPill.setAttribute('data-target', 'indice-general-conformite');
                     globalPill.onclick = () => { scrollToElement('indice-general-conformite'); return false; };
-                    const refNode = btnAnalyse || btnRedac;
-                    refNode.insertAdjacentElement('afterend', globalPill);
                 }
+                const refNode = btnAnalyse || btnRegles || btnBilan || btnRapport || btnRedac;
+                refNode.insertAdjacentElement('afterend', globalPill);
                 globalPill.className = 'quicknav-global-pill ' + globalColors.pill;
                 globalPill.setAttribute('data-tooltip', 'Indice général de conformité : ' + finalGlobalScore + '/100');
                 if (globalPill.innerText !== String(finalGlobalScore)) {
@@ -10563,9 +10648,9 @@
                     divider = document.createElement('div');
                     divider.id = 'quicknav-divider';
                     divider.className = 'quicknav-divider';
-                    const refNode = globalPill || btnAnalyse || btnRedac;
-                    refNode.insertAdjacentElement('afterend', divider);
                 }
+                const refNode = globalPill || btnAnalyse || btnRegles || btnBilan || btnRapport || btnRedac;
+                refNode.insertAdjacentElement('afterend', divider);
             } else if (divider && divider.parentNode) {
                 divider.parentNode.removeChild(divider);
             }
@@ -10581,7 +10666,7 @@
             });
 
             // Insérer ou mettre à jour chaque pastille de section
-            let prevNode = divider || globalPill || btnAnalyse || btnRedac;
+            let prevNode = divider || globalPill || btnAnalyse || btnRegles || btnBilan || btnRapport || btnRedac;
             validSections.forEach((s, idx) => {
                 const shortCode = getShortSectionCode(s.name, idx, validSections);
                 const colors = getScoreColorClass(s.score);
@@ -10594,8 +10679,8 @@
                     pill.href = '#' + s.anchorId;
                     pill.setAttribute('data-target', s.anchorId);
                     pill.onclick = () => { scrollToElement(s.anchorId); return false; };
-                    prevNode.insertAdjacentElement('afterend', pill);
                 }
+                prevNode.insertAdjacentElement('afterend', pill);
                 pill.className = 'quicknav-section-pill ' + colors.pill;
                 pill.setAttribute('data-tooltip', tooltipText);
                 if (pill.innerText !== shortCode) {
@@ -10603,40 +10688,6 @@
                 }
                 prevNode = pill;
             });
-
-            // 7. Séparateur et pastille spécifique "Bilan stratégique" en bas de la barre à droite (affichés uniquement quand la section commence à être créée)
-            let dividerBilan = document.getElementById('quicknav-divider-bilan');
-            let btnBilan = document.getElementById('quicknav-btn-bilan');
-
-            if (hasBilan) {
-                if (!dividerBilan) {
-                    dividerBilan = document.createElement('div');
-                    dividerBilan.id = 'quicknav-divider-bilan';
-                    dividerBilan.className = 'quicknav-divider';
-                }
-                nav.appendChild(dividerBilan);
-
-                if (!btnBilan) {
-                    btnBilan = document.createElement('button');
-                    btnBilan.type = 'button';
-                    btnBilan.id = 'quicknav-btn-bilan';
-                    btnBilan.className = 'quicknav-btn quicknav-bilan-pill';
-                    btnBilan.setAttribute('data-tooltip', 'Bilan stratégique');
-                    btnBilan.setAttribute('data-target', 'sec-bilan-strategique');
-                    btnBilan.innerHTML = '⚖️';
-                    btnBilan.onclick = () => {
-                        switchCorrectionTab('rapport', false);
-                        setTimeout(() => {
-                            scrollToElement('sec-bilan-strategique') || scrollToElement('correction-box');
-                        }, 50);
-                        return false;
-                    };
-                }
-                nav.appendChild(btnBilan);
-            } else {
-                if (dividerBilan && dividerBilan.parentNode) dividerBilan.parentNode.removeChild(dividerBilan);
-                if (btnBilan && btnBilan.parentNode) btnBilan.parentNode.removeChild(btnBilan);
-            }
 
             syncLeftDockMaxHeight();
         }
