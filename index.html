@@ -8637,12 +8637,20 @@
                 return title.trim() + '\n\n' + cleanedMeta.trim() + '\n\n';
             });
 
+            // Isoler systématiquement les lignes d'Indice de conformité hors de tout blockquote (avec ligne vide avant et après)
+            md = md.replace(/^[>\s]*([*_\s]*(?:\d+[\.\)]\s*)?(?:Verdict\s+chiffr[ée][^\n]*:\s*)?[*_\s]*(?:Indice\s+de\s+conformit[ée]|Conformit[ée])[*_\s]*[:*]+\s*\d+\s*\/\s*100[^\n]*)$/gim, '\n\n$1\n\n');
+
             // Détecter et restructurer proprement chaque bloc Pistes d'amélioration (globales ou chirurgicales)
-            return md.replace(/(#{4,5}\s*(?:Pistes\s+d['’]am[ée]lioration[^\n]*|Piste\s+d['’]am[ée]lioration[^\n]*)\n)([\s\S]*?)(?=\n\s*(?:---|###|####|#####|$)|$)/gi, (match, header, content) => {
+            return md.replace(/(#{4,5}\s*(?:Pistes\s+d['’]am[ée]lioration[^\n]*|Piste\s+d['’]am[ée]lioration[^\n]*)\n)([\s\S]*?)(?=\n\s*(?:---|##|###|####|#####|(?:>\s*)?[*_\s]*(?:\d+[\.\)]\s*)?(?:Verdict\s+chiffr[ée]|Indice\s+de\s+conformit[ée]|Conformit[ée]))|$)/gi, (match, header, content) => {
                 const rawLines = content.split('\n');
                 const validLines = [];
+                const trailingScoreLines = [];
                 for (let line of rawLines) {
                     const trimmed = line.trim();
+                    if (/(?:conformit[eé]|indice(?:\s+de\s+conformit[eé])?)[*_\s]*[:*]+\s*\d+\s*\/\s*100/i.test(trimmed)) {
+                        trailingScoreLines.push(trimmed.replace(/^>\s*/, '').trim());
+                        continue;
+                    }
                     if (trimmed === '>' || trimmed === '') {
                         // Conserver un chevron vide comme séparation de paragraphe dans le blockquote
                         if (validLines.length > 0 && validLines[validLines.length - 1] !== '>') {
@@ -8661,10 +8669,11 @@
                 while (validLines.length > 0 && validLines[validLines.length - 1] === '>') {
                     validLines.pop();
                 }
+                const scoreSuffix = trailingScoreLines.length > 0 ? '\n\n' + trailingScoreLines.join('\n\n') + '\n\n' : '\n\n';
                 if (validLines.length === 0) {
-                    return header + '> Aucune piste d\'amélioration significative.\n\n';
+                    return header + '> Aucune piste d\'amélioration significative.' + scoreSuffix;
                 }
-                return header + validLines.join('\n') + '\n\n';
+                return header + validLines.join('\n') + scoreSuffix;
             });
         }
 
@@ -8995,11 +9004,18 @@
 
                     if (scoreMatch && extractedScore === null) {
                         extractedScore = parseInt(scoreMatch[1], 10);
-                        scoreElement = current;
+                        const cleanedWithoutScore = text.replace(/(?:(?:\d+[\.\)]\s*)?Verdict\s+chiffr[ée][^\n]*[:\s]*)?(?:conformit[eé]|indice(?:\s+de\s+conformit[eé])?|m[eé]thodologie|note)[*\s]*[:*]+\s*\d+\s*\/\s*100/gi, '').trim();
+                        if (current.tagName === 'BLOCKQUOTE' || cleanedWithoutScore.length > 40) {
+                            // Le nœud contient aussi des pistes d'amélioration : ne retirer que la mention du score et conserver le nœud
+                            current.innerHTML = current.innerHTML.replace(/(?:<p[^>]*>\s*)?(?:<(?:strong|b)>\s*)?(?:\d+[\.\)]\s*)?(?:Verdict\s+chiffr[ée][^<]*:\s*)?(?:Indice\s+de\s+conformit[eé]|Conformit[eé])\s*:\s*\d+\s*\/\s*100(?:\s*<\/(?:strong|b)>)?(?:\s*<\/p>)?/gi, '');
+                            sectionNodes.push(current);
+                        } else {
+                            scoreElement = current;
+                        }
                     } else if (current.tagName === 'HR') {
                         // Supprimer les séparateurs hr horizontaux superflus
                         if (current.parentNode) current.parentNode.removeChild(current);
-                    } else if (current.tagName === 'P' && /^[*\s]*(?:[eé]valuation|indice\s+de\s+conformit[eé])\b/i.test(text.trim())) {
+                    } else if (current.tagName === 'P' && /^[*\s]*(?:[eé]valuation|indice\s+de\s+conformit[eé])\b/i.test(text.trim()) && text.trim().length < 80) {
                         if (current.parentNode) current.parentNode.removeChild(current);
                     } else {
                         sectionNodes.push(current);
@@ -9081,8 +9097,8 @@
                     const h4Pistes = Array.from(cardDiv.querySelectorAll('h4')).find(h => /Pistes\s+d['’]am[ée]lioration/i.test(h.textContent));
                     if (h4Pistes) {
                         let el = h4Pistes.nextElementSibling;
-                        let targetBq = cardDiv.querySelector('blockquote');
-                        while (el && !['H4', 'H3', 'H2'].includes(el.tagName)) {
+                        let targetBq = null;
+                        while (el && !['H5', 'H4', 'H3', 'H2'].includes(el.tagName)) {
                             const next = el.nextElementSibling;
                             if (el.tagName === 'BLOCKQUOTE') {
                                 if (!el.textContent.trim()) {
