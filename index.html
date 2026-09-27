@@ -9130,7 +9130,23 @@
             // Construction du tableau de bord global en tête si des sections sont évaluées
             let globalScore = null;
             if (sections.length > 0) {
-                globalScore = Math.round(sections.reduce((acc, s) => acc + s.score, 0) / sections.length);
+                let weightedSum = 0;
+                let totalWeight = 0;
+                sections.forEach(s => {
+                    const isConcl = /concl/i.test(s.name || '');
+                    const isIntro = /intro/i.test(s.name || '');
+                    const w = isConcl ? 0.35 : (isIntro ? 0.85 : 1.0);
+                    weightedSum += s.score * w;
+                    totalWeight += w;
+                });
+                globalScore = Math.round(weightedSum / (totalWeight || 1));
+                const bodyNoteMatch = (doc.body.textContent || '').match(/Note\s+estim[ée]e\s*:\s*([0-9]{1,2}(?:[.,][0-9])?)\s*\/\s*20/i);
+                if (bodyNoteMatch) {
+                    const noteVal = parseFloat(bodyNoteMatch[1].replace(',', '.'));
+                    if (!isNaN(noteVal) && noteVal >= 0 && noteVal <= 20) {
+                        globalScore = Math.round(noteVal * 5);
+                    }
+                }
                 const globalColors = getScoreColorClass(globalScore);
 
                 let deltaHtml = '';
