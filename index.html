@@ -8544,11 +8544,11 @@
         }
 
         function getScoreColorClass(score) {
-            if (score >= 90) return { bg: 'score-tier-1', bar: 'bar-tier-1', card: 'card-tier-1', pill: 'pill-tier-1', tier: 1 }; // Vert (90-100)
-            if (score >= 75) return { bg: 'score-tier-2', bar: 'bar-tier-2', card: 'card-tier-2', pill: 'pill-tier-2', tier: 2 }; // Bleu (75-89)
-            if (score >= 60) return { bg: 'score-tier-3', bar: 'bar-tier-3', card: 'card-tier-3', pill: 'pill-tier-3', tier: 3 }; // Ambre / Jaune (60-74)
-            if (score >= 50) return { bg: 'score-tier-4', bar: 'bar-tier-4', card: 'card-tier-4', pill: 'pill-tier-4', tier: 4 }; // Orange (50-59)
-            return { bg: 'score-tier-5', bar: 'bar-tier-5', card: 'card-tier-5', pill: 'pill-tier-5', tier: 5 };                   // Rouge (< 50)
+            if (score >= 77) return { bg: 'score-tier-1', bar: 'bar-tier-1', card: 'card-tier-1', pill: 'pill-tier-1', tier: 1 }; // Vert : excellence (77-100 ↔ 15-20/20)
+            if (score >= 63) return { bg: 'score-tier-2', bar: 'bar-tier-2', card: 'card-tier-2', pill: 'pill-tier-2', tier: 2 }; // Bleu : solide (63-76 ↔ 12,5-14,5/20)
+            if (score >= 50) return { bg: 'score-tier-3', bar: 'bar-tier-3', card: 'card-tier-3', pill: 'pill-tier-3', tier: 3 }; // Ambre : moyenne (50-62 ↔ 10-12/20)
+            if (score >= 35) return { bg: 'score-tier-4', bar: 'bar-tier-4', card: 'card-tier-4', pill: 'pill-tier-4', tier: 4 }; // Orange : fragile (35-49 ↔ 7-9,5/20)
+            return { bg: 'score-tier-5', bar: 'bar-tier-5', card: 'card-tier-5', pill: 'pill-tier-5', tier: 5 };                   // Rouge : insuffisant (< 35 ↔ 0-6,5/20)
         }
 
         function getSectionPartClass(sectionName) {
