@@ -69,3 +69,12 @@ Toute règle d'évaluation, de plafonnement ou de valorisation issue de l'étalo
 4. **Synchronisation systématique** :
    - Toute évolution de l'étalonnage doit être répercutée simultanément dans les grilles de référence (`GRILLE_DISSERTATION.md` et `GRILLE_EXPLICATION_DE_TEXTE.md`), dans le moteur d'évaluation backend (`GCloud/index.js`) et dans l'interface (`index.html` et `Github/index.html`).
 
+5. **Vigilance sur le préfixe historique de certains fichiers du corpus (`Copies/`)** :
+   - Ne **jamais** se fier au seul préfixe `Agreg_Int` dans le nom de fichier des 9 copies suivantes de 2020 et 2021 (`PH` et `DM`), qui sont toutes des épreuves officielles de l'**Agrégation externe** (comme l'indiquent leurs sujets sur programme *La représentation*, *Le Sophiste*, *Le commun*, *Pensées sur l'interprétation de la nature* et les compositions hors-programme *Qu'apprenons-nous de nos affects ?* et *Que peut le droit ?*) :
+     * `2020_Agreg_Int_Dissert_Representation_7_PH` et `2020_Agreg_Int_Dissert_Representation_11-5_DM` $\rightarrow$ **Agrégation externe** (2ᵈᵉ composition sur programme : *La représentation*).
+     * `2020_Agreg_Int_Dissert_HorsProg_8_PH` et `2020_Agreg_Int_Dissert_HorsProg_10_DM` $\rightarrow$ **Agrégation externe** (1ʳᵉ composition hors-programme : *Qu'apprenons-nous de nos affects ?*).
+     * `2020_Agreg_Int_Explic_Platon_4-5_PH` et `2020_Agreg_Int_Explic_Platon_12_DM` $\rightarrow$ **Agrégation externe** (3ᵉ épreuve sur programme : Platon, *Le Sophiste*).
+     * `2021_Agreg_Int_Dissert_Commun_8-5_PH` $\rightarrow$ **Agrégation externe** (2ᵈᵉ composition sur programme : *Le commun*).
+     * `2021_Agreg_Int_Dissert_Droit_8_PH` $\rightarrow$ **Agrégation externe** (1ʳᵉ composition hors-programme : *Que peut le droit ?*).
+     * `2021_Agreg_Int_Explic_Diderot_7_PH` $\rightarrow$ **Agrégation externe** (3ᵉ épreuve sur programme : Diderot).
+
