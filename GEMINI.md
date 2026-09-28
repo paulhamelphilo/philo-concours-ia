@@ -78,3 +78,17 @@ Toute règle d'évaluation, de plafonnement ou de valorisation issue de l'étalo
      * `2021_Agreg_Int_Dissert_Droit_8_PH` $\rightarrow$ **Agrégation externe** (1ʳᵉ composition hors-programme : *Que peut le droit ?*).
      * `2021_Agreg_Int_Explic_Diderot_7_PH` $\rightarrow$ **Agrégation externe** (3ᵉ épreuve sur programme : Diderot).
 
+---
+
+## Protocole impératif de modification et de versionnage du moteur d'évaluation
+
+Il est formellement interdit de modifier le code d'évaluation (`GCloud/index.js`, grilles de référence, prompts système) ou de déployer une nouvelle version sans respecter scrupuleusement les deux règles suivantes :
+
+1. **Validation explicite préalable de l'utilisateur** :
+   - Ne jamais modifier le code d'évaluation ni déployer sur Cloud Run sans avoir d'abord soumis la proposition détaillée (diagnostic, diff exact, impact prévisible) à la validation explicite de l'utilisateur et reçu son accord formel.
+   - Une question ou un constat d'écart de notation posé par l'utilisateur appelle d'abord une explication et un diagnostic partagé, jamais une modification unilatérale immédiate du moteur en production.
+
+2. **Sauvegarde systématique et versionnage incrémental** :
+   - Tout changement validé doit faire l'objet d'un archivage préalable du code sous un nouveau numéro de version dans `Backups_Versions/` (ex. : `v3_3_...`), contenant les fichiers modifiés et les logs de benchmark correspondants.
+   - Mettre à jour systématiquement `Backups_Versions/JOURNAL_ETAPES_ET_RETOUR_ARRIERE.md` pour garantir la possibilité d'un retour en arrière immédiat en un clic.
+

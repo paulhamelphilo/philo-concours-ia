@@ -12346,7 +12346,7 @@
                         </div>
                         <button class="btn btn-submit" onclick="envoyerCorrection()">Correction IA</button>
                         <div style="display:flex; justify-content:center; margin-top:10px; margin-bottom:10px;">
-                            <button class="btn btn-secondary" onclick="resetTraining()">${savedCorrection ? 'Effacer la correction' : 'Remise à zéro'}</button>
+                            <button id="btn-reset-training" class="btn btn-secondary" onclick="resetTraining()">${savedCorrection ? 'Effacer la correction' : 'Remise à zéro'}</button>
                         </div>
                         <div id="loading-msg" class="loading">Le correcteur IA analyse votre travail conformément à la méthodologie, veuillez patienter (environ 5 à 10 secondes)<span class="loading-dots"></span></div>
                         <div id="correction-box" style="${savedCorrection ? 'display: block;' : 'display: none;'}">
@@ -12710,9 +12710,9 @@
                 }
                 updateFloatingProfileDock();
                 updateSubjectSelectBadges();
-                const btnSecondary = document.querySelector(".btn-secondary");
-                if (btnSecondary) {
-                    btnSecondary.innerText = "Effacer la correction";
+                const btnReset = document.getElementById("btn-reset-training");
+                if (btnReset) {
+                    btnReset.innerText = "Effacer la correction";
                 }
             } catch (error) {
                 alert("Erreur lors de la communication avec le correcteur : " + error.message);
