@@ -7472,6 +7472,7 @@
                             timeLabel: String(c.timeLabel || ''),
                             score: typeof c.score === 'number' ? c.score : null,
                             draft: typeof c.draft === 'string' ? c.draft : '',
+                            pendingDraft: typeof c.pendingDraft === 'string' ? c.pendingDraft : undefined,
                             correction: cleanCorr
                         };
                     }).filter(Boolean);
@@ -7917,16 +7918,28 @@
                 });
             }
 
+            // Si un brouillon spécifique rattaché à un cran parent est actif (ex. : 'draft_2')
+            if (typeof entry.activeCranId === 'string' && entry.activeCranId.startsWith('draft_')) {
+                const parentId = Number(entry.activeCranId.replace('draft_', ''));
+                const parentCran = crans.find(c => c.id === parentId);
+                if (parentCran) {
+                    const draftText = (typeof parentCran.pendingDraft === 'string')
+                        ? parentCran.pendingDraft
+                        : (parentCran.draft || defaultTpl);
+                    return {
+                        draft: draftText,
+                        correction: entry.hideDraftCorrection ? null : (parentCran.correction || null),
+                        activeCranId: entry.activeCranId,
+                        crans: crans
+                    };
+                }
+            }
+
             // Si un cran spécifique est sélectionné
             if (typeof entry.activeCranId === 'number') {
                 const cran = crans.find(c => c.id === entry.activeCranId);
                 if (cran) {
-                    let draftText = (typeof cran.draft === 'string') ? cran.draft : defaultTpl;
-                    // Si on consulte la dernière saisie, son texte reflète les modifications en cours
-                    if (cran.id === latestCranId && typeof entry.workingDraft === 'string' && entry.workingDraft.trim() !== '') {
-                        draftText = entry.workingDraft;
-                    }
-
+                    const draftText = (typeof cran.draft === 'string') ? cran.draft : defaultTpl;
                     return {
                         draft: draftText,
                         correction: entry.hideDraftCorrection ? null : (cran.correction || null),
@@ -7936,7 +7949,7 @@
                 }
             }
 
-            // Sinon (saisie la plus récente ou travail initial avant 1re évaluation)
+            // Sinon (brouillon racine sur sujet vierge ou transition)
             let draftText = (typeof entry.workingDraft === 'string' && entry.workingDraft.trim() !== '')
                 ? entry.workingDraft
                 : defaultTpl;
@@ -7961,7 +7974,7 @@
             return {
                 draft: draftText,
                 correction: refCorrection,
-                activeCranId: latestCranId || 'draft',
+                activeCranId: entry.activeCranId || (latestCranId ? latestCranId : 'draft'),
                 crans: crans
             };
         }
@@ -8042,6 +8055,7 @@
             if (textarea && lastRenderedSubjectKey) {
                 const val = textarea.value;
                 const prof = getActiveProfile();
+                let dockNeedsUpdate = false;
                 if (!prof.subjectsData[lastRenderedSubjectKey]) {
                     prof.subjectsData[lastRenderedSubjectKey] = {
                         activeCranId: 'draft',
@@ -8050,24 +8064,44 @@
                         crans: [],
                         updatedAt: Date.now()
                     };
+                    dockNeedsUpdate = true;
                 } else {
                     const entry = prof.subjectsData[lastRenderedSubjectKey];
-                    if (typeof entry.activeCranId === 'number') {
+                    if (typeof entry.activeCranId === 'string' && entry.activeCranId.startsWith('draft_')) {
+                        const parentId = Number(entry.activeCranId.replace('draft_', ''));
+                        const parentCran = (entry.crans || []).find(c => c.id === parentId);
+                        if (parentCran) {
+                            if (val === parentCran.draft) {
+                                delete parentCran.pendingDraft;
+                                entry.activeCranId = parentId;
+                                dockNeedsUpdate = true;
+                            } else {
+                                parentCran.pendingDraft = val;
+                            }
+                        }
+                    } else if (typeof entry.activeCranId === 'number') {
                         const activeCran = (entry.crans || []).find(c => c.id === entry.activeCranId);
-                        if (!activeCran || activeCran.draft !== val) {
-                            entry.draftParentId = entry.activeCranId; // Filiation mémorisée
-                            entry.activeCranId = 'draft';             // Bascule sur le brouillon
-                            entry.workingDraft = val;
-                        } else {
-                            entry.workingDraft = val;
+                        if (activeCran && activeCran.draft !== val) {
+                            activeCran.pendingDraft = val;
+                            entry.draftParentId = entry.activeCranId;
+                            entry.activeCranId = 'draft_' + entry.activeCranId;
+                            dockNeedsUpdate = true;
                         }
                     } else {
+                        const wasEmpty = !entry.workingDraft || entry.workingDraft.replace(/\[[^\]]+\]/g, '').trim() === '';
+                        const nowHasText = val && val.replace(/\[[^\]]+\]/g, '').trim() !== '';
                         entry.workingDraft = val;
+                        if ((entry.crans || []).length === 0 && wasEmpty !== nowHasText) {
+                            dockNeedsUpdate = true;
+                        }
                     }
                     entry.updatedAt = Date.now();
                 }
                 updateLastActiveState();
                 persistStorageData();
+                if (dockNeedsUpdate) {
+                    updateFloatingProfileDock();
+                }
             }
         }
 
@@ -8230,21 +8264,60 @@
                 prof.subjectsData[currentSubjectKey] = entry;
             }
 
+            // Sauvegarder les modifications en cours avant la bascule
+            saveCurrentDraftToLastRenderedSubject();
 
             entry.activeCranId = cranId;
             if (typeof cranId === 'number') {
                 entry.draftParentId = cranId;
+                entry.hideDraftCorrection = false;
+            } else if (typeof cranId === 'string' && cranId.startsWith('draft_')) {
+                const pId = Number(cranId.replace('draft_', ''));
+                entry.draftParentId = pId;
                 entry.hideDraftCorrection = false;
             }
             entry.updatedAt = Date.now();
 
             persistStorageData();
             render();
+            updateFloatingProfileDock();
+        }
+
+        function deleteDraft(parentId) {
+            if (!confirm("Supprimer ce brouillon et abandonner les modifications en cours ?")) {
+                return;
+            }
+            const prof = getActiveProfile();
+            const sujetActif = obtenirSujetActif();
+            const currentSubjectKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
+            const entry = prof.subjectsData[currentSubjectKey];
+            if (!entry) return;
+
+            if (parentId !== null && parentId !== undefined && Array.isArray(entry.crans)) {
+                const cran = entry.crans.find(c => c.id === Number(parentId));
+                if (cran) {
+                    delete cran.pendingDraft;
+                }
+                entry.activeCranId = Number(parentId);
+                entry.draftParentId = Number(parentId);
+            } else {
+                const defaultTpl = getDefaultTemplate(state.exerciseType, state.mode);
+                entry.workingDraft = defaultTpl;
+                entry.activeCranId = 'draft';
+                entry.draftParentId = null;
+            }
+            entry.updatedAt = Date.now();
+            markSubjectDirtyForCloud(storageData.activeProfileId, currentSubjectKey);
+            persistStorageData();
+            if (typeof window.flushCloudSyncNow === 'function') window.flushCloudSyncNow();
+            render();
+            updateFloatingProfileDock();
+            updateSubjectSelectBadges();
         }
 
         function deleteCran(cranId) {
             cranId = Number(cranId);
-            if (!confirm(`Supprimer définitivement la Saisie ${cranId} ?`)) {
+            if (!confirm(`Supprimer définitivement la Saisie ${cranId} et son éventuel brouillon associé ?`)) {
                 return;
             }
             const prof = getActiveProfile();
@@ -8255,7 +8328,7 @@
 
             entry.crans = entry.crans.filter(c => c.id !== cranId);
 
-            if (entry.activeCranId === cranId) {
+            if (entry.activeCranId === cranId || entry.activeCranId === 'draft_' + cranId) {
                 if (entry.crans.length > 0) {
                     entry.activeCranId = entry.crans[0].id;
                     entry.draftParentId = entry.crans[0].id;
@@ -8269,6 +8342,7 @@
             persistStorageData();
             if (typeof window.flushCloudSyncNow === 'function') window.flushCloudSyncNow();
             render();
+            updateFloatingProfileDock();
             updateSubjectSelectBadges();
         }
 
@@ -8410,27 +8484,48 @@
                         latestCranId = c.id;
                     }
                 });
+            }
 
+            const hasRootDraft = crans.length === 0 && typeof entry.workingDraft === 'string' && entry.workingDraft.replace(/\[[^\]]+\]/g, '').trim() !== '';
+
+            if (crans.length > 0 || hasRootDraft) {
                 dividerHtml = '<div class="dock-divider"></div>';
                 timelineHtml = '<div class="timeline-scroll-area" id="timeline-area" onscroll="const t=document.getElementById(\'left-dock-floating-tooltip\');if(t)t.classList.remove(\'visible\');">';
                 timelineHtml += '<div class="vertical-stem-line"></div>';
 
-                // Crans (ordonnés du plus récent au plus ancien, avec intercalation sur parent)
-                crans.forEach(c => {
-                    const isCranActive = (activeCranId === c.id) || (activeCranId === 'draft' && (entry.draftParentId === c.id || (!entry.draftParentId && c.id === latestCranId)));
-                    const isLatest = c.id === latestCranId;
-                    const score = typeof c.score === 'number' ? c.score : 0;
-                    const colorClass = getScoreColorClass(score).pill;
-                    let cranClass = `cran-pill ${colorClass}`;
-                    if (isCranActive) cranClass += ' active';
-                    if (isLatest) cranClass += ' is-latest';
+                if (crans.length === 0 && hasRootDraft) {
+                    const isDraftActive = activeCranId === 'draft';
+                    let draftClass = 'cran-pill tier-draft';
+                    if (isDraftActive) draftClass += ' active';
+                    const tooltip = 'Brouillon initial — clic droit pour réinitialiser';
+                    timelineHtml += `<div class="${draftClass}" data-tooltip="${tooltip}" onclick="selectCran('draft')" oncontextmenu="event.preventDefault(); deleteDraft(null);">✎</div>`;
+                } else {
+                    crans.forEach(c => {
+                        const hasDraft = typeof c.pendingDraft === 'string' && c.pendingDraft.trim() !== '' && c.pendingDraft !== c.draft;
+                        if (hasDraft) {
+                            const draftId = 'draft_' + c.id;
+                            const isDraftActive = (activeCranId === draftId);
+                            let draftClass = 'cran-pill tier-draft';
+                            if (isDraftActive) draftClass += ' active';
+                            const draftTooltip = `Brouillon (modifications de la saisie ${c.id}) — clic droit pour supprimer`;
+                            timelineHtml += `<div class="${draftClass}" data-tooltip="${draftTooltip}" onclick="selectCran('${draftId}')" oncontextmenu="event.preventDefault(); deleteDraft(${c.id});">✎</div>`;
+                        }
 
-                    const label = typeof c.score === 'number' ? c.score : '?';
-                    const timePart = c.timeLabel ? ` (${c.timeLabel})` : '';
-                    const tooltip = `Saisie ${c.id}${isLatest ? ' (dernière)' : ''} : ${score}/100${timePart} — clic droit pour supprimer`;
+                        const isCranActive = (activeCranId === c.id);
+                        const isLatest = c.id === latestCranId;
+                        const score = typeof c.score === 'number' ? c.score : 0;
+                        const colorClass = getScoreColorClass(score).pill;
+                        let cranClass = `cran-pill ${colorClass}`;
+                        if (isCranActive) cranClass += ' active';
+                        if (isLatest) cranClass += ' is-latest';
 
-                    timelineHtml += `<div class="${cranClass}" data-tooltip="${tooltip}" onclick="selectCran(${c.id})" oncontextmenu="event.preventDefault(); deleteCran(${c.id});">${label}</div>`;
-                });
+                        const label = typeof c.score === 'number' ? c.score : '?';
+                        const timePart = c.timeLabel ? ` (${c.timeLabel})` : '';
+                        const tooltip = `Saisie ${c.id}${isLatest ? ' (dernière)' : ''} : ${score}/100${timePart} — clic droit pour supprimer`;
+
+                        timelineHtml += `<div class="${cranClass}" data-tooltip="${tooltip}" onclick="selectCran(${c.id})" oncontextmenu="event.preventDefault(); deleteCran(${c.id});">${label}</div>`;
+                    });
+                }
 
                 timelineHtml += '</div>';
             }
@@ -11778,7 +11873,20 @@
                 };
                 prof.subjectsData[currentSubKey] = entry;
             } else {
-                entry.workingDraft = content;
+                if (typeof entry.activeCranId === 'number') {
+                    const cran = (entry.crans || []).find(c => c.id === entry.activeCranId);
+                    if (cran) {
+                        cran.pendingDraft = content;
+                        entry.activeCranId = 'draft_' + cran.id;
+                        entry.draftParentId = cran.id;
+                    }
+                } else if (typeof entry.activeCranId === 'string' && entry.activeCranId.startsWith('draft_')) {
+                    const pId = Number(entry.activeCranId.replace('draft_', ''));
+                    const cran = (entry.crans || []).find(c => c.id === pId);
+                    if (cran) cran.pendingDraft = content;
+                } else {
+                    entry.workingDraft = content;
+                }
                 entry.updatedAt = Date.now();
             }
 
@@ -11889,28 +11997,45 @@
             const normStoredSujet = stored.correction && stored.correction.sujet ? getSubjectStorageKey(state.exerciseType, state.mode, stored.correction.sujet) : currentSubjectKey;
             const hasDisplayedCorrection = stored.correction && (stored.correction.html || stored.correction.rawMarkdown) && (normStoredSujet === currentSubjectKey);
 
-            if (hasDisplayedCorrection) {
+            if (hasDisplayedCorrection && !entry.hideDraftCorrection) {
                 // 1er clic : Efface l'affichage de la correction tout en conservant le texte rédigé
-                entry.activeCranId = 'draft';
-                entry.draftParentId = null;
-                entry.workingDraft = stored.draft || defaultTpl;
                 entry.hideDraftCorrection = true;
                 entry.updatedAt = Date.now();
             } else {
-                // 2e clic (ou sans correction affichée) : Réinitialise le champ de saisie aux balises méthodologiques initiales
-                const textarea = document.getElementById("training-textarea");
-                if (textarea) {
-                    textarea.value = defaultTpl;
+                // 2e clic (ou sans correction affichée) :
+                if (typeof entry.activeCranId === 'string' && entry.activeCranId.startsWith('draft_')) {
+                    const pId = Number(entry.activeCranId.replace('draft_', ''));
+                    const parentCran = (entry.crans || []).find(c => c.id === pId);
+                    if (parentCran) {
+                        delete parentCran.pendingDraft;
+                        entry.activeCranId = pId;
+                    }
+                } else if (typeof entry.activeCranId === 'number') {
+                    const cran = (entry.crans || []).find(c => c.id === entry.activeCranId);
+                    if (cran) {
+                        delete cran.pendingDraft;
+                    }
+                    const textarea = document.getElementById("training-textarea");
+                    if (textarea) {
+                        textarea.value = defaultTpl;
+                    }
+                    entry.workingDraft = defaultTpl;
+                } else {
+                    const textarea = document.getElementById("training-textarea");
+                    if (textarea) {
+                        textarea.value = defaultTpl;
+                    }
+                    entry.workingDraft = defaultTpl;
+                    entry.activeCranId = 'draft';
+                    entry.draftParentId = null;
                 }
-                entry.activeCranId = 'draft';
-                entry.draftParentId = null;
-                entry.workingDraft = defaultTpl;
                 entry.hideDraftCorrection = true;
                 entry.updatedAt = Date.now();
             }
             updateLastActiveState();
             persistStorageData();
             render();
+            updateFloatingProfileDock();
         }
 
         function getCharCountInfo(len, max) {
@@ -11975,6 +12100,19 @@
         }
 
         function handleTextareaPaste(e, textarea) {
+            const prof = getActiveProfile();
+            const currentSubKey = lastRenderedSubjectKey || (typeof obtenirSujetActif === 'function' ? getSubjectStorageKey(state.exerciseType, state.mode, obtenirSujetActif()) : '');
+            const entry = prof?.subjectsData?.[currentSubKey];
+            if (entry && typeof entry.activeCranId === 'number') {
+                const cran = (entry.crans || []).find(c => c.id === entry.activeCranId);
+                if (cran && typeof cran.pendingDraft === 'string' && cran.pendingDraft !== cran.draft) {
+                    entry.activeCranId = 'draft_' + cran.id;
+                    textarea.value = cran.pendingDraft;
+                    textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+                    updateFloatingProfileDock();
+                }
+            }
+
             if (!e.clipboardData) return;
             const pasteData = e.clipboardData.getData('text');
             if (!pasteData) return;
@@ -11998,6 +12136,23 @@
         }
 
         function handleTextareaKeydown(e, textarea) {
+            // Bascule protectrice si l'on est sur une saisie évaluée ayant déjà un brouillon en cours
+            const prof = getActiveProfile();
+            const currentSubKey = lastRenderedSubjectKey || (typeof obtenirSujetActif === 'function' ? getSubjectStorageKey(state.exerciseType, state.mode, obtenirSujetActif()) : '');
+            const entry = prof?.subjectsData?.[currentSubKey];
+            if (entry && typeof entry.activeCranId === 'number') {
+                const cran = (entry.crans || []).find(c => c.id === entry.activeCranId);
+                if (cran && typeof cran.pendingDraft === 'string' && cran.pendingDraft !== cran.draft) {
+                    const isNavKey = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Control', 'Alt', 'Shift', 'Meta', 'Escape'].includes(e.key);
+                    if (!isNavKey && !e.ctrlKey && !e.metaKey) {
+                        entry.activeCranId = 'draft_' + cran.id;
+                        textarea.value = cran.pendingDraft;
+                        textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+                        updateFloatingProfileDock();
+                    }
+                }
+            }
+
             const INDENT = "    "; // 4 espaces d'alinéa typographique
 
             if (e.key === 'Tab') {
@@ -12687,6 +12842,8 @@
                 let parentId = null;
                 if (typeof entry.activeCranId === 'number') {
                     parentId = entry.activeCranId;
+                } else if (typeof entry.activeCranId === 'string' && entry.activeCranId.startsWith('draft_')) {
+                    parentId = Number(entry.activeCranId.replace('draft_', ''));
                 } else if (entry.draftParentId) {
                     parentId = entry.draftParentId;
                 } else if (entry.crans.length > 0) {
@@ -12712,6 +12869,15 @@
                 };
 
                 entry.crans = insertCranAboveParent(entry.crans, newCran, parentId);
+
+                // Si la saisie parente avait un brouillon en cours, on le valide et le supprime
+                if (parentId) {
+                    const parentCran = entry.crans.find(c => c.id === parentId);
+                    if (parentCran) {
+                        delete parentCran.pendingDraft;
+                    }
+                }
+
                 entry.activeCranId = newCranId;
                 entry.draftParentId = newCranId;
                 entry.workingDraft = trainingText;
