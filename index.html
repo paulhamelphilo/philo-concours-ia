@@ -3757,7 +3757,7 @@
     </div>
 
     <script>
-        const APP_BUILD_VERSION = "2026.10.01.multi_brouillons_v3_5";
+        const APP_BUILD_VERSION = "2026.10.01.multi_brouillons_v3_6";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -7386,6 +7386,22 @@
             }
         };
 
+        function normalizeTextForDraftComparison(txt) {
+            if (typeof txt !== 'string') return '';
+            return txt
+                .replace(/\r\n/g, '\n')
+                .replace(/\r/g, '\n')
+                .split('\n')
+                .map(line => line.trimEnd())
+                .join('\n')
+                .replace(/^\s+/, '')
+                .trimEnd();
+        }
+
+        function isSubstantiveTextModified(orig, candidate) {
+            return normalizeTextForDraftComparison(orig) !== normalizeTextForDraftComparison(candidate);
+        }
+
         function isMeaningfulSubjectEntry(sub) {
             if (!sub || typeof sub !== 'object') return false;
             if (Array.isArray(sub.crans) && sub.crans.length > 0) return true;
@@ -7473,16 +7489,25 @@
                             timeLabel: String(c.timeLabel || ''),
                             score: typeof c.score === 'number' ? c.score : null,
                             draft: typeof c.draft === 'string' ? c.draft : '',
-                            pendingDraft: typeof c.pendingDraft === 'string' ? c.pendingDraft : undefined,
+                            pendingDraft: (typeof c.pendingDraft === 'string' && isSubstantiveTextModified(c.draft, c.pendingDraft)) ? c.pendingDraft : undefined,
                             correction: cleanCorr
                         };
                     }).filter(Boolean);
+
+                    let activeCranId = subData.activeCranId !== undefined ? subData.activeCranId : 'draft';
+                    if (typeof activeCranId === 'string' && activeCranId.startsWith('draft_')) {
+                        const pId = Number(activeCranId.replace('draft_', ''));
+                        const parentC = cleanCrans.find(c => c.id === pId);
+                        if (!parentC || !parentC.pendingDraft) {
+                            activeCranId = pId;
+                        }
+                    }
 
                     upsertedSubjects.push({
                         profileId: pid,
                         subjectKey: sKey,
                         data: {
-                            activeCranId: subData.activeCranId !== undefined ? subData.activeCranId : 'draft',
+                            activeCranId: activeCranId,
                             draftParentId: subData.draftParentId !== undefined ? subData.draftParentId : null,
                             hideDraftCorrection: Boolean(subData.hideDraftCorrection),
                             workingDraft: typeof subData.workingDraft === 'string' ? subData.workingDraft : '',
@@ -7924,15 +7949,20 @@
                 const parentId = Number(entry.activeCranId.replace('draft_', ''));
                 const parentCran = crans.find(c => c.id === parentId);
                 if (parentCran) {
-                    const draftText = (typeof parentCran.pendingDraft === 'string')
-                        ? parentCran.pendingDraft
-                        : (parentCran.draft || defaultTpl);
-                    return {
-                        draft: draftText,
-                        correction: entry.hideDraftCorrection ? null : (parentCran.correction || null),
-                        activeCranId: entry.activeCranId,
-                        crans: crans
-                    };
+                    if (typeof parentCran.pendingDraft === 'string' && !isSubstantiveTextModified(parentCran.draft, parentCran.pendingDraft)) {
+                        delete parentCran.pendingDraft;
+                        entry.activeCranId = parentId;
+                    } else {
+                        const draftText = (typeof parentCran.pendingDraft === 'string')
+                            ? parentCran.pendingDraft
+                            : (parentCran.draft || defaultTpl);
+                        return {
+                            draft: draftText,
+                            correction: entry.hideDraftCorrection ? null : (parentCran.correction || null),
+                            activeCranId: entry.activeCranId,
+                            crans: crans
+                        };
+                    }
                 }
             }
 
@@ -8072,7 +8102,7 @@
                         const parentId = Number(entry.activeCranId.replace('draft_', ''));
                         const parentCran = (entry.crans || []).find(c => c.id === parentId);
                         if (parentCran) {
-                            if (val === parentCran.draft) {
+                            if (!isSubstantiveTextModified(parentCran.draft, val)) {
                                 delete parentCran.pendingDraft;
                                 entry.activeCranId = parentId;
                                 dockNeedsUpdate = true;
@@ -8082,7 +8112,7 @@
                         }
                     } else if (typeof entry.activeCranId === 'number') {
                         const activeCran = (entry.crans || []).find(c => c.id === entry.activeCranId);
-                        if (activeCran && activeCran.draft !== val) {
+                        if (activeCran && isSubstantiveTextModified(activeCran.draft, val)) {
                             activeCran.pendingDraft = val;
                             entry.draftParentId = entry.activeCranId;
                             entry.activeCranId = 'draft_' + entry.activeCranId;
@@ -8502,7 +8532,14 @@
                     timelineHtml += `<div class="${draftClass}" data-tooltip="${tooltip}" onclick="selectCran('draft')" oncontextmenu="event.preventDefault(); deleteDraft(null);">✎</div>`;
                 } else {
                     crans.forEach(c => {
-                        const hasDraft = typeof c.pendingDraft === 'string' && c.pendingDraft.trim() !== '' && c.pendingDraft !== c.draft;
+                        // Proactive auto-nettoyage des faux brouillons
+                        if (typeof c.pendingDraft === 'string' && !isSubstantiveTextModified(c.draft, c.pendingDraft)) {
+                            delete c.pendingDraft;
+                            if (entry.activeCranId === 'draft_' + c.id) {
+                                entry.activeCranId = c.id;
+                            }
+                        }
+                        const hasDraft = typeof c.pendingDraft === 'string' && c.pendingDraft.trim() !== '' && isSubstantiveTextModified(c.draft, c.pendingDraft);
                         if (hasDraft) {
                             const draftId = 'draft_' + c.id;
                             const isDraftActive = (activeCranId === draftId);
@@ -12106,7 +12143,7 @@
             const entry = prof?.subjectsData?.[currentSubKey];
             if (entry && typeof entry.activeCranId === 'number') {
                 const cran = (entry.crans || []).find(c => c.id === entry.activeCranId);
-                if (cran && typeof cran.pendingDraft === 'string' && cran.pendingDraft !== cran.draft) {
+                if (cran && typeof cran.pendingDraft === 'string' && isSubstantiveTextModified(cran.draft, cran.pendingDraft)) {
                     entry.activeCranId = 'draft_' + cran.id;
                     textarea.value = cran.pendingDraft;
                     textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
@@ -12143,7 +12180,7 @@
             const entry = prof?.subjectsData?.[currentSubKey];
             if (entry && typeof entry.activeCranId === 'number') {
                 const cran = (entry.crans || []).find(c => c.id === entry.activeCranId);
-                if (cran && typeof cran.pendingDraft === 'string' && cran.pendingDraft !== cran.draft) {
+                if (cran && typeof cran.pendingDraft === 'string' && isSubstantiveTextModified(cran.draft, cran.pendingDraft)) {
                     const isNavKey = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Control', 'Alt', 'Shift', 'Meta', 'Escape'].includes(e.key);
                     if (!isNavKey && !e.ctrlKey && !e.metaKey) {
                         entry.activeCranId = 'draft_' + cran.id;
