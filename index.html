@@ -3762,7 +3762,7 @@
         // Toute modification ultérieure de l'application DOIT incrémenter APP_BUILD_VERSION.
         // Ce script garantit que les utilisateurs reçoivent instantanément les mises à jour.
         // =========================================================================
-        const APP_BUILD_VERSION = "2026.10.01.multi_brouillons_v3_6";
+        const APP_BUILD_VERSION = "2026.10.01.sync_automatique_cloud_v3_7";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -7431,12 +7431,27 @@
             }
         }
 
-        window.scheduleCloudSync = function (delayMs = 2500) {
+        let cloudSyncFirstScheduledAt = null;
+
+        window.scheduleCloudSync = function (delayMs = 1200) {
             const token = typeof window.getMentorAuthToken === 'function' ? window.getMentorAuthToken() : '';
             if (!token) return;
             window.setCloudSyncStatusUI('pending', 'Enregistrement...');
+            const now = Date.now();
+            if (!cloudSyncFirstScheduledAt) {
+                cloudSyncFirstScheduledAt = now;
+            }
+            // Si la saisie continue depuis plus de 8 secondes sans pause, forcer l'envoi immédiat
+            if (now - cloudSyncFirstScheduledAt >= 8000) {
+                cloudSyncFirstScheduledAt = null;
+                if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+                cloudSyncTimer = null;
+                window.flushCloudSyncNow();
+                return;
+            }
             if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
             cloudSyncTimer = setTimeout(() => {
+                cloudSyncFirstScheduledAt = null;
                 window.flushCloudSyncNow();
             }, delayMs);
         };
@@ -7550,6 +7565,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
                     },
+                    keepalive: true,
                     body: JSON.stringify({
                         action: 'sync_push',
                         payload: {
@@ -7632,19 +7648,21 @@
                     activeCranId: winner.activeCranId !== undefined ? winner.activeCranId : 'draft',
                     draftParentId: winner.draftParentId !== undefined ? winner.draftParentId : null,
                     hideDraftCorrection: Boolean(winner.hideDraftCorrection),
-                    workingDraft: (typeof winner.workingDraft === 'string' && winner.workingDraft.trim() !== '')
+                    workingDraft: (typeof winner?.workingDraft === 'string')
                         ? winner.workingDraft
                         : (localSub?.workingDraft || cloudSub?.workingDraft || ''),
                     crans: mergedCrans,
                     updatedAt: winnerTs || Date.now()
                 },
-                needsCloudPush: (localTs > cloudTs) || extraCranFromLocal
+                needsCloudPush: (localTs > cloudTs) || extraCranFromLocal,
+                isCloudNewer: (cloudTs > localTs)
             };
         }
 
         function mergeCloudAndLocalWorkspace(cloudWs) {
-            if (!cloudWs || typeof cloudWs !== 'object') return false;
+            if (!cloudWs || typeof cloudWs !== 'object') return { needsPush: false, hasChanges: false };
             let anyLocalNeedsPush = false;
+            let hasAnyChanges = false;
 
             const cloudProfiles = (cloudWs.profiles && typeof cloudWs.profiles === 'object') ? cloudWs.profiles : {};
             if (!storageData.profiles || typeof storageData.profiles !== 'object') {
@@ -7669,6 +7687,7 @@
                         lastActiveByContext: cloudProf.lastActiveByContext || {},
                         subjectsData: { ...(cloudProf.subjectsData || {}) }
                     };
+                    hasAnyChanges = true;
                     return;
                 }
 
@@ -7696,6 +7715,7 @@
                         const cSub = cloudSubs[sKey];
                         if (!lSub && cSub) {
                             localProf.subjectsData[sKey] = cSub;
+                            hasAnyChanges = true;
                         } else if (lSub && !cSub) {
                             if (isMeaningfulSubjectEntry(lSub)) {
                                 cloudDirtySubjects.add(`${pid}:::${sKey}`);
@@ -7704,6 +7724,9 @@
                         } else if (lSub && cSub) {
                             const res = mergeSubjectEntriesForCloud(lSub, cSub);
                             localProf.subjectsData[sKey] = res.merged;
+                            if (res.isCloudNewer) {
+                                hasAnyChanges = true;
+                            }
                             if (res.needsCloudPush) {
                                 cloudDirtySubjects.add(`${pid}:::${sKey}`);
                                 anyLocalNeedsPush = true;
@@ -7716,9 +7739,10 @@
                     const cloudUpdatedAt = Number(cloudWs.updatedAt) || 0;
                     const localUpdatedAt = Number(storageData.updatedAt) || 0;
 
-                    if (cloudUpdatedAt >= localUpdatedAt || !localHasActiveSubject) {
+                    if (cloudUpdatedAt > localUpdatedAt || !localHasActiveSubject) {
                         if (cloudProf.lastActive && Object.keys(cloudProf.lastActive).length > 0) {
                             localProf.lastActive = { ...localProf.lastActive, ...cloudProf.lastActive };
+                            hasAnyChanges = true;
                         }
                         if (cloudProf.lastActiveByContext) {
                             localProf.lastActiveByContext = { ...(localProf.lastActiveByContext || {}), ...cloudProf.lastActiveByContext };
@@ -7729,14 +7753,15 @@
 
             const cloudUpdatedAt = Number(cloudWs.updatedAt) || 0;
             const localUpdatedAt = Number(storageData.updatedAt) || 0;
-            if (cloudUpdatedAt >= localUpdatedAt && cloudWs.activeProfileId && storageData.profiles[cloudWs.activeProfileId]) {
+            if (cloudUpdatedAt > localUpdatedAt && cloudWs.activeProfileId && storageData.profiles[cloudWs.activeProfileId]) {
                 storageData.activeProfileId = Number(cloudWs.activeProfileId);
+                hasAnyChanges = true;
             }
-            storageData.updatedAt = Math.max(localUpdatedAt, cloudUpdatedAt, Date.now());
+            storageData.updatedAt = Math.max(localUpdatedAt, cloudUpdatedAt);
             const activeProf = getActiveProfile();
             storageData.lastActive = activeProf.lastActive || {};
 
-            return anyLocalNeedsPush;
+            return { needsPush: anyLocalNeedsPush, hasChanges: hasAnyChanges };
         }
 
         window.syncPullFromCloud = async function (isExplicitLogin = false) {
@@ -7798,16 +7823,37 @@
                 }
 
                 if (data.exists && data.workspace) {
-                    const needsPush = mergeCloudAndLocalWorkspace(data.workspace);
+                    const mergeRes = mergeCloudAndLocalWorkspace(data.workspace);
                     persistStorageData({ skipCloudTrigger: true });
-                    lastRenderedSubjectKey = null;
-                    if (isAppFullyLoaded) {
-                        if (typeof restoreLastActiveState === 'function') restoreLastActiveState();
-                        if (typeof render === 'function') render();
-                        if (typeof updateFloatingProfileDock === 'function') updateFloatingProfileDock();
+                    if (mergeRes.hasChanges) {
+                        lastRenderedSubjectKey = null;
+                        if (isAppFullyLoaded) {
+                            const textarea = document.getElementById("training-textarea");
+                            const wasFocused = (document.activeElement === textarea);
+                            const selStart = wasFocused && textarea ? textarea.selectionStart : null;
+                            const selEnd = wasFocused && textarea ? textarea.selectionEnd : null;
+
+                            if (typeof restoreLastActiveState === 'function') restoreLastActiveState();
+                            if (typeof render === 'function') render();
+                            if (typeof updateFloatingProfileDock === 'function') updateFloatingProfileDock();
+                            if (typeof updateSubjectSelectBadges === 'function') updateSubjectSelectBadges();
+
+                            if (wasFocused) {
+                                const newTextarea = document.getElementById("training-textarea");
+                                if (newTextarea) {
+                                    newTextarea.focus();
+                                    if (selStart !== null && selEnd !== null) {
+                                        newTextarea.setSelectionRange(
+                                            Math.min(selStart, newTextarea.value.length),
+                                            Math.min(selEnd, newTextarea.value.length)
+                                        );
+                                    }
+                                }
+                            }
+                        }
                     }
 
-                    if (needsPush || cloudDirtySubjects.size > 0) {
+                    if (mergeRes.needsPush || cloudDirtySubjects.size > 0) {
                         await window.flushCloudSyncNow();
                     } else {
                         window.setCloudSyncStatusUI('ok');
@@ -7837,22 +7883,70 @@
             if (typeof saveCurrentDraftToLastRenderedSubject === 'function') {
                 saveCurrentDraftToLastRenderedSubject();
             }
-            await window.flushCloudSyncNow();
+            if (cloudDirtySubjects.size > 0 || cloudSyncTimer) {
+                await window.flushCloudSyncNow();
+            }
             await window.syncPullFromCloud(false);
         };
 
+        window.lastUserTypingTimestamp = 0;
+        let isCloudPullInProgress = false;
+
+        async function triggerBackgroundCloudPull() {
+            // Vérifier que l'utilisateur est connecté au Cloud
+            if (typeof window.getMentorAuthToken !== 'function' || !window.getMentorAuthToken()) return;
+            // Ne pas interrompre une analyse IA en cours
+            if (typeof isSubmitting !== 'undefined' && isSubmitting) return;
+            // Ne pas écraser la frappe active de l'utilisateur (délai de 3s après dernière frappe ou modifications pendantes)
+            const isActivelyTyping = (Date.now() - (window.lastUserTypingTimestamp || 0) < 3000);
+            if (isActivelyTyping || cloudDirtySubjects.size > 0 || cloudSyncTimer) return;
+            if (isCloudPullInProgress) return;
+
+            try {
+                isCloudPullInProgress = true;
+                await window.syncPullFromCloud(false);
+            } catch (err) {
+                console.warn("Échec interrogation périodique Cloud :", err);
+            } finally {
+                isCloudPullInProgress = false;
+            }
+        }
+
+        window.triggerBackgroundCloudPull = triggerBackgroundCloudPull;
+
+        // Événements d'interrogation et de synchronisation automatique
         window.addEventListener('online', () => {
             console.log("Connexion réseau rétablie, relance de la synchronisation Cloud...");
-            if (typeof window.forceManualCloudSync === 'function') {
-                window.forceManualCloudSync();
+            triggerBackgroundCloudPull();
+        });
+
+        // Focus fenêtre (l'utilisateur revient sur l'onglet ou l'application)
+        window.addEventListener('focus', () => {
+            triggerBackgroundCloudPull();
+        });
+
+        // Visibilité du document (veille mobile, changement d'onglet)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                if (cloudSyncTimer || cloudDirtySubjects.size > 0) {
+                    window.flushCloudSyncNow();
+                }
+            } else if (document.visibilityState === 'visible') {
+                triggerBackgroundCloudPull();
             }
         });
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden' && (cloudSyncTimer || cloudDirtySubjects.size > 0)) {
+        // Fermeture d'onglet ou navigation (sauvegarde ultime avant déchargement)
+        window.addEventListener('pagehide', () => {
+            if (cloudSyncTimer || cloudDirtySubjects.size > 0) {
                 window.flushCloudSyncNow();
             }
         });
+
+        // Surveillance périodique en arrière-plan toutes les 15 secondes
+        setInterval(() => {
+            triggerBackgroundCloudPull();
+        }, 15000);
 
         function persistStorageData(options) {
             try {
@@ -7886,7 +7980,7 @@
                     localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(storageData));
                 }
 
-                if (!options || !options.skipCloudTrigger) {
+                if (options && options.markCloudDirty && lastRenderedSubjectKey) {
                     markSubjectDirtyForCloud(storageData.activeProfileId, lastRenderedSubjectKey);
                     window.scheduleCloudSync(2500);
                 }
@@ -8098,7 +8192,10 @@
                 const val = textarea.value;
                 const prof = getActiveProfile();
                 let dockNeedsUpdate = false;
+                let textActuallyChanged = false;
+
                 if (!prof.subjectsData[lastRenderedSubjectKey]) {
+                    const isNonEmpty = val && val.trim() !== '' && val !== "    ";
                     prof.subjectsData[lastRenderedSubjectKey] = {
                         activeCranId: 'draft',
                         draftParentId: null,
@@ -8107,6 +8204,9 @@
                         updatedAt: Date.now()
                     };
                     dockNeedsUpdate = true;
+                    if (isNonEmpty) {
+                        textActuallyChanged = true;
+                    }
                 } else {
                     const entry = prof.subjectsData[lastRenderedSubjectKey];
                     if (typeof entry.activeCranId === 'string' && entry.activeCranId.startsWith('draft_')) {
@@ -8114,11 +8214,17 @@
                         const parentCran = (entry.crans || []).find(c => c.id === parentId);
                         if (parentCran) {
                             if (!isSubstantiveTextModified(parentCran.draft, val)) {
-                                delete parentCran.pendingDraft;
+                                if (parentCran.pendingDraft !== undefined) {
+                                    delete parentCran.pendingDraft;
+                                    textActuallyChanged = true;
+                                }
                                 entry.activeCranId = parentId;
                                 dockNeedsUpdate = true;
                             } else {
-                                parentCran.pendingDraft = val;
+                                if (parentCran.pendingDraft !== val) {
+                                    parentCran.pendingDraft = val;
+                                    textActuallyChanged = true;
+                                }
                             }
                         }
                     } else if (typeof entry.activeCranId === 'number') {
@@ -8128,19 +8234,30 @@
                             entry.draftParentId = entry.activeCranId;
                             entry.activeCranId = 'draft_' + entry.activeCranId;
                             dockNeedsUpdate = true;
+                            textActuallyChanged = true;
                         }
                     } else {
                         const wasEmpty = !entry.workingDraft || entry.workingDraft.replace(/\[[^\]]+\]/g, '').trim() === '';
                         const nowHasText = val && val.replace(/\[[^\]]+\]/g, '').trim() !== '';
-                        entry.workingDraft = val;
+                        if (entry.workingDraft !== val) {
+                            entry.workingDraft = val;
+                            textActuallyChanged = true;
+                        }
                         if ((entry.crans || []).length === 0 && wasEmpty !== nowHasText) {
                             dockNeedsUpdate = true;
                         }
                     }
-                    entry.updatedAt = Date.now();
+
+                    if (textActuallyChanged) {
+                        entry.updatedAt = Date.now();
+                        markSubjectDirtyForCloud(storageData.activeProfileId, lastRenderedSubjectKey);
+                        if (typeof window.scheduleCloudSync === 'function') {
+                            window.scheduleCloudSync(1200);
+                        }
+                    }
                 }
                 updateLastActiveState();
-                persistStorageData();
+                persistStorageData({ skipCloudTrigger: true });
                 if (dockNeedsUpdate) {
                     updateFloatingProfileDock();
                 }
@@ -12119,6 +12236,7 @@
         }
 
         function preserveAndCount(textarea) {
+            window.lastUserTypingTimestamp = Date.now();
             if (textarea && typeof textarea.value === 'string') {
                 if (textarea.value.length === 0) {
                     textarea.value = "    ";
@@ -12149,6 +12267,7 @@
         }
 
         function handleTextareaPaste(e, textarea) {
+            window.lastUserTypingTimestamp = Date.now();
             const prof = getActiveProfile();
             const currentSubKey = lastRenderedSubjectKey || (typeof obtenirSujetActif === 'function' ? getSubjectStorageKey(state.exerciseType, state.mode, obtenirSujetActif()) : '');
             const entry = prof?.subjectsData?.[currentSubKey];
@@ -12185,6 +12304,7 @@
         }
 
         function handleTextareaKeydown(e, textarea) {
+            window.lastUserTypingTimestamp = Date.now();
             // Bascule protectrice si l'on est sur une saisie évaluée ayant déjà un brouillon en cours
             const prof = getActiveProfile();
             const currentSubKey = lastRenderedSubjectKey || (typeof obtenirSujetActif === 'function' ? getSubjectStorageKey(state.exerciseType, state.mode, obtenirSujetActif()) : '');
