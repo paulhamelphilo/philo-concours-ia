@@ -3762,7 +3762,15 @@
         // Toute modification ultérieure de l'application DOIT incrémenter APP_BUILD_VERSION.
         // Ce script garantit que les utilisateurs reçoivent instantanément les mises à jour.
         // =========================================================================
-        const APP_BUILD_VERSION = "2026.10.01.sync_automatique_cloud_v3_8";
+        const APP_BUILD_VERSION = "2026.10.01.nettoyage_url_v3_9";
+
+        // Nettoyage esthétique immédiat et transparent de l'URL dans la barre d'adresse
+        try {
+            if (window.location.search && (window.location.search.includes('v=') || window.location.search.includes('_nocache='))) {
+                const cleanUrl = window.location.pathname + (window.location.hash || '');
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        } catch (_) {}
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
