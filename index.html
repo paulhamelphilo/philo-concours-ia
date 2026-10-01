@@ -3757,6 +3757,11 @@
     </div>
 
     <script>
+        // =========================================================================
+        // MÉCANISME ANTI-CACHE ET ACTUALISATION TRANSPARENTE OBLIGATOIRE (GEMINI.MD)
+        // Toute modification ultérieure de l'application DOIT incrémenter APP_BUILD_VERSION.
+        // Ce script garantit que les utilisateurs reçoivent instantanément les mises à jour.
+        // =========================================================================
         const APP_BUILD_VERSION = "2026.10.01.multi_brouillons_v3_6";
 
         // Détection et actualisation automatique transparente anti-cache
@@ -3777,6 +3782,12 @@
                     const match = html.match(/const\s+APP_BUILD_VERSION\s*=\s*["']([^"']+)["']/);
                     if (match && match[1] && match[1] !== APP_BUILD_VERSION) {
                         console.log("Nouvelle version Mentor IA disponible (" + match[1] + "). Synchronisation avant actualisation...");
+                        // Garde-fou : ne pas interrompre une évaluation IA en cours de traitement
+                        const btnSubmit = document.querySelector(".btn-submit");
+                        if (btnSubmit && btnSubmit.disabled) {
+                            setTimeout(() => checkAppUpdate(true), 15000);
+                            return;
+                        }
                         // Sauvegarde de sécurité absolue du brouillon et synchronisation Cloud avant rechargement
                         if (typeof saveCurrentDraftToLastRenderedSubject === 'function') {
                             saveCurrentDraftToLastRenderedSubject();

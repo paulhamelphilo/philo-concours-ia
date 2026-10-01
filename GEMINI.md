@@ -92,3 +92,26 @@ Il est formellement interdit de modifier le code d'évaluation (`GCloud/index.js
    - Tout changement validé doit faire l'objet d'un archivage préalable du code sous un nouveau numéro de version dans `Backups_Versions/` (ex. : `v3_3_...`), contenant les fichiers modifiés et les logs de benchmark correspondants.
    - Mettre à jour systématiquement `Backups_Versions/JOURNAL_ETAPES_ET_RETOUR_ARRIERE.md` pour garantir la possibilité d'un retour en arrière immédiat en un clic.
 
+---
+
+## Protocole impératif d'actualisation transparente et gestion anti-cache du frontend
+
+Pour garantir que les candidats et utilisateurs bénéficient immédiatement, sans délai et de manière 100 % transparente de toute amélioration, correctif ou évolution sans jamais avoir à vider manuellement leur cache navigateur (ni faire Ctrl+F5) :
+
+1. **Sanctuarisation absolue du script anti-cache** :
+   - Le bloc de détection et d'actualisation transparente (`checkAppUpdate`, écouteurs d'événements `visibilitychange`, `window.focus`, et surveillance périodique en arrière-plan) situé au sommet du script principal dans `index.html` et `Github/index.html` est sanctuarisé.
+   - Il est formellement interdit de le supprimer, de le désactiver, de le commenter ou d'altérer sa séquence de synchronisation préalable avant rechargement.
+
+2. **Incrémentation systématique de `APP_BUILD_VERSION` à chaque modification** :
+   - À **chaque modification ou mise à jour ultérieure** de l'interface, du style, de la méthodologie ou de la logique frontend (`index.html` et `Github/index.html`), la constante `APP_BUILD_VERSION` doit impérativement être incrémentée sous le format standard : `YYYY.MM.DD.<libelle_explicite>_vX_Y`.
+   - C'est ce changement de valeur qui déclenche l'actualisation automatique et transparente chez tous les utilisateurs connectés.
+
+3. **Sauvegarde de sécurité avant rechargement** :
+   - Toute actualisation automatique déclenchée par une nouvelle version doit d'abord sauvegarder le texte en cours de rédaction (`saveCurrentDraftToLastRenderedSubject`), persister le stockage local (`persistStorageData`) et purger la synchronisation Cloud (`flushCloudSyncNow`) avant d'exécuter `window.location.replace`.
+   - Ne jamais interrompre une évaluation IA en cours de traitement : si une analyse est en cours de calcul, le rechargement doit être différé automatiquement pour laisser l'évaluation se terminer et afficher le rapport.
+
+4. **Synchronisation binaire obligatoire (`fc.exe /b`) et déploiement** :
+   - Avant tout commit et push, s'assurer que `index.html` et `Github/index.html` sont strictement identiques bit-à-bit via `fc.exe /b "index.html" "Github\index.html"`.
+   - Pousser systématiquement sur la branche `main` du dépôt GitHub pour alimenter le site en ligne sur GitHub Pages.
+
+
