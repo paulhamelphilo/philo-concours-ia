@@ -8763,6 +8763,29 @@
         }
 
         function restructurerEnteteRapport(doc) {
+            function resoudreIntituleExactSujet(rawVal) {
+                let candidate = (rawVal || '').replace(/^[*\s:—–-]+|[*\s:—–-]+$/g, '').trim();
+                const active = (typeof obtenirSujetActif === 'function' ? obtenirSujetActif() : '') || (typeof sujetActif !== 'undefined' ? sujetActif : '');
+                if (active && active.trim()) {
+                    return active.trim();
+                }
+                if (typeof CONCOURS_ANNALES !== 'undefined' && candidate) {
+                    const cleanTarget = candidate.replace(/[\s«"“”'’*–—-]/g, '').toLowerCase();
+                    for (const k in CONCOURS_ANNALES) {
+                        const grp = CONCOURS_ANNALES[k];
+                        if (grp && Array.isArray(grp.dissertation)) {
+                            const found = grp.dissertation.find(d => d && d.title && d.title.replace(/[\s«"“”'’*–—-]/g, '').toLowerCase() === cleanTarget);
+                            if (found && found.title) return found.title.trim();
+                        }
+                    }
+                }
+                const mQuotes = candidate.match(/^«\s*(.*?)\s*»$/) || candidate.match(/^“\s*(.*?)\s*”$/) || candidate.match(/^"\s*(.*?)\s*"$/);
+                if (mQuotes && mQuotes[1]) {
+                    return mQuotes[1].trim();
+                }
+                return candidate;
+            }
+
             // Identifier le titre principal du rapport (h1 ou h2 selon les flux)
             let titleEl = Array.from(doc.querySelectorAll('h1, h2')).find(h => /^🏛️?\s*Rapport\s+d['’]évaluation/i.test(h.textContent.trim()));
             if (!titleEl) {
@@ -8788,8 +8811,7 @@
                             valEl.textContent = val;
                         } else if (lbl.includes('sujet')) {
                             val = val.replace(/(?:Nature\s+du\s+travail|Concours(?:\s+cibl[eé])?)[\s\S]*$/i, '').trim();
-                            val = val.replace(/^[\s«"“”*]+|[\s»"“”*]+$/g, '').trim();
-                            if (val) val = `« ${val} »`;
+                            val = resoudreIntituleExactSujet(val);
                             valEl.textContent = val;
                         } else if (lbl.includes('nature')) {
                             val = val.replace(/(?:Concours(?:\s+cibl[eé])?|Sujet(?:\s*\/\s*texte)?)[\s\S]*$/i, '').trim();
@@ -8896,11 +8918,8 @@
                 sujetVal = sujetActif;
             }
 
-            // Nettoyage et formatage typographique soigné du sujet
-            let formattedSujet = sujetVal ? sujetVal.replace(/^[\s«"“”*]+|[\s»"“”*]+$/g, '').trim() : '';
-            if (formattedSujet) {
-                formattedSujet = `« ${formattedSujet} »`;
-            }
+            // Restitution exacte du sujet (sans guillemets artificiels)
+            let formattedSujet = resoudreIntituleExactSujet(sujetVal);
 
             // Supprimer les nœuds d'origine
             nodesToRemove.forEach(node => {
