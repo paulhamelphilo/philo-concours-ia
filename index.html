@@ -3757,7 +3757,7 @@
     </div>
 
     <script>
-        const APP_BUILD_VERSION = "2026.09.26.robust_cloud_sync_v3";
+        const APP_BUILD_VERSION = "2026.10.01.multi_brouillons_v3_5";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -3789,7 +3789,8 @@
                                 await window.flushCloudSyncNow();
                             } catch (_) {}
                         }
-                        window.location.reload(true);
+                        const targetUrl = window.location.href.split('#')[0].split('?')[0] + '?v=' + encodeURIComponent(match[1]);
+                        window.location.replace(targetUrl);
                     }
                 })
                 .catch(() => {});
