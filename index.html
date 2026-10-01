@@ -3762,7 +3762,7 @@
         // Toute modification ultérieure de l'application DOIT incrémenter APP_BUILD_VERSION.
         // Ce script garantit que les utilisateurs reçoivent instantanément les mises à jour.
         // =========================================================================
-        const APP_BUILD_VERSION = "2026.10.01.sync_automatique_cloud_v3_7";
+        const APP_BUILD_VERSION = "2026.10.01.sync_automatique_cloud_v3_8";
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -7456,7 +7456,7 @@
             }, delayMs);
         };
 
-        window.flushCloudSyncNow = async function () {
+        window.flushCloudSyncNow = async function (options = {}) {
             if (cloudSyncTimer) {
                 clearTimeout(cloudSyncTimer);
                 cloudSyncTimer = null;
@@ -7558,26 +7558,37 @@
             const deletedProfiles = Array.from(cloudDeletedProfiles);
             cloudDeletedProfiles.clear();
 
+            const bodyStr = JSON.stringify({
+                action: 'sync_push',
+                payload: {
+                    activeProfileId: Number(storageData.activeProfileId) || 1,
+                    updatedAt: Number(storageData.updatedAt) || Date.now(),
+                    profilesMeta,
+                    upsertedSubjects,
+                    deletedSubjects,
+                    deletedProfiles
+                }
+            });
+
+            // Ne JAMAIS activer keepalive si le corps dépasse 60 Ko (limite stricte 64 Ko imposée par les navigateurs)
+            // et ne l'activer que si la page est explicitement en cours de déchargement (pagehide)
+            const isSmallPayload = bodyStr.length < 60000;
+            const useKeepalive = Boolean(options && options.isPageHide && isSmallPayload);
+
+            const fetchOpts = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: bodyStr
+            };
+            if (useKeepalive) {
+                fetchOpts.keepalive = true;
+            }
+
             try {
-                const res = await fetch(CLOUD_FUNCTION_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    keepalive: true,
-                    body: JSON.stringify({
-                        action: 'sync_push',
-                        payload: {
-                            activeProfileId: Number(storageData.activeProfileId) || 1,
-                            updatedAt: Number(storageData.updatedAt) || Date.now(),
-                            profilesMeta,
-                            upsertedSubjects,
-                            deletedSubjects,
-                            deletedProfiles
-                        }
-                    })
-                });
+                const res = await fetch(CLOUD_FUNCTION_URL, fetchOpts);
 
                 if (res.status === 401 || res.status === 403) {
                     console.warn("Session Cloud expirée ou non autorisée lors de la sauvegarde.");
@@ -7599,7 +7610,11 @@
                 dirtySnapshot.forEach(k => cloudDirtySubjects.add(k));
                 deletedSubSnapshot.forEach(k => cloudDeletedSubjects.add(k));
                 deletedProfiles.forEach(p => cloudDeletedProfiles.add(p));
-                window.setCloudSyncStatusUI('offline');
+                if (!navigator.onLine) {
+                    window.setCloudSyncStatusUI('offline');
+                } else {
+                    window.setCloudSyncStatusUI('pending', 'Nouvel essai...');
+                }
 
                 // Reprise automatique avec réessai après micro-coupure de déploiement
                 if (!cloudRetryTimer && navigator.onLine) {
@@ -7873,8 +7888,10 @@
                     await window.flushCloudSyncNow();
                 }
             } catch (err) {
-                console.warn("Synchronisation Cloud indisponible (mode local actif) :", err);
-                window.setCloudSyncStatusUI('offline');
+                console.warn("Synchronisation Cloud indisponible :", err);
+                if (!navigator.onLine) {
+                    window.setCloudSyncStatusUI('offline');
+                }
             }
         };
 
@@ -7939,14 +7956,16 @@
         // Fermeture d'onglet ou navigation (sauvegarde ultime avant déchargement)
         window.addEventListener('pagehide', () => {
             if (cloudSyncTimer || cloudDirtySubjects.size > 0) {
-                window.flushCloudSyncNow();
+                window.flushCloudSyncNow({ isPageHide: true });
             }
         });
 
-        // Surveillance périodique en arrière-plan toutes les 15 secondes
+        // Surveillance périodique en arrière-plan (uniquement si l'onglet est actif et visible)
         setInterval(() => {
-            triggerBackgroundCloudPull();
-        }, 15000);
+            if (document.visibilityState === 'visible') {
+                triggerBackgroundCloudPull();
+            }
+        }, 30000);
 
         function persistStorageData(options) {
             try {
