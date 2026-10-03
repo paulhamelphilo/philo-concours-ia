@@ -4,3 +4,13 @@ env.yaml
 node_modules/
 .DS_Store
 *.bak
+copies_calibrees.json
+GEMINI.md
+Backups_Versions/
+GCloud/
+Copies/
+Grilles_Evaluation/
+Ressources Concours/
+Test Mentor/
+scratch/
+api_keys.env
