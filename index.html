@@ -3332,6 +3332,56 @@
             }
         }
 
+        /* En mode mobile portrait ou écrans étroits : bande blanche spécifique au-dessus du titre */
+        @media (max-width: 768px) and (orientation: portrait), (max-width: 520px) {
+            #mentor-session-bar {
+                position: relative !important;
+                top: auto !important;
+                right: auto !important;
+                left: auto !important;
+                bottom: auto !important;
+                width: calc(100% + 20px) !important;
+                box-sizing: border-box !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                gap: 10px !important;
+                background: #ffffff !important;
+                padding: 8px 12px 8px 12px !important;
+                margin: -12px -10px 14px -10px !important;
+                border-top-left-radius: 8px !important;
+                border-top-right-radius: 8px !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+                z-index: 60 !important;
+            }
+
+            #mentor-session-bar[style*="none"] {
+                display: none !important;
+            }
+
+            #mentor-session-bar:not([style*="none"]) {
+                display: flex !important;
+            }
+
+            #mentor-cloud-sync-pill {
+                width: 32px !important;
+                height: 32px !important;
+                font-size: 0.88rem !important;
+            }
+
+            #mentor-account-popover {
+                right: 10px !important;
+                max-width: calc(100vw - 32px) !important;
+            }
+
+            .container > h1 {
+                font-size: 1.65rem !important;
+                margin-top: 0 !important;
+                margin-bottom: 20px !important;
+                padding-bottom: 12px !important;
+            }
+        }
+
         .mentor-bar-btn {
             padding: 5px 12px;
             border-radius: 6px;
@@ -3975,7 +4025,7 @@
         // Toute modification ultérieure de l'application DOIT incrémenter APP_BUILD_VERSION.
         // Ce script garantit que les utilisateurs reçoivent instantanément les mises à jour.
         // =========================================================================
-        const APP_BUILD_VERSION = "2026.10.03.epuration_ui_admin_v3_10";
+        const APP_BUILD_VERSION = "2026.10.03.mobile_portrait_header_bande_v3_11";
 
         // Nettoyage esthétique immédiat et transparent de l'URL dans la barre d'adresse
         try {
