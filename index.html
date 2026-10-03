@@ -52,7 +52,9 @@
             --btn-secondary-border: #adb7bd;
         }
 
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
@@ -60,7 +62,8 @@
             list-style-type: "–  ";
         }
 
-        html, body {
+        html,
+        body {
             max-width: 100%;
             overflow-x: hidden;
         }
@@ -309,15 +312,19 @@
         .global-eval-dashboard.dashboard-tier-1 {
             border-left-color: #22c55e;
         }
+
         .global-eval-dashboard.dashboard-tier-2 {
             border-left-color: #0ea5e9;
         }
+
         .global-eval-dashboard.dashboard-tier-3 {
             border-left-color: #f59e0b;
         }
+
         .global-eval-dashboard.dashboard-tier-4 {
             border-left-color: #f97316;
         }
+
         .global-eval-dashboard.dashboard-tier-5 {
             border-left-color: #ef4444;
         }
@@ -493,18 +500,22 @@
             --card-tier-color: #22c55e;
             border-left-color: #22c55e;
         }
+
         .section-feedback-card.card-tier-2 {
             --card-tier-color: #0ea5e9;
             border-left-color: #0ea5e9;
         }
+
         .section-feedback-card.card-tier-3 {
             --card-tier-color: #f59e0b;
             border-left-color: #f59e0b;
         }
+
         .section-feedback-card.card-tier-4 {
             --card-tier-color: #f97316;
             border-left-color: #f97316;
         }
+
         .section-feedback-card.card-tier-5 {
             --card-tier-color: #ef4444;
             border-left-color: #ef4444;
@@ -522,52 +533,46 @@
 
         .section-feedback-card.card-part-2 {
             border-left-width: 2px;
-            background-image: linear-gradient(
-                to right,
-                #ffffff 0px,
-                #ffffff 3px,
-                var(--card-tier-color) 3px,
-                var(--card-tier-color) 5px,
-                #ffffff 5px
-            );
+            background-image: linear-gradient(to right,
+                    #ffffff 0px,
+                    #ffffff 3px,
+                    var(--card-tier-color) 3px,
+                    var(--card-tier-color) 5px,
+                    #ffffff 5px);
             padding-left: 29px;
         }
 
         .section-feedback-card.card-part-3 {
             border-left-width: 2px;
-            background-image: linear-gradient(
-                to right,
-                #ffffff 0px,
-                #ffffff 3px,
-                var(--card-tier-color) 3px,
-                var(--card-tier-color) 5px,
-                #ffffff 5px,
-                #ffffff 8px,
-                var(--card-tier-color) 8px,
-                var(--card-tier-color) 10px,
-                #ffffff 10px
-            );
+            background-image: linear-gradient(to right,
+                    #ffffff 0px,
+                    #ffffff 3px,
+                    var(--card-tier-color) 3px,
+                    var(--card-tier-color) 5px,
+                    #ffffff 5px,
+                    #ffffff 8px,
+                    var(--card-tier-color) 8px,
+                    var(--card-tier-color) 10px,
+                    #ffffff 10px);
             padding-left: 34px;
         }
 
         .section-feedback-card.card-part-4 {
             border-left-width: 2px;
-            background-image: linear-gradient(
-                to right,
-                #ffffff 0px,
-                #ffffff 3px,
-                var(--card-tier-color) 3px,
-                var(--card-tier-color) 5px,
-                #ffffff 5px,
-                #ffffff 8px,
-                var(--card-tier-color) 8px,
-                var(--card-tier-color) 10px,
-                #ffffff 10px,
-                #ffffff 13px,
-                var(--card-tier-color) 13px,
-                var(--card-tier-color) 15px,
-                #ffffff 15px
-            );
+            background-image: linear-gradient(to right,
+                    #ffffff 0px,
+                    #ffffff 3px,
+                    var(--card-tier-color) 3px,
+                    var(--card-tier-color) 5px,
+                    #ffffff 5px,
+                    #ffffff 8px,
+                    var(--card-tier-color) 8px,
+                    var(--card-tier-color) 10px,
+                    #ffffff 10px,
+                    #ffffff 13px,
+                    var(--card-tier-color) 13px,
+                    var(--card-tier-color) 15px,
+                    #ffffff 15px);
             padding-left: 39px;
         }
 
@@ -669,8 +674,8 @@
 
         /* Intertitres de section (« Analyse critique » et « Pistes d'amélioration ») :
            hiérarchie strictement décroissante au-dessus du corps de texte (15 px) */
-        .section-feedback-card > h4,
-        .section-feedback-card > h5 {
+        .section-feedback-card>h4,
+        .section-feedback-card>h5 {
             color: #0f172a;
             font-size: 16.5px;
             font-weight: 700;
@@ -701,8 +706,8 @@
             line-height: 1.4;
         }
 
-        .section-card-header + h4,
-        .section-card-header + h5 {
+        .section-card-header+h4,
+        .section-card-header+h5 {
             margin-top: 4px;
         }
 
@@ -841,7 +846,7 @@
         }
 
         /* Titre du nœud critique en en-tête de la case (prééminence visuelle conservée) */
-        .noeud-critique-block > h4:first-child {
+        .noeud-critique-block>h4:first-child {
             color: #1e3a8a;
             font-size: 16.5px;
             font-weight: 700;
@@ -854,8 +859,8 @@
             line-height: 1.4;
         }
 
-        .noeud-critique-block > h4:first-child + h5,
-        .noeud-critique-block > h4:first-child + h4 {
+        .noeud-critique-block>h4:first-child+h5,
+        .noeud-critique-block>h4:first-child+h4 {
             margin-top: 6px;
         }
 
@@ -865,21 +870,25 @@
             background: #fcfdfc;
             border-color: #e2ece4;
         }
+
         .card-tier-2 .noeud-critique-block {
             border-left-color: #0ea5e9;
             background: #f8fafc;
             border-color: #e2e8f0;
         }
+
         .card-tier-3 .noeud-critique-block {
             border-left-color: #f59e0b;
             background: #fffdfa;
             border-color: #faedd0;
         }
+
         .card-tier-4 .noeud-critique-block {
             border-left-color: #f97316;
             background: #fffaf5;
             border-color: #fae4d2;
         }
+
         .card-tier-5 .noeud-critique-block {
             border-left-color: #ef4444;
             background: #fdf8f8;
@@ -900,11 +909,13 @@
             .section-feedback-card {
                 padding: 16px;
             }
+
             .section-card-header {
                 flex-direction: column;
                 align-items: stretch;
                 gap: 10px;
             }
+
             .section-card-score-wrap,
             .section-score-pill {
                 align-self: flex-end;
@@ -930,10 +941,24 @@
         }
 
         @keyframes dotsAnimation {
-            0%, 20% { content: ''; }
-            40% { content: '.'; }
-            60% { content: '..'; }
-            80%, 100% { content: '...'; }
+
+            0%,
+            20% {
+                content: '';
+            }
+
+            40% {
+                content: '.';
+            }
+
+            60% {
+                content: '..';
+            }
+
+            80%,
+            100% {
+                content: '...';
+            }
         }
 
         .btn-sm {
@@ -1077,21 +1102,25 @@
             color: #15803d;
             border: 1px solid #86efac;
         }
+
         .pill-tier-2 {
             background-color: #e0f2fe;
             color: #0369a1;
             border: 1px solid #7dd3fc;
         }
+
         .pill-tier-3 {
             background-color: #fef3c7;
             color: #b45309;
             border: 1px solid #fcd34d;
         }
+
         .pill-tier-4 {
             background-color: #ffedd5;
             color: #c2410c;
             border: 1px solid #fdba74;
         }
+
         .pill-tier-5 {
             background-color: #fee2e2;
             color: #b91c1c;
@@ -1104,6 +1133,7 @@
             color: #1e40af;
             border: 1px solid #93c5fd;
         }
+
         .quicknav-bilan-pill:hover {
             background: #2563eb;
             color: #ffffff;
@@ -1391,6 +1421,7 @@
             border: 1.5px solid #0284c7;
             font-size: clamp(8.5px, 2.35vh, 13px);
         }
+
         .cran-pill.tier-draft.active {
             background: #0284c7;
             color: #ffffff;
@@ -1398,10 +1429,12 @@
             box-shadow: 0 0 0 1.5px #ffffff, 0 0 0 2.5px #0284c7;
             transform: none !important;
         }
+
         .cran-pill.tier-draft.active:hover {
             transform: none !important;
             filter: brightness(1.06);
         }
+
         /* Info-bulles élégantes à droite de la barre de gauche (Desktop) — même style que la barre de droite */
         .floating-profile-dock .profile-pill[data-tooltip]::before,
         .floating-profile-dock .profile-add-btn[data-tooltip]::before,
@@ -1967,8 +2000,15 @@
         }
 
         @keyframes fadeInPane {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Justification du texte courant dans le rapport d'évaluation */
@@ -2317,12 +2357,30 @@
             display: none !important;
         }
 
-        .inline-annotation-card.type-conceptuel { border-left-color: #f59e0b; }
-        .inline-annotation-card.type-logique { border-left-color: #ef4444; }
-        .inline-annotation-card.type-reference { border-left-color: #0284c7; }
-        .inline-annotation-card.type-style { border-left-color: #9333ea; }
-        .inline-annotation-card.type-etincelle { border-left-color: #16a34a; }
-        .inline-annotation-card.type-atelier { border-left-color: #d97706; background: #fffdf7; }
+        .inline-annotation-card.type-conceptuel {
+            border-left-color: #f59e0b;
+        }
+
+        .inline-annotation-card.type-logique {
+            border-left-color: #ef4444;
+        }
+
+        .inline-annotation-card.type-reference {
+            border-left-color: #0284c7;
+        }
+
+        .inline-annotation-card.type-style {
+            border-left-color: #9333ea;
+        }
+
+        .inline-annotation-card.type-etincelle {
+            border-left-color: #16a34a;
+        }
+
+        .inline-annotation-card.type-atelier {
+            border-left-color: #d97706;
+            background: #fffdf7;
+        }
 
         .btn-replier-card {
             background: #f1f5f9;
@@ -2339,6 +2397,7 @@
             gap: 4px;
             transition: all 0.15s ease;
         }
+
         .btn-replier-card:hover {
             background: #e2e8f0;
             color: #0f172a;
@@ -2380,11 +2439,30 @@
             gap: 4px;
         }
 
-        .type-conceptuel .inline-ann-badge { background: #fef3c7; color: #92400e; }
-        .type-logique .inline-ann-badge { background: #fee2e2; color: #991b1b; }
-        .type-reference .inline-ann-badge { background: #e0f2fe; color: #075985; }
-        .type-style .inline-ann-badge { background: #f3e8ff; color: #6b21a8; }
-        .type-etincelle .inline-ann-badge { background: #dcfce7; color: #166534; }
+        .type-conceptuel .inline-ann-badge {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .type-logique .inline-ann-badge {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .type-reference .inline-ann-badge {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .type-style .inline-ann-badge {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .type-etincelle .inline-ann-badge {
+            background: #dcfce7;
+            color: #166534;
+        }
 
         .inline-ann-num {
             font-size: 12px;
@@ -2715,6 +2793,7 @@
 
         /* Règles d'impression : conservation du chapeau général et suppression des sauts de page */
         @media print {
+
             /* Masquage de tous les éléments interactifs, formulaires et bannières hors rapport */
             .floating-profile-dock,
             .floating-quicknav,
@@ -2724,7 +2803,7 @@
             .workspace-header,
             .sujet-dissertation-banner,
             #training-section-container,
-            .editor-column > div:not(#correction-box),
+            .editor-column>div:not(#correction-box),
             .btn,
             .loading,
             .correction-tabs-bar,
@@ -2852,7 +2931,11 @@
             }
 
             /* Évite les coupures orphelines de titres */
-            h2, h3, h4, h5, h6,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6,
             .section-card-header,
             .dashboard-header {
                 break-after: avoid !important;
@@ -2911,7 +2994,8 @@
                 margin-bottom: 12px !important;
             }
 
-            p, li {
+            p,
+            li {
                 orphans: 2;
                 widows: 2;
             }
@@ -2928,6 +3012,7 @@
                 break-inside: auto !important;
                 page-break-inside: auto !important;
             }
+
             #mentor-auth-overlay,
             #mentor-admin-modal,
             #mentor-log-detail-modal,
@@ -2948,6 +3033,7 @@
             padding: 24px;
             overflow-y: auto;
         }
+
         .mentor-auth-card {
             background: #ffffff;
             width: 100%;
@@ -2957,6 +3043,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: left;
         }
+
         .mentor-auth-card h1 {
             text-align: center;
             color: var(--primary-color, #2c3e50);
@@ -2966,13 +3053,16 @@
             font-size: 2rem;
             line-height: 1.35;
         }
+
         .mentor-auth-form-inner {
             max-width: 380px;
             margin: 0 auto;
         }
+
         .mentor-auth-field {
             margin-bottom: 16px;
         }
+
         .mentor-auth-field label {
             display: block;
             font-weight: 600;
@@ -2980,6 +3070,7 @@
             color: #334155;
             margin-bottom: 6px;
         }
+
         .mentor-auth-field input {
             width: 100%;
             padding: 11px 12px;
@@ -2989,10 +3080,12 @@
             outline: none;
             transition: border-color 0.2s;
         }
+
         .mentor-auth-field input:focus {
             border-color: #2c3e50;
             box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.12);
         }
+
         .mentor-auth-btn {
             width: 100%;
             padding: 12px 16px;
@@ -3006,13 +3099,16 @@
             transition: background 0.2s;
             margin-top: 6px;
         }
+
         .mentor-auth-btn:hover {
             background: #1a252f;
         }
+
         .mentor-auth-btn:disabled {
             opacity: 0.65;
             cursor: wait;
         }
+
         .mentor-auth-error {
             background: #fef2f2;
             color: #b91c1c;
@@ -3034,6 +3130,7 @@
             align-items: center;
             gap: 10px;
         }
+
         #mentor-cloud-sync-pill {
             display: inline-flex;
             align-items: center;
@@ -3052,26 +3149,31 @@
             padding: 0;
             line-height: 1;
         }
+
         #mentor-cloud-sync-pill:hover {
             background: #f1f5f9;
             border-color: #94a3b8;
             color: #0f172a;
         }
+
         #mentor-cloud-sync-pill.sync-ok {
             background: #f0fdf4;
             border-color: #bbf7d0;
             color: #166534;
         }
+
         #mentor-cloud-sync-pill.sync-pending {
             background: #fffbeb;
             border-color: #fde68a;
             color: #92400e;
         }
+
         #mentor-cloud-sync-pill.sync-offline {
             background: #fef2f2;
             border-color: #fecaca;
             color: #991b1b;
         }
+
         #mentor-account-trigger {
             width: 34px;
             height: 34px;
@@ -3091,6 +3193,7 @@
             padding: 0;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
         }
+
         #mentor-account-trigger:hover,
         #mentor-account-trigger.open {
             background: #f1f5f9;
@@ -3098,16 +3201,19 @@
             color: #0f172a;
             box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
         }
+
         #mentor-account-trigger.is-admin {
             background: #1e293b;
             color: #ffffff;
             border-color: #1e293b;
         }
+
         #mentor-account-trigger.is-admin:hover,
         #mentor-account-trigger.is-admin.open {
             background: #0f172a;
             border-color: #0f172a;
         }
+
         #mentor-account-trigger.is-admin::after {
             content: "";
             position: absolute;
@@ -3119,6 +3225,7 @@
             background: #38bdf8;
             border: 1.5px solid #ffffff;
         }
+
         #mentor-account-popover {
             display: none;
             position: absolute;
@@ -3135,15 +3242,18 @@
             font-size: 0.86rem;
             color: #334155;
         }
+
         #mentor-account-popover.open {
             display: block;
             animation: fadeInPane 0.15s ease;
         }
+
         .mentor-popover-header {
             padding-bottom: 10px;
             margin-bottom: 10px;
             border-bottom: 1px solid #f1f5f9;
         }
+
         .mentor-popover-user-row {
             display: flex;
             align-items: center;
@@ -3154,6 +3264,7 @@
             font-size: 0.9rem;
             margin-bottom: 4px;
         }
+
         .mentor-popover-role-badge {
             display: none;
             font-size: 0.7rem;
@@ -3163,17 +3274,20 @@
             padding: 1px 7px;
             border-radius: 999px;
         }
+
         .mentor-session-pill {
             display: inline-block;
             font-size: 0.78rem;
             color: #64748b;
             font-weight: 500;
         }
+
         .mentor-popover-actions {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
+
         .mentor-popover-btn {
             width: 100%;
             text-align: left;
@@ -3190,28 +3304,34 @@
             align-items: center;
             gap: 8px;
         }
+
         .mentor-popover-btn:hover {
             background: #f1f5f9;
             color: #0f172a;
         }
+
         .mentor-popover-btn.logout-btn {
             color: #b91c1c;
         }
+
         .mentor-popover-btn.logout-btn:hover {
             background: #fef2f2;
             color: #991b1b;
         }
+
         @media (max-width: 768px) {
             #mentor-session-bar {
                 top: 14px;
                 right: 12px;
             }
+
             #mentor-account-trigger {
                 width: 32px;
                 height: 32px;
                 font-size: 0.82rem;
             }
         }
+
         .mentor-bar-btn {
             padding: 5px 12px;
             border-radius: 6px;
@@ -3223,14 +3343,17 @@
             cursor: pointer;
             transition: all 0.15s;
         }
+
         .mentor-bar-btn:hover {
             background: #e2e8f0;
         }
+
         .mentor-bar-btn.admin-btn {
             background: #2c3e50;
             color: #ffffff;
             border-color: #2c3e50;
         }
+
         .mentor-bar-btn.admin-btn:hover {
             background: #1a252f;
         }
@@ -3249,9 +3372,11 @@
             padding: 24px 16px;
             overflow-y: auto;
         }
+
         #mentor-log-detail-modal {
             z-index: 99995;
         }
+
         .mentor-admin-panel {
             background: #ffffff;
             width: 100%;
@@ -3262,6 +3387,7 @@
             border: 1px solid #cbd5e1;
             margin: auto 0;
         }
+
         .mentor-admin-header {
             display: flex;
             align-items: center;
@@ -3272,34 +3398,40 @@
             padding-bottom: 14px;
             margin-bottom: 18px;
         }
+
         .mentor-admin-header h2 {
             margin: 0;
             font-size: 1.3rem;
             color: #1e293b;
         }
+
         .mentor-kpi-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px;
             margin-bottom: 18px;
         }
+
         .mentor-kpi-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
             padding: 12px 16px;
         }
+
         .mentor-kpi-label {
             font-size: 0.82rem;
             color: #64748b;
             font-weight: 600;
         }
+
         .mentor-kpi-value {
             font-size: 1.55rem;
             font-weight: 700;
             color: #1e293b;
             margin-top: 2px;
         }
+
         .mentor-admin-section {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -3307,17 +3439,20 @@
             padding: 16px;
             margin-bottom: 18px;
         }
+
         .mentor-admin-section h3 {
             margin: 0 0 12px 0;
             font-size: 1.04rem;
             color: #1e293b;
         }
+
         .mentor-admin-form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
             gap: 10px;
             align-items: end;
         }
+
         .mentor-admin-form-grid label {
             display: block;
             font-size: 0.8rem;
@@ -3325,6 +3460,7 @@
             color: #475569;
             margin-bottom: 4px;
         }
+
         .mentor-admin-form-grid input {
             width: 100%;
             padding: 8px 10px;
@@ -3332,17 +3468,20 @@
             border-radius: 6px;
             font-size: 0.88rem;
         }
+
         .mentor-table-wrap {
             overflow-x: auto;
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
         }
+
         .mentor-admin-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.85rem;
         }
+
         .mentor-admin-table th,
         .mentor-admin-table td {
             padding: 9px 10px;
@@ -3350,15 +3489,18 @@
             text-align: left;
             vertical-align: middle;
         }
+
         .mentor-admin-table th {
             background: #f1f5f9;
             color: #334155;
             font-weight: 700;
             white-space: nowrap;
         }
+
         .mentor-admin-table tr:hover td {
             background: #f8fafc;
         }
+
         .mentor-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -3366,14 +3508,17 @@
             font-size: 0.76rem;
             font-weight: 600;
         }
+
         .mentor-badge.active {
             background: #dcfce7;
             color: #166534;
         }
+
         .mentor-badge.suspended {
             background: #fee2e2;
             color: #991b1b;
         }
+
         .mentor-badge.admin {
             background: #e0e7ff;
             color: #1e40af;
@@ -3386,19 +3531,26 @@
     <!-- Écran d'accueil et de connexion (seul élément visible tant que non connecté) -->
     <div id="mentor-auth-overlay">
         <div class="mentor-auth-card">
-            <h1>🏛️ Philo Concours IA <span style="font-size: 0.55em; font-weight: normal; color: #64748b; display: block; margin-top: 6px;">Capes externe &bull; Agrégation interne &bull; Agrégation externe</span></h1>
+            <h1>🏛️ Philo Concours IA <span
+                    style="font-size: 0.55em; font-weight: normal; color: #64748b; display: block; margin-top: 6px;">Capes
+                    externe &bull; Agrégation interne &bull; Agrégation externe</span></h1>
             <div class="mentor-auth-form-inner">
                 <div id="mentor-auth-error" class="mentor-auth-error"></div>
                 <form id="mentor-auth-form" onsubmit="window.submitMentorLogin(event)">
                     <div class="mentor-auth-field">
                         <label for="mentor-login-username">Identifiant</label>
-                        <input type="text" id="mentor-login-username" autocomplete="username" placeholder="Votre identifiant" required>
+                        <input type="text" id="mentor-login-username" autocomplete="username"
+                            placeholder="Votre identifiant" required>
                     </div>
                     <div class="mentor-auth-field">
                         <label for="mentor-login-password">Mot de passe</label>
                         <div style="position: relative;">
-                            <input type="password" id="mentor-login-password" autocomplete="current-password" placeholder="Votre mot de passe" required style="padding-right: 40px;">
-                            <button type="button" onclick="const inp = document.getElementById('mentor-login-password'); inp.type = inp.type === 'password' ? 'text' : 'password';" title="Afficher ou masquer le mot de passe" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; color: #64748b;">👁️</button>
+                            <input type="password" id="mentor-login-password" autocomplete="current-password"
+                                placeholder="Votre mot de passe" required style="padding-right: 40px;">
+                            <button type="button"
+                                onclick="const inp = document.getElementById('mentor-login-password'); inp.type = inp.type === 'password' ? 'text' : 'password';"
+                                title="Afficher ou masquer le mot de passe"
+                                style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; color: #64748b;">👁️</button>
                         </div>
                     </div>
                     <button type="submit" id="mentor-login-submit" class="mentor-auth-btn">Se connecter</button>
@@ -3411,12 +3563,16 @@
     <div id="mentor-admin-modal" style="display: none;">
         <div class="mentor-admin-panel">
             <div class="mentor-admin-header">
-                <h2>🛡️ Administration des comptes et suivi de l'usage</h2>
+                <h2>🛡️ Administration</h2>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button type="button" class="mentor-bar-btn" onclick="window.loadMentorAdminDashboard()">🔄 Actualiser</button>
-                    <button type="button" class="mentor-bar-btn" onclick="window.exportMentorDataCSV()">📊 Exporter en CSV (Excel)</button>
-                    <button type="button" class="mentor-bar-btn" onclick="window.exportMentorDataJSON()">📦 Exporter en JSON</button>
-                    <button type="button" class="mentor-bar-btn admin-btn" onclick="window.closeMentorAdminModal()">Fermer ✕</button>
+                    <button type="button" class="mentor-bar-btn" onclick="window.loadMentorAdminDashboard()">🔄
+                        Actualiser</button>
+                    <button type="button" class="mentor-bar-btn" onclick="window.exportMentorDataCSV()">📊 Export
+                        CSV</button>
+                    <button type="button" class="mentor-bar-btn" onclick="window.exportMentorDataJSON()">📦 Export
+                        JSON</button>
+                    <button type="button" class="mentor-bar-btn admin-btn"
+                        onclick="window.closeMentorAdminModal()">Fermer</button>
                 </div>
             </div>
 
@@ -3441,19 +3597,25 @@
             </div>
 
             <!-- Interrupteur de confidentialité -->
-            <div class="mentor-admin-section" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div class="mentor-admin-section"
+                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
                 <div>
                     <h3 style="margin-bottom: 4px;">🔒 Confidentialité et archivage des textes soumis</h3>
                     <div style="font-size: 0.85rem; color: #475569;" id="admin-privacy-status-text">
-                        État actuel : désactivé par défaut (seuls les compteurs, dates, concours, sujets, tokens et notes sont enregistrés ; les textes des travaux ne sont pas conservés).
+                        État actuel : désactivé par défaut (seuls les compteurs, dates, concours, sujets, tokens et
+                        notes sont enregistrés ; les textes des travaux ne sont pas conservés).
                     </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; background: #ffffff; padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
-                        <input type="checkbox" id="admin-toggle-store-texts" onchange="window.toggleMentorStoreTexts(this.checked)">
+                    <label
+                        style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; background: #ffffff; padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
+                        <input type="checkbox" id="admin-toggle-store-texts"
+                            onchange="window.toggleMentorStoreTexts(this.checked)">
                         <span>Enregistrer le texte des travaux et des rapports</span>
                     </label>
-                    <button type="button" class="mentor-bar-btn" onclick="window.purgeMentorArchivedTexts()" title="Supprimer tous les textes de travaux et rapports enregistrés tout en gardant les compteurs">🧹 Purger les textes archivés</button>
+                    <button type="button" class="mentor-bar-btn" onclick="window.purgeMentorArchivedTexts()"
+                        title="Supprimer tous les textes de travaux et rapports enregistrés tout en gardant les compteurs">🧹
+                        Purger les textes archivés</button>
                 </div>
             </div>
 
@@ -3463,19 +3625,21 @@
                 <form id="admin-user-form" onsubmit="window.saveMentorUserAccount(event)">
                     <div class="mentor-admin-form-grid">
                         <div>
-                            <label for="admin-input-username">Identifiant (login)</label>
+                            <label for="admin-input-username">Identifiant</label>
                             <input type="text" id="admin-input-username" placeholder="Ex. : marie" required>
                         </div>
                         <div>
-                            <label for="admin-input-password">Mot de passe <span style="font-weight:normal; color:#64748b; cursor:pointer; text-decoration:underline;" onclick="window.generateRandomGuestPassword()">(générer)</span></label>
+                            <label for="admin-input-password">Mot de passe <span
+                                    style="font-weight:normal; color:#64748b; cursor:pointer; text-decoration:underline;"
+                                    onclick="window.generateRandomGuestPassword()">(générer)</span></label>
                             <input type="text" id="admin-input-password" placeholder="Ex. : Philo2026!">
                         </div>
                         <div>
-                            <label for="admin-input-note">Nom ou note personnelle</label>
+                            <label for="admin-input-note">Remarque</label>
                             <input type="text" id="admin-input-note" placeholder="Ex. : Collègue agrégation">
                         </div>
                         <div>
-                            <label for="admin-input-quota-copies">Quota max de travaux</label>
+                            <label for="admin-input-quota-copies">Quota max</label>
                             <input type="number" id="admin-input-quota-copies" min="0" placeholder="Vide = illimité">
                         </div>
                         <div>
@@ -3483,8 +3647,11 @@
                             <input type="date" id="admin-input-expires">
                         </div>
                         <div style="display: flex; gap: 6px;">
-                            <button type="submit" class="mentor-bar-btn admin-btn" style="padding: 9px 14px; width: 100%;">Enregistrer le compte</button>
-                            <button type="button" class="mentor-bar-btn" style="padding: 9px 10px;" onclick="window.resetMentorUserForm()" title="Vider le formulaire">Réinitialiser</button>
+                            <button type="submit" class="mentor-bar-btn admin-btn"
+                                style="padding: 9px 14px; width: 100%;">Enregistrer</button>
+                            <button type="button" class="mentor-bar-btn" style="padding: 9px 10px;"
+                                onclick="window.resetMentorUserForm()"
+                                title="Vider le formulaire">Réinitialiser</button>
                         </div>
                     </div>
                 </form>
@@ -3492,9 +3659,11 @@
 
             <!-- Liste des comptes et suivi par compte -->
             <div class="mentor-admin-section">
-                <div style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
-                    <h3 style="margin: 0;">👥 Suivi compte par compte</h3>
-                    <span style="font-size: 0.78rem; color: #64748b;">Barème API : Gemini 3.7 Flash (0,75 $ / 1M tokens en entrée • 3,75 $ / 1M tokens en sortie, réflexion préalable incluse)</span>
+                <div
+                    style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">👥 Suivi des comptes</h3>
+                    <span style="font-size: 0.78rem; color: #64748b;">Barème API : Gemini 3.7 Flash (0,75 $ / 1M tokens
+                        en entrée • 3,75 $ / 1M tokens en sortie, réflexion préalable incluse)</span>
                 </div>
                 <div class="mentor-table-wrap">
                     <table class="mentor-admin-table">
@@ -3513,7 +3682,10 @@
                             </tr>
                         </thead>
                         <tbody id="admin-users-tbody">
-                            <tr><td colspan="10" style="text-align:center; padding: 18px;">Chargement des comptes...</td></tr>
+                            <tr>
+                                <td colspan="10" style="text-align:center; padding: 18px;">Chargement des comptes...
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -3521,14 +3693,18 @@
 
             <!-- Journal détaillé des activités -->
             <div class="mentor-admin-section" style="margin-bottom: 0;">
-                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-                    <h3 style="margin: 0;">📋 Journal détaillé des utilisations</h3>
+                <div
+                    style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">📋 Journal détaillé</h3>
                     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <label for="admin-filter-user" style="font-size: 0.84rem; font-weight: 600; margin: 0;">Filtrer par compte :</label>
-                        <select id="admin-filter-user" onchange="window.renderMentorAdminLogs()" style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
+                        <label for="admin-filter-user" style="font-size: 0.84rem; font-weight: 600; margin: 0;">Filtrer
+                            par compte :</label>
+                        <select id="admin-filter-user" onchange="window.renderMentorAdminLogs()"
+                            style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
                             <option value="">Tous les comptes</option>
                         </select>
-                        <select id="admin-filter-action" onchange="window.renderMentorAdminLogs()" style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
+                        <select id="admin-filter-action" onchange="window.renderMentorAdminLogs()"
+                            style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
                             <option value="">Toutes les actions</option>
                             <option value="correction">Travaux évalués uniquement</option>
                             <option value="login">Connexions uniquement</option>
@@ -3543,7 +3719,7 @@
                                 <th>Compte</th>
                                 <th>Action</th>
                                 <th>Concours et épreuve</th>
-                                <th>Sujet ou texte traité</th>
+                                <th>Sujet traité</th>
                                 <th>Modèle</th>
                                 <th>Tokens (entrée / sortie)</th>
                                 <th>Coût</th>
@@ -3552,7 +3728,10 @@
                             </tr>
                         </thead>
                         <tbody id="admin-logs-tbody">
-                            <tr><td colspan="10" style="text-align:center; padding: 18px;">Chargement de l'historique...</td></tr>
+                            <tr>
+                                <td colspan="10" style="text-align:center; padding: 18px;">Chargement de l'historique...
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -3565,9 +3744,11 @@
         <div class="mentor-admin-panel" style="max-width: 960px;">
             <div class="mentor-admin-header">
                 <h2 id="mentor-log-detail-title">📄 Consultation du travail et du rapport</h2>
-                <button type="button" class="mentor-bar-btn admin-btn" onclick="document.getElementById('mentor-log-detail-modal').style.display='none'">Fermer ✕</button>
+                <button type="button" class="mentor-bar-btn admin-btn"
+                    onclick="document.getElementById('mentor-log-detail-modal').style.display='none'">Fermer ✕</button>
             </div>
-            <div id="mentor-log-detail-body" style="max-height: 75vh; overflow-y: auto; font-size: 0.92rem; line-height: 1.6;"></div>
+            <div id="mentor-log-detail-body"
+                style="max-height: 75vh; overflow-y: auto; font-size: 0.92rem; line-height: 1.6;"></div>
         </div>
     </div>
 
@@ -3577,10 +3758,14 @@
     <div class="container" id="mentor-main-container" style="display: none;">
         <!-- Bouton de session utilisateur discret en haut à droite, indicateur Cloud et menu déroulant -->
         <div id="mentor-session-bar" style="display: none;">
-            <button type="button" id="mentor-cloud-sync-pill" class="sync-ok" onclick="window.forceManualCloudSync && window.forceManualCloudSync(event)" title="Historique et brouillons synchronisés dans le Cloud (cliquer pour synchroniser maintenant)" aria-label="Synchronisé dans le Cloud">
+            <button type="button" id="mentor-cloud-sync-pill" class="sync-ok"
+                onclick="window.forceManualCloudSync && window.forceManualCloudSync(event)"
+                title="Historique et brouillons synchronisés dans le Cloud (cliquer pour synchroniser maintenant)"
+                aria-label="Synchronisé dans le Cloud">
                 <span id="mentor-cloud-sync-icon">☁️</span>
             </button>
-            <button type="button" id="mentor-account-trigger" onclick="window.toggleMentorAccountMenu(event)" title="Compte et session" aria-label="Compte et session">
+            <button type="button" id="mentor-account-trigger" onclick="window.toggleMentorAccountMenu(event)"
+                title="Compte et session" aria-label="Compte et session">
                 <span id="mentor-account-initial">U</span>
             </button>
             <div id="mentor-account-popover">
@@ -3590,29 +3775,47 @@
                         <span id="mentor-session-role-badge" class="mentor-popover-role-badge">Administrateur</span>
                     </div>
                     <span id="mentor-session-quota-pill" class="mentor-session-pill">Évaluation</span>
-                    <div id="mentor-popover-sync-info" style="font-size: 0.75rem; color: #166534; margin-top: 4px; font-weight: 500;">☁️ Statut cloud : synchronisé</div>
+                    <div id="mentor-popover-sync-info"
+                        style="font-size: 0.75rem; color: #166534; margin-top: 4px; font-weight: 500;">☁️ Statut cloud :
+                        synchronisé</div>
                 </div>
                 <div class="mentor-popover-actions">
-                    <button type="button" class="mentor-popover-btn" onclick="window.closeMentorAccountMenu(); if (window.forceManualCloudSync) window.forceManualCloudSync();">🔄 Synchroniser maintenant</button>
-                    <button type="button" id="mentor-btn-open-admin" class="mentor-popover-btn" style="display: none;" onclick="window.closeMentorAccountMenu(); window.openMentorAdminModal();">🛡️ Administration et suivi</button>
-                    <button type="button" class="mentor-popover-btn logout-btn" onclick="window.closeMentorAccountMenu(); window.logoutMentorSession();">🚪 Se déconnecter</button>
+                    <button type="button" class="mentor-popover-btn"
+                        onclick="window.closeMentorAccountMenu(); if (window.forceManualCloudSync) window.forceManualCloudSync();">🔄
+                        Synchroniser maintenant</button>
+                    <button type="button" id="mentor-btn-open-admin" class="mentor-popover-btn" style="display: none;"
+                        onclick="window.closeMentorAccountMenu(); window.openMentorAdminModal();">🛡️ Administration et
+                        suivi</button>
+                    <button type="button" class="mentor-popover-btn logout-btn"
+                        onclick="window.closeMentorAccountMenu(); window.logoutMentorSession();">🚪 Se
+                        déconnecter</button>
                 </div>
             </div>
         </div>
-        <h1>🏛️ Philo Concours IA <span style="font-size: 0.55em; font-weight: normal; color: var(--secondary-color); display: block; margin-top: 4px;">Capes externe &bull; Agrégation interne &bull; Agrégation externe</span></h1>
+        <h1>🏛️ Philo Concours IA <span
+                style="font-size: 0.55em; font-weight: normal; color: var(--secondary-color); display: block; margin-top: 4px;">Capes
+                externe &bull; Agrégation interne &bull; Agrégation externe</span></h1>
 
-                <div class="global-selector">
-            <label style="display:block; font-weight:bold; margin-bottom:8px; text-align:center;"><strong>Concours</strong></label>
+        <div class="global-selector">
+            <label
+                style="display:block; font-weight:bold; margin-bottom:8px; text-align:center;"><strong>Concours</strong></label>
             <div class="concours-nav">
-                <button id="btn-concours-capes-ext" class="btn active" onclick="setConcours('Capes Externe')">Capes externe</button>
-                <button id="btn-concours-agreg-int" class="btn" onclick="setConcours('Agrégation Interne')">Agrégation interne</button>
-                <button id="btn-concours-agreg-ext" class="btn" onclick="setConcours('Agrégation Externe')">Agrégation externe</button>
+                <button id="btn-concours-capes-ext" class="btn active" onclick="setConcours('Capes Externe')">Capes
+                    externe</button>
+                <button id="btn-concours-agreg-int" class="btn" onclick="setConcours('Agrégation Interne')">Agrégation
+                    interne</button>
+                <button id="btn-concours-agreg-ext" class="btn" onclick="setConcours('Agrégation Externe')">Agrégation
+                    externe</button>
             </div>
 
-            <label style="display:block; font-weight:bold; margin-bottom:8px; text-align:center;"><strong>Épreuve</strong></label>
+            <label
+                style="display:block; font-weight:bold; margin-bottom:8px; text-align:center;"><strong>Épreuve</strong></label>
             <div id="exercise-type-container" class="exercise-type-nav">
-                <button id="btn-ep-dis" type="button" class="btn active" onclick="setExerciseTypeAndEpreuve('dissertation', 'Dissertation')">Dissertation</button>
-                <button id="btn-ep-exp" type="button" class="btn" onclick="setExerciseTypeAndEpreuve('explication', 'Explication de texte')">Explication de texte</button>
+                <button id="btn-ep-dis" type="button" class="btn active"
+                    onclick="setExerciseTypeAndEpreuve('dissertation', 'Dissertation')">Dissertation</button>
+                <button id="btn-ep-exp" type="button" class="btn"
+                    onclick="setExerciseTypeAndEpreuve('explication', 'Explication de texte')">Explication de
+                    texte</button>
             </div>
 
             <!-- Dissertation - Sélecteur standard (Introduction / Développement / Copie complète) -->
@@ -3624,17 +3827,21 @@
                         style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
 
                     <div style="margin-top:12px; text-align:right;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleDissertationMode(false)">📋 Choisir dans les annales officielles</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="toggleDissertationMode(false)">📋 Choisir dans les annales officielles</button>
                     </div>
                 </div>
                 <div id="dissertation-predefined" style="display:none;">
-                    <label style="display:block; margin-bottom: 6px;"><strong>Sujet de dissertation (annales officielles)</strong></label>
-                    <select id="select-sujet" onchange="render()" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
+                    <label style="display:block; margin-bottom: 6px;"><strong>Sujet de dissertation (annales
+                            officielles)</strong></label>
+                    <select id="select-sujet" onchange="render()"
+                        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
                         <option value="">-- Sélectionnez une annale officielle --</option>
                     </select>
 
                     <div style="margin-top:12px; text-align:right;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleDissertationMode(true)">✍️ Saisir un sujet personnalisé</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleDissertationMode(true)">✍️
+                            Saisir un sujet personnalisé</button>
                     </div>
                 </div>
             </div>
@@ -3662,7 +3869,8 @@
                     </div>
 
                     <div style="margin-top:12px; text-align:right;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleArgumentationMode(true)">Saisir une thèse personnalisée à argumenter</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="toggleArgumentationMode(true)">Saisir une thèse personnalisée à argumenter</button>
                     </div>
                 </div>
                 <div id="argumentation-custom" style="display:none;">
@@ -3688,24 +3896,28 @@
 
                     <div>
                         <label><strong>Référence</strong></label>
-                        <input type="text" id="input-custom-ref" placeholder="Auteur, œuvre, etc. (ex. : Spinoza, Éthique, III)"
+                        <input type="text" id="input-custom-ref"
+                            placeholder="Auteur, œuvre, etc. (ex. : Spinoza, Éthique, III)"
                             oninput="updateCustomExplication()"
                             style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
                     </div>
 
                     <div style="margin-top:12px; text-align:right;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleExplicationMode(false)">📋 Choisir parmi les textes officiels</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleExplicationMode(false)">📋
+                            Choisir parmi les textes officiels</button>
                     </div>
                 </div>
                 <div id="explication-predefined" style="display:block;">
-                    <label style="display:block; margin-bottom: 6px;"><strong>Texte officiel du concours (annales)</strong></label>
+                    <label style="display:block; margin-bottom: 6px;"><strong>Texte officiel du concours
+                            (annales)</strong></label>
                     <select id="select-explic-text" onchange="selectExplicText(this.value)"
                         style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
                         <option value="">-- Sélectionnez un texte officiel --</option>
                     </select>
 
                     <div style="margin-top:12px; text-align:right;">
-                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleExplicationMode(true)">✍️ Saisir un texte personnalisé</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleExplicationMode(true)">✍️
+                            Saisir un texte personnalisé</button>
                     </div>
                 </div>
             </div>
@@ -3731,7 +3943,8 @@
 
                     <div>
                         <label><strong>Référence</strong></label>
-                        <input type="text" id="input-custom-arg-ref" placeholder="Auteur, œuvre, etc. (ex. : Descartes, Discours de la méthode)"
+                        <input type="text" id="input-custom-arg-ref"
+                            placeholder="Auteur, œuvre, etc. (ex. : Descartes, Discours de la méthode)"
                             oninput="updateCustomExplicationArg()"
                             style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
                     </div>
@@ -3762,7 +3975,7 @@
         // Toute modification ultérieure de l'application DOIT incrémenter APP_BUILD_VERSION.
         // Ce script garantit que les utilisateurs reçoivent instantanément les mises à jour.
         // =========================================================================
-        const APP_BUILD_VERSION = "2026.10.01.nettoyage_url_v3_9";
+        const APP_BUILD_VERSION = "2026.10.03.epuration_ui_admin_v3_10";
 
         // Nettoyage esthétique immédiat et transparent de l'URL dans la barre d'adresse
         try {
@@ -3770,7 +3983,7 @@
                 const cleanUrl = window.location.pathname + (window.location.hash || '');
                 window.history.replaceState({}, document.title, cleanUrl);
             }
-        } catch (_) {}
+        } catch (_) { }
 
         // Détection et actualisation automatique transparente anti-cache
         function checkAppUpdate(force = false) {
@@ -3785,35 +3998,35 @@
                     method: 'GET',
                     cache: 'no-store'
                 })
-                .then(res => res.text())
-                .then(async html => {
-                    const match = html.match(/const\s+APP_BUILD_VERSION\s*=\s*["']([^"']+)["']/);
-                    if (match && match[1] && match[1] !== APP_BUILD_VERSION) {
-                        console.log("Nouvelle version Mentor IA disponible (" + match[1] + "). Synchronisation avant actualisation...");
-                        // Garde-fou : ne pas interrompre une évaluation IA en cours de traitement
-                        const btnSubmit = document.querySelector(".btn-submit");
-                        if (btnSubmit && btnSubmit.disabled) {
-                            setTimeout(() => checkAppUpdate(true), 15000);
-                            return;
+                    .then(res => res.text())
+                    .then(async html => {
+                        const match = html.match(/const\s+APP_BUILD_VERSION\s*=\s*["']([^"']+)["']/);
+                        if (match && match[1] && match[1] !== APP_BUILD_VERSION) {
+                            console.log("Nouvelle version Mentor IA disponible (" + match[1] + "). Synchronisation avant actualisation...");
+                            // Garde-fou : ne pas interrompre une évaluation IA en cours de traitement
+                            const btnSubmit = document.querySelector(".btn-submit");
+                            if (btnSubmit && btnSubmit.disabled) {
+                                setTimeout(() => checkAppUpdate(true), 15000);
+                                return;
+                            }
+                            // Sauvegarde de sécurité absolue du brouillon et synchronisation Cloud avant rechargement
+                            if (typeof saveCurrentDraftToLastRenderedSubject === 'function') {
+                                saveCurrentDraftToLastRenderedSubject();
+                            }
+                            if (typeof persistStorageData === 'function') {
+                                persistStorageData();
+                            }
+                            if (typeof window.flushCloudSyncNow === 'function') {
+                                try {
+                                    await window.flushCloudSyncNow();
+                                } catch (_) { }
+                            }
+                            const targetUrl = window.location.href.split('#')[0].split('?')[0] + '?v=' + encodeURIComponent(match[1]);
+                            window.location.replace(targetUrl);
                         }
-                        // Sauvegarde de sécurité absolue du brouillon et synchronisation Cloud avant rechargement
-                        if (typeof saveCurrentDraftToLastRenderedSubject === 'function') {
-                            saveCurrentDraftToLastRenderedSubject();
-                        }
-                        if (typeof persistStorageData === 'function') {
-                            persistStorageData();
-                        }
-                        if (typeof window.flushCloudSyncNow === 'function') {
-                            try {
-                                await window.flushCloudSyncNow();
-                            } catch (_) {}
-                        }
-                        const targetUrl = window.location.href.split('#')[0].split('?')[0] + '?v=' + encodeURIComponent(match[1]);
-                        window.location.replace(targetUrl);
-                    }
-                })
-                .catch(() => {});
-            } catch (e) {}
+                    })
+                    .catch(() => { });
+            } catch (e) { }
         }
 
         // 1. Contrôle immédiat au chargement
@@ -4028,7 +4241,7 @@
 
             window.logoutMentorSession = async function () {
                 if (typeof window.flushCloudSyncNow === 'function') {
-                    try { await window.flushCloudSyncNow(); } catch (_) {}
+                    try { await window.flushCloudSyncNow(); } catch (_) { }
                 }
                 localStorage.removeItem(TOKEN_KEY);
                 localStorage.removeItem(USER_KEY);
@@ -4111,7 +4324,7 @@
 
             window.resetMentorUserForm = function () {
                 const title = document.getElementById('admin-user-form-title');
-                if (title) title.textContent = '➕ Créer ou modifier un compte invité';
+                if (title) title.textContent = '➕ Créer ou modifier un compte';
                 document.getElementById('admin-input-username').value = '';
                 document.getElementById('admin-input-password').value = '';
                 document.getElementById('admin-input-note').value = '';
@@ -7263,7 +7476,7 @@
             s = (s || '').trim();
             // Normalisation des apostrophes typographiques et espaces insécables
             s = s.replace(/[\u2019\u2018\u0060\u00B4]/g, "'")
-                 .replace(/[\u00A0\u202F\s]+/g, ' ');
+                .replace(/[\u00A0\u202F\s]+/g, ' ');
             // Retrait d'un éventuel préfixe d'année/session pour aligner "2026 — Sujet" et "Sujet"
             s = s.replace(/^\d{4}\s*[—–-]\s*/, '').trim();
             return `${ex}_${md}:${s}`;
@@ -8778,7 +8991,7 @@
                     if (titleEl) {
                         const sectionName = titleEl.textContent.replace(/[\[\]]/g, '').trim();
                         const normName = sectionName.toUpperCase().replace(/[’'`]/g, "'").replace(/\s+/g, ' ');
-                        
+
                         let note = scoreMap[normName];
                         if (typeof note !== 'number') {
                             const scorePill = card.querySelector('.section-score-pill');
@@ -9094,8 +9307,8 @@
                         if (lbl.includes('concours')) {
                             val = val.replace(/(?:Sujet(?:\s*\/\s*texte)?|Nature\s+du\s+travail)[\s\S]*$/i, '').trim();
                             val = val.replace(/Agrégation\s+Externe/gi, 'Agrégation externe')
-                                     .replace(/Agrégation\s+Interne/gi, 'Agrégation interne')
-                                     .replace(/Capes\s+Externe/gi, 'Capes externe');
+                                .replace(/Agrégation\s+Interne/gi, 'Agrégation interne')
+                                .replace(/Capes\s+Externe/gi, 'Capes externe');
                             valEl.textContent = val;
                         } else if (lbl.includes('sujet')) {
                             val = val.replace(/(?:Nature\s+du\s+travail|Concours(?:\s+cibl[eé])?)[\s\S]*$/i, '').trim();
@@ -9776,8 +9989,8 @@
                 waitingBox.innerHTML = `
                     <span style="font-size: 1.35rem; line-height: 1;">⏳</span>
                     <div>
-                        <strong style="color: #0f172a; display: block; margin-bottom: 3px;">Délibération finale en cours à l'issue de l'analyse détaillée</strong>
-                        <span>La note estimée, l'appréciation générale, le bilan stratégique et les règles implicites s'afficheront en tête de rapport dès l'achèvement de l'examen analytique des moments.</span>
+                        <strong style="color: #0f172a; display: block; margin-bottom: 3px;">Délibération finale à l'issue de l'analyse détaillée</strong>
+                        <span>La note estimée, l'appréciation générale, le bilan stratégique et les règles implicites s'afficheront en tête de rapport dès l'achèvement de l'analyse détaillée.</span>
                     </div>
                 `;
                 doc.body.insertBefore(waitingBox, topAnchorNode);
@@ -10144,7 +10357,7 @@
                     if (match) {
                         return { start: match.index, end: match.index + match[0].length };
                     }
-                } catch (e) {}
+                } catch (e) { }
             }
 
             // 3. Correspondance d'ancrage Début + Fin (Préfixe + Suffixe) pour citations longues
@@ -10165,7 +10378,7 @@
                             return { start: mPref.index, end: mPref.index + mSuff.index + mSuff[0].length };
                         }
                     }
-                } catch (e) {}
+                } catch (e) { }
             }
 
             // 4. Repli préfixe pour citations modifiées en terminaison
@@ -10179,7 +10392,7 @@
                         const approxEnd = Math.min(fullText.length, match.index + cleanPhrase.length);
                         return { start: match.index, end: approxEnd };
                     }
-                } catch (e) {}
+                } catch (e) { }
             }
 
             return null;
@@ -10936,7 +11149,7 @@
                     btnRegles.className = 'quicknav-btn';
                     btnRegles.setAttribute('data-tooltip', 'Règles implicites du concours');
                     btnRegles.innerHTML = '🤫';
-                    btnRegles.onclick = () => { switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-regles-implicites') || scrollToElement('correction-box'); }, 50); return false; };
+                    btnRegles.onclick = () => { switchCorrectionTab('rapport', false); setTimeout(() => { scrollToElement('sec-regles-implicites') || scrollToElement('correction-box'); }, 50); return false; };
                 }
                 prevTopBtn.insertAdjacentElement('afterend', btnRegles);
                 prevTopBtn = btnRegles;
@@ -10948,7 +11161,7 @@
                     btnAnalyse.className = 'quicknav-btn';
                     btnAnalyse.setAttribute('data-tooltip', 'Analyse personnalisée du travail');
                     btnAnalyse.innerHTML = '🔍';
-                    btnAnalyse.onclick = () => { switchCorrectionTab('rapport', false); setTimeout(()=>{ scrollToElement('sec-analyse-personnalisee') || scrollToElement('correction-box'); }, 50); return false; };
+                    btnAnalyse.onclick = () => { switchCorrectionTab('rapport', false); setTimeout(() => { scrollToElement('sec-analyse-personnalisee') || scrollToElement('correction-box'); }, 50); return false; };
                 }
                 prevTopBtn.insertAdjacentElement('afterend', btnAnalyse);
             } else {
@@ -12526,7 +12739,7 @@
             const area = document.getElementById('content-area');
 
             const maxLength = 100000;
-            
+
             const prof = getActiveProfile();
             const sujetActif = obtenirSujetActif();
             const currentSubjectKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
@@ -12718,7 +12931,7 @@
                         <div style="display:flex; justify-content:center; margin-top:10px; margin-bottom:10px;">
                             <button id="btn-reset-training" class="btn btn-secondary" onclick="resetTraining()">${savedCorrection ? 'Effacer la correction' : 'Remise à zéro'}</button>
                         </div>
-                        <div id="loading-msg" class="loading">Le correcteur IA analyse votre travail conformément à la méthodologie, veuillez patienter (environ 5 à 10 secondes)<span class="loading-dots"></span></div>
+                        <div id="loading-msg" class="loading">Le correcteur IA analyse votre travail, veuillez patienter (environ 5 à 10 secondes)<span class="loading-dots"></span></div>
                         <div id="correction-box" style="${savedCorrection ? 'display: block;' : 'display: none;'}">
                             <!-- Barre d'onglets commutable (onglet Copie annotée masqué pour le test) -->
                             <div class="correction-tabs-bar" role="tablist" style="display: none;">
@@ -12918,7 +13131,7 @@
                         if (response.status === 401 && window.showMentorLoginOverlay) {
                             window.showMentorLoginOverlay(errMsg);
                         }
-                    } catch (_) {}
+                    } catch (_) { }
                     throw new Error(errMsg);
                 }
 
@@ -13017,7 +13230,7 @@
                     draftBySection: currentDraftBySection,
                     draftText: trainingText
                 };
-                
+
                 const currentSubjectKey = getSubjectStorageKey(state.exerciseType, state.mode, sujetActif);
                 const prof = getActiveProfile();
                 if (!prof.subjectsData[currentSubjectKey]) {
