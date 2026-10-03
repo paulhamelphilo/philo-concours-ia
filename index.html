@@ -3609,198 +3609,9 @@
         </div>
     </div>
 
-    <!-- Fenêtre modale d'administration et de monitoring (réservée à l'administrateur) -->
-    <div id="mentor-admin-modal" style="display: none;">
-        <div class="mentor-admin-panel">
-            <div class="mentor-admin-header">
-                <h2>🛡️ Administration</h2>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <button type="button" class="mentor-bar-btn" onclick="window.loadMentorAdminDashboard()">🔄
-                        Actualiser</button>
-                    <button type="button" class="mentor-bar-btn" onclick="window.exportMentorDataCSV()">📊 Export
-                        CSV</button>
-                    <button type="button" class="mentor-bar-btn" onclick="window.exportMentorDataJSON()">📦 Export
-                        JSON</button>
-                    <button type="button" class="mentor-bar-btn admin-btn"
-                        onclick="window.closeMentorAdminModal()">Fermer</button>
-                </div>
-            </div>
+    <!-- Le conteneur d'administration est injecté dynamiquement en mémoire lors de la connexion de l'administrateur -->
+    <div id="mentor-admin-dynamic-container"></div>
 
-            <!-- Indicateurs synthétiques -->
-            <div class="mentor-kpi-grid">
-                <div class="mentor-kpi-card">
-                    <div class="mentor-kpi-label">Comptes actifs</div>
-                    <div class="mentor-kpi-value" id="admin-kpi-users">-</div>
-                </div>
-                <div class="mentor-kpi-card">
-                    <div class="mentor-kpi-label">Travaux évalués</div>
-                    <div class="mentor-kpi-value" id="admin-kpi-copies">-</div>
-                </div>
-                <div class="mentor-kpi-card">
-                    <div class="mentor-kpi-label">Tokens totaux (entrée / sortie)</div>
-                    <div class="mentor-kpi-value" id="admin-kpi-tokens" style="font-size: 1.15rem;">-</div>
-                </div>
-                <div class="mentor-kpi-card">
-                    <div class="mentor-kpi-label">Coût total estimé</div>
-                    <div class="mentor-kpi-value" id="admin-kpi-cost">-</div>
-                </div>
-            </div>
-
-            <!-- Interrupteur de confidentialité -->
-            <div class="mentor-admin-section"
-                style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                <div>
-                    <h3 style="margin-bottom: 4px;">🔒 Confidentialité et archivage des textes soumis</h3>
-                    <div style="font-size: 0.85rem; color: #475569;" id="admin-privacy-status-text">
-                        État actuel : désactivé par défaut (seuls les compteurs, dates, concours, sujets, tokens et
-                        notes sont enregistrés ; les textes des travaux ne sont pas conservés).
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                    <label
-                        style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.88rem; cursor: pointer; background: #ffffff; padding: 7px 12px; border: 1px solid #cbd5e1; border-radius: 8px;">
-                        <input type="checkbox" id="admin-toggle-store-texts"
-                            onchange="window.toggleMentorStoreTexts(this.checked)">
-                        <span>Enregistrer le texte des travaux et des rapports</span>
-                    </label>
-                    <button type="button" class="mentor-bar-btn" onclick="window.purgeMentorArchivedTexts()"
-                        title="Supprimer tous les textes de travaux et rapports enregistrés tout en gardant les compteurs">🧹
-                        Purger les textes archivés</button>
-                </div>
-            </div>
-
-            <!-- Formulaire de création / modification de compte -->
-            <div class="mentor-admin-section">
-                <h3 id="admin-user-form-title">➕ Créer ou modifier un compte invité</h3>
-                <form id="admin-user-form" onsubmit="window.saveMentorUserAccount(event)">
-                    <div class="mentor-admin-form-grid">
-                        <div>
-                            <label for="admin-input-username">Identifiant</label>
-                            <input type="text" id="admin-input-username" placeholder="Ex. : marie" required>
-                        </div>
-                        <div>
-                            <label for="admin-input-password">Mot de passe <span
-                                    style="font-weight:normal; color:#64748b; cursor:pointer; text-decoration:underline;"
-                                    onclick="window.generateRandomGuestPassword()">(générer)</span></label>
-                            <input type="text" id="admin-input-password" placeholder="Ex. : Philo2026!">
-                        </div>
-                        <div>
-                            <label for="admin-input-note">Remarque</label>
-                            <input type="text" id="admin-input-note" placeholder="Ex. : Collègue agrégation">
-                        </div>
-                        <div>
-                            <label for="admin-input-quota-copies">Quota max</label>
-                            <input type="number" id="admin-input-quota-copies" min="0" placeholder="Vide = illimité">
-                        </div>
-                        <div>
-                            <label for="admin-input-expires">Date de fin (optionnelle)</label>
-                            <input type="date" id="admin-input-expires">
-                        </div>
-                        <div style="display: flex; gap: 6px;">
-                            <button type="submit" class="mentor-bar-btn admin-btn"
-                                style="padding: 9px 14px; width: 100%;">Enregistrer</button>
-                            <button type="button" class="mentor-bar-btn" style="padding: 9px 10px;"
-                                onclick="window.resetMentorUserForm()"
-                                title="Vider le formulaire">Réinitialiser</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Liste des comptes et suivi par compte -->
-            <div class="mentor-admin-section">
-                <div
-                    style="display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
-                    <h3 style="margin: 0;">👥 Suivi des comptes</h3>
-                    <span style="font-size: 0.78rem; color: #64748b;">Barème API : Gemini 3.7 Flash (0,75 $ / 1M tokens
-                        en entrée • 3,75 $ / 1M tokens en sortie, réflexion préalable incluse)</span>
-                </div>
-                <div class="mentor-table-wrap">
-                    <table class="mentor-admin-table">
-                        <thead>
-                            <tr>
-                                <th>Compte</th>
-                                <th>Mot de passe</th>
-                                <th>Statut</th>
-                                <th>Connexions</th>
-                                <th>Travaux (quota)</th>
-                                <th>Modèle</th>
-                                <th>Tokens (entrée / sortie)</th>
-                                <th>Coût total</th>
-                                <th>Dernière activité</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-users-tbody">
-                            <tr>
-                                <td colspan="10" style="text-align:center; padding: 18px;">Chargement des comptes...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Journal détaillé des activités -->
-            <div class="mentor-admin-section" style="margin-bottom: 0;">
-                <div
-                    style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-                    <h3 style="margin: 0;">📋 Journal détaillé</h3>
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <label for="admin-filter-user" style="font-size: 0.84rem; font-weight: 600; margin: 0;">Filtrer
-                            par compte :</label>
-                        <select id="admin-filter-user" onchange="window.renderMentorAdminLogs()"
-                            style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
-                            <option value="">Tous les comptes</option>
-                        </select>
-                        <select id="admin-filter-action" onchange="window.renderMentorAdminLogs()"
-                            style="width: auto; padding: 5px 10px; font-size: 0.84rem;">
-                            <option value="">Toutes les actions</option>
-                            <option value="correction">Travaux évalués uniquement</option>
-                            <option value="login">Connexions uniquement</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mentor-table-wrap" style="max-height: 420px; overflow-y: auto;">
-                    <table class="mentor-admin-table">
-                        <thead>
-                            <tr>
-                                <th>Date et heure</th>
-                                <th>Compte</th>
-                                <th>Action</th>
-                                <th>Concours et épreuve</th>
-                                <th>Sujet traité</th>
-                                <th>Modèle</th>
-                                <th>Tokens (entrée / sortie)</th>
-                                <th>Coût</th>
-                                <th>Note estimée</th>
-                                <th>Contenu</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-logs-tbody">
-                            <tr>
-                                <td colspan="10" style="text-align:center; padding: 18px;">Chargement de l'historique...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sous-fenêtre de lecture d'un travail et de son rapport -->
-    <div id="mentor-log-detail-modal" style="display: none;">
-        <div class="mentor-admin-panel" style="max-width: 960px;">
-            <div class="mentor-admin-header">
-                <h2 id="mentor-log-detail-title">📄 Consultation du travail et du rapport</h2>
-                <button type="button" class="mentor-bar-btn admin-btn"
-                    onclick="document.getElementById('mentor-log-detail-modal').style.display='none'">Fermer ✕</button>
-            </div>
-            <div id="mentor-log-detail-body"
-                style="max-height: 75vh; overflow-y: auto; font-size: 0.92rem; line-height: 1.6;"></div>
-        </div>
-    </div>
 
     <!-- Barre latérale gauche : multi-profils et historique cranté -->
     <div id="floating-profile-dock" class="floating-profile-dock" style="display: none;"></div>
@@ -4025,7 +3836,7 @@
         // Toute modification ultérieure de l'application DOIT incrémenter APP_BUILD_VERSION.
         // Ce script garantit que les utilisateurs reçoivent instantanément les mises à jour.
         // =========================================================================
-        const APP_BUILD_VERSION = "2026.10.03.mobile_portrait_header_bande_v3_11";
+        const APP_BUILD_VERSION = "2026.10.03.securisation_admin_dynamique_v3_12";
 
         // Nettoyage esthétique immédiat et transparent de l'URL dans la barre d'adresse
         try {
@@ -4103,7 +3914,6 @@
         (function initMentorAuthAndAdmin() {
             const TOKEN_KEY = 'mentor_philo_auth_token_v1';
             const USER_KEY = 'mentor_philo_auth_user_v1';
-            let currentAdminData = { settings: { storeEssayTexts: false }, users: [], logs: [] };
 
             function escapeHtml(str) {
                 return String(str === null || str === undefined ? '' : str)
@@ -4333,527 +4143,79 @@
                 }
             };
 
-            // ============ FONCTIONS D'ADMINISTRATION ET DE MONITORING ============
+            // ============ CHARGEMENT DU MODULE D'ADMINISTRATION (SÉCURISÉ) ============
+            window._mentorAdminModuleLoaded = false;
+            window._mentorAdminModuleLoading = false;
 
-            async function callAdminApi(action, payload = {}) {
-                const token = window.getMentorAuthToken();
-                const res = await fetch(CLOUD_FUNCTION_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify({ action, ...payload })
-                });
-                const data = await res.json();
-                if (!res.ok || !data.success) {
-                    throw new Error(data.error || 'Erreur lors de la requête administrateur.');
+            window.openMentorAdminModal = async function () {
+                const user = window.getMentorCurrentUser ? window.getMentorCurrentUser() : null;
+                if (!user || user.role !== 'admin') {
+                    alert("Accès refusé : droits d'administrateur requis.");
+                    return;
                 }
-                return data;
-            }
 
-            window.openMentorAdminModal = function () {
-                const modal = document.getElementById('mentor-admin-modal');
-                if (modal) modal.style.display = 'flex';
-                window.loadMentorAdminDashboard();
+                if (window._mentorAdminModuleLoaded) {
+                    const modal = document.getElementById('mentor-admin-modal');
+                    if (modal) modal.style.display = 'flex';
+                    if (typeof window.loadMentorAdminDashboard === 'function') {
+                        window.loadMentorAdminDashboard();
+                    }
+                    return;
+                }
+
+                if (window._mentorAdminModuleLoading) return;
+                window._mentorAdminModuleLoading = true;
+
+                const adminBtn = document.getElementById('mentor-btn-open-admin');
+                const origText = adminBtn ? adminBtn.textContent : '';
+                if (adminBtn) adminBtn.textContent = '⏳ Chargement...';
+
+                try {
+                    const token = window.getMentorAuthToken ? window.getMentorAuthToken() : '';
+                    const res = await fetch(CLOUD_FUNCTION_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({ action: 'admin_get_module' })
+                    });
+                    const data = await res.json();
+                    if (!res.ok || !data.success || !data.html) {
+                        throw new Error(data.error || "Impossible de charger le module d'administration.");
+                    }
+
+                    let container = document.getElementById('mentor-admin-dynamic-container');
+                    if (!container) {
+                        container = document.createElement('div');
+                        container.id = 'mentor-admin-dynamic-container';
+                        document.body.appendChild(container);
+                    }
+                    container.innerHTML = data.html;
+
+                    if (data.script) {
+                        const scriptFn = new Function(data.script);
+                        scriptFn();
+                    }
+
+                    window._mentorAdminModuleLoaded = true;
+
+                    const modal = document.getElementById('mentor-admin-modal');
+                    if (modal) modal.style.display = 'flex';
+                    if (typeof window.loadMentorAdminDashboard === 'function') {
+                        window.loadMentorAdminDashboard();
+                    }
+                } catch (err) {
+                    alert("Erreur lors de l'ouverture de l'administration : " + err.message);
+                } finally {
+                    window._mentorAdminModuleLoading = false;
+                    if (adminBtn) adminBtn.textContent = origText;
+                }
             };
 
             window.closeMentorAdminModal = function () {
                 const modal = document.getElementById('mentor-admin-modal');
                 if (modal) modal.style.display = 'none';
-            };
-
-            window.generateRandomGuestPassword = function () {
-                const prefixes = ['Philo', 'Platon', 'Kant', 'Hegel', 'Logos', 'Concept'];
-                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
-                const num = Math.floor(100 + Math.random() * 900);
-                const pwd = `${prefix}${num}!`;
-                const inp = document.getElementById('admin-input-password');
-                if (inp) inp.value = pwd;
-            };
-
-            window.resetMentorUserForm = function () {
-                const title = document.getElementById('admin-user-form-title');
-                if (title) title.textContent = '➕ Créer ou modifier un compte';
-                document.getElementById('admin-input-username').value = '';
-                document.getElementById('admin-input-password').value = '';
-                document.getElementById('admin-input-note').value = '';
-                document.getElementById('admin-input-quota-copies').value = '';
-                document.getElementById('admin-input-expires').value = '';
-            };
-
-            window.prefillMentorUserForm = function (username) {
-                const user = (currentAdminData.users || []).find(u => u.username === username);
-                if (!user) return;
-                const title = document.getElementById('admin-user-form-title');
-                if (title) title.textContent = `✏️ Modification du compte : « ${user.username} »`;
-                document.getElementById('admin-input-username').value = user.username;
-                document.getElementById('admin-input-password').value = user.plainPassword || '';
-                document.getElementById('admin-input-note').value = user.note || '';
-                document.getElementById('admin-input-quota-copies').value = user.quotaCopies !== null && user.quotaCopies !== undefined ? user.quotaCopies : '';
-                document.getElementById('admin-input-expires').value = user.expiresAt ? String(user.expiresAt).slice(0, 10) : '';
-                document.getElementById('admin-input-username').focus();
-            };
-
-            window.loadMentorAdminDashboard = async function () {
-                try {
-                    const data = await callAdminApi('admin_dashboard');
-                    currentAdminData = {
-                        settings: data.settings || { storeEssayTexts: false },
-                        users: data.users || [],
-                        logs: data.logs || []
-                    };
-                    renderAdminDashboardUI();
-                } catch (err) {
-                    alert('Erreur : ' + err.message);
-                }
-            };
-
-            function getModelRatesPer1M(modelName) {
-                const m = String(modelName || 'gemini-3.7-flash').toLowerCase();
-                if (m.includes('pro')) {
-                    return { inputPer1M: 1.25, outputPer1M: 10.00 };
-                }
-                if (m.includes('lite') || m.includes('2.0') || m.includes('1.5')) {
-                    return { inputPer1M: 0.10, outputPer1M: 0.40 };
-                }
-                if (m.includes('2.5')) {
-                    return { inputPer1M: 0.30, outputPer1M: 2.50 };
-                }
-                // Tarif standard officiel Gemini 3.7 / 3.8 Flash : 0,75 $ / 1M en entrée et 3,75 $ / 1M en sortie (réflexion préalable comprise)
-                return { inputPer1M: 0.75, outputPer1M: 3.75 };
-            }
-
-            function calculateCorrectionCostUsd(modelName, inputTokens, outputTokens) {
-                const rates = getModelRatesPer1M(modelName);
-                const inTok = Math.max(0, Number(inputTokens) || 0);
-                const outTok = Math.max(0, Number(outputTokens) || 0);
-                return ((inTok / 1000000) * rates.inputPer1M) + ((outTok / 1000000) * rates.outputPer1M);
-            }
-
-            function formatCostUsd(costUsd, inTok, outTok, modelName) {
-                const val = Number(costUsd) || 0;
-                const eur = val * 0.92;
-                const usdStr = val === 0
-                    ? '0,0000 $'
-                    : (val < 0.1
-                        ? val.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' $'
-                        : val.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' $');
-                const eurStr = eur === 0
-                    ? '0,0000 €'
-                    : (eur < 0.1
-                        ? eur.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' €'
-                        : eur.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €');
-
-                let titleText = `Équivalent indicatif : ~${eurStr}`;
-                if (inTok !== undefined && outTok !== undefined) {
-                    const inTokens = Math.max(0, Number(inTok) || 0);
-                    const outTokens = Math.max(0, Number(outTok) || 0);
-                    const mod = modelName || 'gemini-3.7-flash';
-                    const rates = getModelRatesPer1M(mod);
-                    const inCost = (inTokens / 1000000) * rates.inputPer1M;
-                    const outCost = (outTokens / 1000000) * rates.outputPer1M;
-                    const inCostStr = inCost.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' $';
-                    const outCostStr = outCost.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + ' $';
-                    const rateInStr = rates.inputPer1M.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
-                    const rateOutStr = rates.outputPer1M.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
-
-                    titleText = `Détail du calcul (${mod}) :\n` +
-                        `• Entrée : ${inTokens.toLocaleString('fr-FR')} tokens × (${rateInStr} / 1M) = ${inCostStr}\n` +
-                        `• Sortie : ${outTokens.toLocaleString('fr-FR')} tokens × (${rateOutStr} / 1M) = ${outCostStr}\n` +
-                        `• Total : ${usdStr} (~${eurStr})`;
-                }
-
-                return `<span style="cursor:help; border-bottom:1px dotted #94a3b8;" title="${escapeHtml(titleText)}">${usdStr}</span>`;
-            }
-
-            function formatTokensCell(inputTokens, outputTokens, thinkingTokens) {
-                const inTok = Number(inputTokens) || 0;
-                const outTok = Number(outputTokens) || 0;
-                const thinkTok = Number(thinkingTokens) || 0;
-                if (inTok === 0 && outTok === 0) {
-                    return '<span style="color:#94a3b8;">0</span>';
-                }
-                const thinkInfo = thinkTok > 0
-                    ? ` <span style="color:#64748b; font-size:0.74rem;" title="Tokens utilisés pour la réflexion préalable inclus dans la sortie">(dont ${thinkTok.toLocaleString('fr-FR')} réflex.)</span>`
-                    : '';
-                return `<div style="line-height:1.35; font-size:0.8rem;">
-                    <div><span style="color:#475569;">Entrée :</span> <strong>${inTok.toLocaleString('fr-FR')}</strong></div>
-                    <div><span style="color:#475569;">Sortie :</span> <strong>${outTok.toLocaleString('fr-FR')}</strong>${thinkInfo}</div>
-                </div>`;
-            }
-
-            function renderAdminDashboardUI() {
-                const users = currentAdminData.users || [];
-                const logs = currentAdminData.logs || [];
-                const settings = currentAdminData.settings || {};
-
-                // Agrégation par compte (avec repli sur les journaux si nécessaire)
-                const logStatsByUser = {};
-                logs.forEach(l => {
-                    if (l.action !== 'correction' || !l.username) return;
-                    if (!logStatsByUser[l.username]) {
-                        logStatsByUser[l.username] = { inTok: 0, outTok: 0, thinkTok: 0, cost: 0, model: '' };
-                    }
-                    const s = logStatsByUser[l.username];
-                    const inT = Number(l.inputTokens) || 0;
-                    const outT = Number(l.outputTokens) || 0;
-                    const thT = Number(l.thinkingTokens) || 0;
-                    const mod = l.model || 'gemini-3.7-flash';
-                    const c = (l.costUsd !== undefined && l.costUsd !== null) ? Number(l.costUsd) : calculateCorrectionCostUsd(mod, inT, outT);
-                    s.inTok += inT;
-                    s.outTok += outT;
-                    s.thinkTok += thT;
-                    s.cost += c;
-                    if (!s.model && l.model) s.model = l.model;
-                });
-
-                // 1. KPIs
-                const activeUsersCount = users.filter(u => u.active !== false).length;
-                const totalCopies = users.reduce((acc, u) => acc + (u.copiesCount || 0), 0);
-
-                let globalInputTokens = 0;
-                let globalOutputTokens = 0;
-                let globalThinkingTokens = 0;
-                let globalCostUsd = 0;
-
-                users.forEach(u => {
-                    const fallback = logStatsByUser[u.username] || { inTok: 0, outTok: 0, thinkTok: 0, cost: 0, model: '' };
-                    const uIn = Math.max(Number(u.totalInputTokens) || 0, fallback.inTok);
-                    const uOut = Math.max(Number(u.totalOutputTokens) || 0, fallback.outTok);
-                    const uThink = Math.max(Number(u.totalThinkingTokens) || 0, fallback.thinkTok);
-                    const uModel = u.lastModel || fallback.model || 'gemini-3.7-flash';
-                    const uCost = calculateCorrectionCostUsd(uModel, uIn, uOut);
-
-                    u._resolvedInputTokens = uIn;
-                    u._resolvedOutputTokens = uOut;
-                    u._resolvedThinkingTokens = uThink;
-                    u._resolvedModel = uModel;
-                    u._resolvedCostUsd = uCost;
-
-                    globalInputTokens += uIn;
-                    globalOutputTokens += uOut;
-                    globalThinkingTokens += uThink;
-                    globalCostUsd += uCost;
-                });
-
-                document.getElementById('admin-kpi-users').textContent = `${activeUsersCount} / ${users.length}`;
-                document.getElementById('admin-kpi-copies').textContent = totalCopies.toLocaleString('fr-FR');
-                const kpiTokensEl = document.getElementById('admin-kpi-tokens');
-                if (kpiTokensEl) {
-                    kpiTokensEl.innerHTML = `${globalInputTokens.toLocaleString('fr-FR')} E <span style="color:#94a3b8; font-weight:400;">/</span> ${globalOutputTokens.toLocaleString('fr-FR')} S`;
-                    kpiTokensEl.title = `Entrée : ${globalInputTokens.toLocaleString('fr-FR')} tokens • Sortie : ${globalOutputTokens.toLocaleString('fr-FR')} tokens (dont ${globalThinkingTokens.toLocaleString('fr-FR')} tokens de réflexion préalable)`;
-                }
-                const kpiCostEl = document.getElementById('admin-kpi-cost');
-                if (kpiCostEl) {
-                    kpiCostEl.innerHTML = formatCostUsd(globalCostUsd, globalInputTokens, globalOutputTokens, 'gemini-3.7-flash');
-                }
-
-                // 2. Interrupteur de confidentialité
-                const toggleEl = document.getElementById('admin-toggle-store-texts');
-                const statusTextEl = document.getElementById('admin-privacy-status-text');
-                if (toggleEl) toggleEl.checked = Boolean(settings.storeEssayTexts);
-                if (statusTextEl) {
-                    if (settings.storeEssayTexts) {
-                        statusTextEl.innerHTML = 'État actuel : <strong style="color:#166534;">activé</strong> (les travaux soumis et les rapports générés sont enregistrés pour lecture dans le journal ci-dessous).';
-                    } else {
-                        statusTextEl.innerHTML = 'État actuel : <strong style="color:#475569;">désactivé par défaut</strong> (confidentialité maximale : seuls les compteurs, dates, concours, sujets, tokens et notes sont enregistrés).';
-                    }
-                }
-
-                // 3. Filtre utilisateur dans le journal
-                const filterUserSelect = document.getElementById('admin-filter-user');
-                const currentFilterVal = filterUserSelect ? filterUserSelect.value : '';
-                if (filterUserSelect) {
-                    filterUserSelect.innerHTML = '<option value="">Tous les comptes</option>' +
-                        users.map(u => `<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)}${u.note ? ' (' + escapeHtml(u.note) + ')' : ''}</option>`).join('');
-                    filterUserSelect.value = currentFilterVal;
-                }
-
-                // 4. Tableau des comptes
-                const usersTbody = document.getElementById('admin-users-tbody');
-                if (usersTbody) {
-                    if (users.length === 0) {
-                        usersTbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">Aucun compte enregistré.</td></tr>';
-                    } else {
-                        usersTbody.innerHTML = users.map(u => {
-                            const isAdmin = u.role === 'admin';
-                            const badgeHtml = isAdmin
-                                ? '<span class="mentor-badge admin">Administrateur</span>'
-                                : (u.active !== false
-                                    ? '<span class="mentor-badge active">Actif</span>'
-                                    : '<span class="mentor-badge suspended">Suspendu</span>');
-                            const copiesStr = (u.quotaCopies !== null && u.quotaCopies !== undefined)
-                                ? `<strong>${u.copiesCount || 0}</strong> / ${u.quotaCopies}`
-                                : `<strong>${u.copiesCount || 0}</strong> <span style="color:#64748b;">(illimité)</span>`;
-                            const pwdDisplay = u.plainPassword
-                                ? `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${escapeHtml(u.plainPassword)}</code>`
-                                : '<span style="color:#94a3b8;">(défini dans env.yaml)</span>';
-
-                            const modelBadge = `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.78rem; color:#334155;">${escapeHtml(u._resolvedModel || 'gemini-3.7-flash')}</code>`;
-                            const tokensHtml = formatTokensCell(u._resolvedInputTokens, u._resolvedOutputTokens, u._resolvedThinkingTokens);
-                            const costHtml = `<strong style="color:#0f172a;">${formatCostUsd(u._resolvedCostUsd, u._resolvedInputTokens, u._resolvedOutputTokens, u._resolvedModel)}</strong>`;
-
-                            return `<tr>
-                                <td>
-                                    <strong>${escapeHtml(u.username)}</strong>
-                                    ${u.note ? `<div style="font-size:0.78rem; color:#64748b;">${escapeHtml(u.note)}</div>` : ''}
-                                    ${u.expiresAt ? `<div style="font-size:0.75rem; color:#b45309;">Expire le : ${escapeHtml(String(u.expiresAt).slice(0, 10))}</div>` : ''}
-                                </td>
-                                <td>${pwdDisplay}</td>
-                                <td>${badgeHtml}</td>
-                                <td>${u.loginCount || 0}</td>
-                                <td>${copiesStr}</td>
-                                <td>${modelBadge}</td>
-                                <td>${tokensHtml}</td>
-                                <td>${costHtml}</td>
-                                <td style="font-size:0.8rem;">${escapeHtml(formatDateFr(u.lastActiveAt || u.lastLoginAt))}</td>
-                                <td>
-                                    <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                                        <button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="document.getElementById('admin-filter-user').value='${escapeHtml(u.username)}'; window.renderMentorAdminLogs();">🔍 Journal</button>
-                                        <button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.prefillMentorUserForm('${escapeHtml(u.username)}')">✏️ Modifier</button>
-                                        ${!isAdmin ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.toggleMentorUserActive('${escapeHtml(u.username)}', ${u.active === false})">${u.active === false ? '✅ Activer' : '⏸️ Suspendre'}</button>` : ''}
-                                        <button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.resetMentorUserCounters('${escapeHtml(u.username)}')" title="Remettre les compteurs de ce compte à zéro">🔄 0</button>
-                                        ${!isAdmin ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem; color:#b91c1c;" onclick="window.deleteMentorUser('${escapeHtml(u.username)}')">🗑️</button>` : ''}
-                                    </div>
-                                </td>
-                            </tr>`;
-                        }).join('');
-                    }
-                }
-
-                // 5. Journal d'activité
-                window.renderMentorAdminLogs();
-            }
-
-            window.renderMentorAdminLogs = function () {
-                const logsTbody = document.getElementById('admin-logs-tbody');
-                if (!logsTbody) return;
-                const userFilter = document.getElementById('admin-filter-user')?.value || '';
-                const actionFilter = document.getElementById('admin-filter-action')?.value || '';
-
-                const filtered = (currentAdminData.logs || []).filter(l => {
-                    if (userFilter && l.username !== userFilter) return false;
-                    if (actionFilter && l.action !== actionFilter) return false;
-                    return true;
-                });
-
-                if (filtered.length === 0) {
-                    logsTbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:16px; color:#64748b;">Aucune activité correspondant à ces critères.</td></tr>';
-                    return;
-                }
-
-                logsTbody.innerHTML = filtered.map(l => {
-                    const isCorrection = l.action === 'correction';
-                    let actionLabel = 'Connexion';
-                    if (isCorrection) actionLabel = '📝 Travail évalué';
-                    else if (l.action === 'login') actionLabel = '🔑 Connexion';
-
-                    const modelStr = isCorrection
-                        ? `<code style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.76rem; color:#334155;">${escapeHtml(l.model || 'gemini-3.7-flash')}</code>`
-                        : '<span style="color:#94a3b8;">-</span>';
-
-                    const inTok = Number(l.inputTokens) || 0;
-                    const outTok = Number(l.outputTokens) || 0;
-                    const thinkTok = Number(l.thinkingTokens) || 0;
-                    const tokensStr = isCorrection
-                        ? formatTokensCell(inTok, outTok, thinkTok)
-                        : '<span style="color:#94a3b8;">-</span>';
-
-                    const usedMod = l.model || 'gemini-3.7-flash';
-                    const costVal = isCorrection
-                        ? calculateCorrectionCostUsd(usedMod, inTok, outTok)
-                        : 0;
-                    const costStr = isCorrection
-                        ? `<strong>${formatCostUsd(costVal, inTok, outTok, usedMod)}</strong>`
-                        : '<span style="color:#94a3b8;">-</span>';
-
-                    const gradesStr = l.noteEstimee
-                        ? `<strong>${escapeHtml(l.noteEstimee)}</strong>/20`
-                        : '<span style="color:#94a3b8;">-</span>';
-
-                    const contentBtn = l.hasTexts
-                        ? `<button type="button" class="mentor-bar-btn" style="padding:3px 8px; font-size:0.78rem;" onclick="window.openMentorLogDetail('${escapeHtml(l.id)}')">📄 Lire travail et rapport</button>`
-                        : '<span style="color:#94a3b8; font-size:0.78rem;">Non archivé</span>';
-
-                    return `<tr>
-                        <td style="white-space:nowrap; font-size:0.8rem;">${escapeHtml(formatDateFr(l.timestamp))}</td>
-                        <td><strong>${escapeHtml(l.username)}</strong></td>
-                        <td>${actionLabel}</td>
-                        <td>${escapeHtml(l.concours ? l.concours + (l.epreuve ? ' • ' + l.epreuve : '') : '-')}</td>
-                        <td style="max-width:260px;">${escapeHtml(l.sujet || '-')}</td>
-                        <td>${modelStr}</td>
-                        <td>${tokensStr}</td>
-                        <td style="white-space:nowrap; font-size:0.82rem;">${costStr}</td>
-                        <td style="font-size:0.82rem;">${gradesStr}</td>
-                        <td>${contentBtn}</td>
-                    </tr>`;
-                }).join('');
-            };
-
-            window.saveMentorUserAccount = async function (event) {
-                if (event) event.preventDefault();
-                const username = document.getElementById('admin-input-username').value.trim();
-                const password = document.getElementById('admin-input-password').value.trim();
-                const note = document.getElementById('admin-input-note').value.trim();
-                const quotaCopies = document.getElementById('admin-input-quota-copies').value.trim();
-                const expiresAt = document.getElementById('admin-input-expires').value.trim();
-
-                try {
-                    await callAdminApi('admin_save_user', {
-                        userData: {
-                            username,
-                            password,
-                            note,
-                            quotaCopies: quotaCopies === '' ? null : Number(quotaCopies),
-                            expiresAt: expiresAt || null
-                        }
-                    });
-                    window.resetMentorUserForm();
-                    await window.loadMentorAdminDashboard();
-                } catch (err) {
-                    alert('Erreur : ' + err.message);
-                }
-            };
-
-            window.toggleMentorUserActive = async function (username, newActiveState) {
-                try {
-                    await callAdminApi('admin_save_user', {
-                        userData: { username, active: newActiveState }
-                    });
-                    await window.loadMentorAdminDashboard();
-                } catch (err) {
-                    alert('Erreur : ' + err.message);
-                }
-            };
-
-            window.resetMentorUserCounters = async function (username) {
-                if (!confirm(`Voulez-vous remettre à zéro les compteurs (travaux évalués, tokens et coût) pour le compte « ${username} » ?`)) return;
-                try {
-                    await callAdminApi('admin_save_user', {
-                        userData: { username, resetCounters: true }
-                    });
-                    await window.loadMentorAdminDashboard();
-                } catch (err) {
-                    alert('Erreur : ' + err.message);
-                }
-            };
-
-            window.deleteMentorUser = async function (username) {
-                if (!confirm(`Voulez-vous supprimer définitivement le compte invité « ${username} » ?`)) return;
-                try {
-                    await callAdminApi('admin_delete_user', { username });
-                    await window.loadMentorAdminDashboard();
-                } catch (err) {
-                    alert('Erreur : ' + err.message);
-                }
-            };
-
-            window.toggleMentorStoreTexts = async function (checked) {
-                try {
-                    await callAdminApi('admin_update_settings', {
-                        settings: { storeEssayTexts: Boolean(checked) }
-                    });
-                    await window.loadMentorAdminDashboard();
-                } catch (err) {
-                    alert('Erreur : ' + err.message);
-                }
-            };
-
-            window.purgeMentorArchivedTexts = async function () {
-                if (!confirm("Voulez-vous effacer tous les textes de travaux et de rapports enregistrés dans la base ? (Tous les compteurs, sujets, dates, tokens et notes seront conservés).")) return;
-                try {
-                    const res = await callAdminApi('admin_purge_texts');
-                    alert(`Purge effectuée : ${res.purgedCount || 0} entrée(s) nettoyée(s).`);
-                    await window.loadMentorAdminDashboard();
-                } catch (err) {
-                    alert('Erreur : ' + err.message);
-                }
-            };
-
-            window.openMentorLogDetail = async function (logId) {
-                try {
-                    const data = await callAdminApi('admin_get_log_detail', { logId });
-                    const log = data.log;
-                    const modal = document.getElementById('mentor-log-detail-modal');
-                    const title = document.getElementById('mentor-log-detail-title');
-                    const body = document.getElementById('mentor-log-detail-body');
-
-                    if (title) {
-                        title.textContent = `📄 ${log.username} — ${log.concours || ''} (${formatDateFr(log.timestamp)})`;
-                    }
-                    if (body) {
-                        const usedModel = log.model || 'gemini-3.7-flash';
-                        const inTok = Number(log.inputTokens) || 0;
-                        const outTok = Number(log.outputTokens) || 0;
-                        const thinkTok = Number(log.thinkingTokens) || 0;
-                        const costVal = calculateCorrectionCostUsd(usedModel, inTok, outTok);
-
-                        body.innerHTML = `
-                            <div style="margin-bottom:16px; padding:12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
-                                <strong>Sujet ou texte :</strong> ${escapeHtml(log.sujet || '-')}<br>
-                                <strong>Modèle :</strong> <code>${escapeHtml(usedModel)}</code> • <strong>Tokens en entrée :</strong> ${inTok.toLocaleString('fr-FR')} • <strong>Tokens en sortie :</strong> ${outTok.toLocaleString('fr-FR')}${thinkTok > 0 ? ` (dont ${thinkTok.toLocaleString('fr-FR')} pour la réflexion préalable)` : ''} • <strong>Coût :</strong> ${formatCostUsd(costVal, inTok, outTok, usedModel)}${log.noteEstimee ? ` • <strong>Note estimée :</strong> ${escapeHtml(log.noteEstimee)}/20` : ''}
-                            </div>
-                            <h3 style="margin-bottom:8px;">✍️ Travail soumis par le candidat</h3>
-                            <pre style="white-space:pre-wrap; font-family:inherit; background:#fffbeb; border:1px solid #fde68a; padding:14px; border-radius:8px; margin-bottom:20px;">${escapeHtml(log.copieText || 'Aucun texte enregistré.')}</pre>
-                            <h3 style="margin-bottom:8px;">🏛️ Rapport généré par le Mentor</h3>
-                            <div style="background:#ffffff; border:1px solid #cbd5e1; padding:16px; border-radius:8px;">${window.marked ? window.marked.parse(log.rapportText || '') : escapeHtml(log.rapportText || '')}</div>
-                        `;
-                    }
-                    if (modal) modal.style.display = 'flex';
-                } catch (err) {
-                    alert('Erreur : ' + err.message);
-                }
-            };
-
-            window.exportMentorDataJSON = async function () {
-                try {
-                    const data = await callAdminApi('admin_export_data');
-                    const blob = new Blob([JSON.stringify(data.exportData, null, 2)], { type: 'application/json;charset=utf-8' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `mentor_monitoring_export_${new Date().toISOString().slice(0, 10)}.json`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                } catch (err) {
-                    alert('Erreur export JSON : ' + err.message);
-                }
-            };
-
-            window.exportMentorDataCSV = function () {
-                const users = currentAdminData.users || [];
-                const headers = ['Identifiant', 'Note', 'Role', 'Statut', 'Connexions', 'Travaux_evalues', 'Quota_travaux', 'Modele', 'Tokens_entree', 'Tokens_sortie_dont_reflexion', 'Tokens_reflexion', 'Cout_total_USD', 'Derniere_activite'];
-                const rows = users.map(u => {
-                    const inTok = u._resolvedInputTokens !== undefined ? u._resolvedInputTokens : (u.totalInputTokens || 0);
-                    const outTok = u._resolvedOutputTokens !== undefined ? u._resolvedOutputTokens : (u.totalOutputTokens || 0);
-                    const thinkTok = u._resolvedThinkingTokens !== undefined ? u._resolvedThinkingTokens : (u.totalThinkingTokens || 0);
-                    const mod = u._resolvedModel || u.lastModel || 'gemini-3.7-flash';
-                    const cost = u._resolvedCostUsd !== undefined ? u._resolvedCostUsd : calculateCorrectionCostUsd(mod, inTok, outTok);
-                    return [
-                        u.username,
-                        (u.note || '').replace(/;/g, ','),
-                        u.role,
-                        u.active !== false ? 'Actif' : 'Suspendu',
-                        u.loginCount || 0,
-                        u.copiesCount || 0,
-                        u.quotaCopies !== null && u.quotaCopies !== undefined ? u.quotaCopies : 'Illimite',
-                        mod,
-                        inTok,
-                        outTok,
-                        thinkTok,
-                        Number(cost || 0).toFixed(4).replace('.', ','),
-                        u.lastActiveAt || u.lastLoginAt || ''
-                    ];
-                });
-                const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\r\n');
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `mentor_suivi_comptes_${new Date().toISOString().slice(0, 10)}.csv`;
-                a.click();
-                URL.revokeObjectURL(url);
             };
 
             // Initialisation au chargement du DOM
